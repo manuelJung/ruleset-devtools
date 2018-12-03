@@ -1,49 +1,56 @@
-import {observable} from 'mobx'
+// @flow
+import {observable, toJS} from 'mobx'
 import events from './events'
 
-const dataStore = observable({
-  ruleExecutions: {
-    byId: {},
-    byRuleId: {} // []
+import type {ActionExecution, RuleExecution, Ruleset} from './entities'
+
+type DataStore = {
+  _ruleExecutions: {
+    byId: {[executionId:string]: RuleExecution},
+    byRuleId: {[ruleId:string]: RuleExecution[]},
+    byActionId: {[actionId:string]: RuleExecution[]}
   },
-  actionExecutions: {
+  _actionExecutions: {
+    allIds: string[],
+    byId: {[actionId:string]: ActionExecution},
+    byRuleId: {[ruleId:string]: ActionExecution[]},
+    byExecutionId: {[executionId:string]: ActionExecution[]}
+  },
+  _rulesets: {
+    byId: {[ruleId:string]: Ruleset},
+  },
+  actionExecutions: ActionExecution[],
+  toJS: () => DataStore
+}
+
+const dataStore:DataStore = observable(({
+  _ruleExecutions: {
     byId: {},
-    byRuleId: {} // [],
+    byRuleId: {}, // []
+    byActionId: {} // []
+  },
+  _actionExecutions: {
+    byId: {},
+    allIds: [],
+    byRuleId: {}, // [],
     byExecutionId: {} // []
   },
-  rulesets: {
+  _rulesets: {
     byId: {}
+  },
+  get actionExecutions(){
+    return this._actionExecutions.allIds.map(id => this._actionExecutions.byId[id])
+  },
+  toJS(){
+    return toJS(this)
   }
-})
+}:DataStore))
 
-events.on('ACTION', action => {
-  const store = createActionExecution(action)
-  const dict = dataStore.actionExecutions
-  const {id, ruleId, executionId} = action.meta
-  dict.byId[id] = store
-  if(ruleId) {
-    if(!dict.byExecutionId[executionId]) dict.byExecutionId[executionId] = []
-    dict.byExecutionId[executionId].push(store)
-    if(!dict.byRuleId[ruleId]) dict.byRuleId[ruleId] = []
-    dict.byRuleId[ruleId] = store
-  }
-})
+export default dataStore
 
-events.on('EXEC_RULE', action => {
-  const store = createRuleExecution(action)
-  const dict = dataStore.actionExecutions
-  const {id, ruleId} = action.meta
-  dict.byId[id] = store
-  if(!dict.byRuleId[executionId]) dict.byRuleId[executionId] = []
-  dict.byRuleId[executionId].push(store)
-})
+window.dataStore = dataStore
 
-events.on('ADD_RULE', action => {
-  const store = createRuleset(action)
-  const dict = dataStore.rulesets
-  const {id, ruleId} = action.meta
-  dict.byId[id] = store
-})
+
 
 /*{
   type: 'EXEC_RULE',
@@ -54,19 +61,24 @@ events.on('ADD_RULE', action => {
   },
   payload: 'CONDITION_MATCH'
 }*/
-const createRuleExecution = action => {
-  const store = observable({
-    id: action.meta.id, 
-    ruleId: action.meta.ruleId, 
-    timestamp: action.meta.timestamp, 
+const createRuleExecution = event => {
+  const store:RuleExecution = observable(({
+    storeType: 'RULE_EXECUTION',
+    id: event.meta.id, 
+    ruleId: event.meta.ruleId, 
+    timestamp: event.meta.timestamp, 
     finished: false,
-    status: action.payload,
-    get actions(){
-      const dict = dataStore.actionExecutions.byExecutionId
+    status: event.payload,
+    get rule(){
+      const {ruleId} = event.meta
+      return dataStore._rulesets.byId[ruleId].rule
+    },
+    get actionExecutions(){
+      const dict = dataStore._actionExecutions.byExecutionId
       if(!dict) return []
-      return Object.keys(dict).map(key => dict[key])
+      return ((Object.values(dict):any):ActionExecution[])
     }
-  })
+  }:RuleExecution))
   return store
 }
 
@@ -80,16 +92,21 @@ const createRuleExecution = action => {
   },
   payload: action
 } */
-const createActionExecution = action => {
-  const store = observable({
-    id: action.meta.id, 
-    timestamp: action.meta.timestamp,
-    action: action.payload,
+const createActionExecution = event => {
+  const store:ActionExecution = observable(({
+    storeType: 'ACTION_EXECUTION',
+    id: event.meta.id,
+    timestamp: event.meta.timestamp,
+    action: event.payload,
+    get assignedRuleExecutions(){
+      return dataStore._ruleExecutions.byActionId[this.id]
+    },
     get ruleExecution(){
-      const {executionId} = action.meta
-      return dataStore.ruleExecutions.byId[executionId] || null
+      const {executionId} = event.meta
+      if(!executionId) return null
+      return dataStore._ruleExecutions.byId[executionId]
     }
-  })
+  }:ActionExecution))
   return store
 }
 
@@ -101,24 +118,64 @@ const createActionExecution = action => {
   },
   payload: serializeRule(rule)
 } */
-createRuleset = action => {
-  const store = observable({
-    rule: action.payload,
-    active: action.payload.addWhen ? false : true,
-    pendingWhen: action.payload.addWhen ? true : false,
+const createRuleset = event => {
+  const store:Ruleset = observable(({
+    storeType: 'RULESET',
+    id: event.meta.id,
+    rule: event.payload,
+    active: event.payload.addWhen ? false : true,
+    pendingWhen: event.payload.addWhen ? true : false,
     pendingUntil: false,
     parentRule: null,
     subRules: [],
     get ruleExecutions(){
-      const dict = dataStore.ruleExecutions.byRuleId
+      const dict = dataStore._ruleExecutions.byRuleId
       if(!dict) return []
-      return Object.keys(dict).map(key => dict[key])
+      return ((Object.values(dict):any):RuleExecution[])
     }
-  })
-  events.on('REMOVE_RULE', action => {
-    if(action.payload === store.rule.id){
+  }:Ruleset))
+  events.addListener(event => {
+    if(event.type !== 'REMOVE_RULE') return
+    if(event.payload === store.rule.id){
       store.active = false
     }
   })
   return store
 }
+
+
+events.addListener(event => {
+  if(event.type === 'ACTION'){
+    const store = createActionExecution(event)
+    const dict = dataStore._actionExecutions
+    const {id, ruleId, executionId} = event.meta
+    dict.byId[id] = store
+    dict.allIds.push(id)
+    if(ruleId && executionId) {
+      if(!dict.byExecutionId[executionId]) dict.byExecutionId[executionId] = []
+      dict.byExecutionId[executionId].push(store)
+      if(!dict.byRuleId[ruleId]) dict.byRuleId[ruleId] = []
+      dict.byRuleId[ruleId].push(store)
+    }
+  }
+  if(event.type === 'EXEC_RULE'){
+    const store = createRuleExecution(event)
+    const dict = dataStore._ruleExecutions
+    const {id, ruleId, actionId} = event.meta
+    const rule = dataStore._rulesets.byId[ruleId].rule
+    let actionTypes = rule.target === '*' ? ['global']
+      : Array.isArray(rule.target) ? rule.target : [rule.target]
+    dict.byId[id] = store
+    if(!dict.byActionId[actionId]) dict.byActionId[actionId] = []
+    dict.byActionId[actionId].push(store)
+    if(!dict.byRuleId[ruleId]) dict.byRuleId[ruleId] = []
+    dict.byRuleId[ruleId].push(store)
+
+  }
+  if(event.type === 'ADD_RULE'){
+    const store = createRuleset(event)
+    const dict = dataStore._rulesets
+    const {id} = event.meta
+    dict.byId[id] = store
+  }
+}, true)
