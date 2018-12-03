@@ -34,6 +34,8 @@ export type Ruleset = {
   ruleExecutions: RuleExecution[],
 }
 
+export type Store = RuleExecution | ActionExecution | Ruleset
+
 // EVENTS
 
 export type AddRuleEvent = {

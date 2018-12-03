@@ -2,8 +2,8 @@
 import React from 'react'
 import {observer} from 'mobx-react'
 import styled from 'styled-components'
-
 import store from 'modules/store'
+import EntityBox from './EntityBox'
 
 type Props = {}
 
@@ -12,18 +12,10 @@ export default observer<Props>(function Chart(){
     <Wrapper>
       {store.actionExecutions.map(actionExecution => (
         <Row key={actionExecution.id}>
-          <Action>
-            <div className='title'>{actionExecution.action.type}</div>
-            {actionExecution.ruleExecution && <div className='ruleExec'>
-              {actionExecution.ruleExecution.rule.id}
-            </div>}
-          </Action>
+          <EntityBox store={actionExecution}/>
           <hr/>
           {actionExecution.assignedRuleExecutions.map(ruleExecution => (
-            <RuleExec status={ruleExecution.status} key={ruleExecution.id}>
-              <div className='title'>{ruleExecution.ruleId}</div>
-              {ruleExecution.rule.target === '*' && <div className='global'>global-rule</div>}
-            </RuleExec>
+            <EntityBox key={ruleExecution.id} store={ruleExecution}/>
           ))}
         </Row>
       ))}
