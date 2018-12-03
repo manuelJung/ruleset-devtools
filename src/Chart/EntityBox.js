@@ -12,13 +12,13 @@ type Props = {
 export default observer<Props>(function EntityBox({store}){
   switch(store.storeType){
     case 'RULE_EXECUTION': return (
-      <RuleExecution status={store.status} onClick={() => uiStore.setActiveStore(store)}>
+      <RuleExecution active={uiStore.activeStore === store} status={store.status} onClick={() => uiStore.setActiveStore(store)}>
         <div className='title'>{store.ruleId}</div>
         {store.rule.target === '*' && <div className='global'>global-rule</div>}
       </RuleExecution>
     )
     case 'ACTION_EXECUTION': return (
-      <ActionExecution onClick={() => uiStore.setActiveStore(store)}>
+      <ActionExecution active={uiStore.activeStore === store} onClick={() => uiStore.setActiveStore(store)}>
         <div className='title'>{store.action.type}</div>
         {store.ruleExecution && <div className='ruleExec'> {store.ruleExecution.rule.id} </div>}
       </ActionExecution>
@@ -30,14 +30,16 @@ export default observer<Props>(function EntityBox({store}){
 
 const RuleExecution = styled.div`
   padding: 5px;
+  cursor: pointer;
   margin-bottom: 5px;
-  border: 1px solid black;
+  border: ${props => props.active ? '2px dashed black' : '1px solid black'};
   background: ${props => props.status === 'CONDITION_MATCH' ? 'green' : 'red'};
 `
 
 const ActionExecution = styled.div`
   padding: 5px;
+  cursor: pointer;
   margin-bottom: 5px;
-  border: 1px solid black;
+  border: ${props => props.active ? '2px dashed black' : '1px solid black'};
   min-height: 50px;
 `
