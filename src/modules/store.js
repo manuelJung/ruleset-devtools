@@ -20,7 +20,7 @@ type DataStore = {
     byId: {[ruleId:string]: Ruleset},
   },
   actionExecutions: ActionExecution[],
-  toJS: () => DataStore
+  toJS: (store?:any) => DataStore
 }
 
 const dataStore:DataStore = observable(({
@@ -41,7 +41,8 @@ const dataStore:DataStore = observable(({
   get actionExecutions(){
     return this._actionExecutions.allIds.map(id => this._actionExecutions.byId[id])
   },
-  toJS(){
+  toJS(store){
+    if(store) return toJS(store)
     return toJS(this)
   }
 }:DataStore))
@@ -74,9 +75,9 @@ const createRuleExecution = event => {
       return dataStore._rulesets.byId[ruleId].rule
     },
     get actionExecutions(){
-      const dict = dataStore._actionExecutions.byExecutionId
+      const dict = dataStore._actionExecutions.byExecutionId[this.id]
       if(!dict) return []
-      return ((Object.values(dict):any):ActionExecution[])
+      return dict
     }
   }:RuleExecution))
   return store
