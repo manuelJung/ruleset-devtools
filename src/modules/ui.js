@@ -5,7 +5,7 @@ import type {Store} from './entities'
 
 export type UIStore = {
   activeStore: Store | null,
-  setActiveStore: (store:Store) => mixed
+  setActiveStore: (store:Store|null) => mixed
 }
 
 const uiStore:UIStore = observable(({

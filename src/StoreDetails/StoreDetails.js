@@ -18,10 +18,12 @@ export default observer<{}>(function StoreDetails(){
 
 
 const RuleExecutionDetails = observer<{store:RuleExecution}>(function RuleExecutionDetails({store}){
+  let ruleText = JSON.stringify(store.rule, null, 2) || ''
+  ruleText = ruleText.replace(/ /g, ' ')
   return (
     <Wrapper className='RuleExecutionDetails'>
       <div className='headline'>
-        <div className='store-type'>RuleExecution</div>
+        <div className='store-type'>Rule</div>
         <div className='store-title'>{store.rule.id}-{store.id}</div>
       </div>
       <div className='row'>
@@ -32,6 +34,19 @@ const RuleExecutionDetails = observer<{store:RuleExecution}>(function RuleExecut
           </span>
         ))}</div>
       </div>
+      <div className='row'>
+        <div className='title'>Status</div>
+        <div className='value'>{store.status}</div>
+      </div>
+      <div className='row'>
+        <div className='title'>Rule</div>
+        <div className='value'>{ruleText.split('\n').map(line =>(
+          <React.Fragment key={line}>
+            <span>{line}</span>
+            <br/>
+          </React.Fragment>
+        ))}</div>
+      </div>
     </Wrapper>
   )
 })
@@ -40,11 +55,11 @@ const ActionExecutionDetails = observer<{store:ActionExecution}>(function Action
   return (
     <Wrapper className='ActionExecutionDetails'>
       <div className='headline'>
-        <div className='store-type'>ActionExecution</div>
+        <div className='store-type'>Action</div>
         <div className='store-title'>{store.action.type}-{store.id}</div>
       </div>
       <div className='row'>
-        <div className='title'>invoked by</div>
+        <div className='title'>invoked by rule</div>
         <div className='value'>
           {store.ruleExecution && <span className='link' onClick={() => uiStore.setActiveStore(store.ruleExecution)}>
             {store.ruleExecution.rule.id}
@@ -65,6 +80,7 @@ const Wrapper = styled.div`
     .store-type {
       padding: 5px;
       font-size: 22px;
+      min-width: 200px;
       border-right: 1px solid black;
     }
     .store-title {
@@ -75,6 +91,8 @@ const Wrapper = styled.div`
   }
   .row {
     display: flex;
+    border-bottom: 1px solid black;
+    &:last-child {border-bottom: none;}
     .title {
       flex: 1;
       padding: 5px;

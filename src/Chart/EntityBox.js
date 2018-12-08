@@ -32,8 +32,9 @@ const RuleExecution = styled.div`
   padding: 5px;
   cursor: pointer;
   margin-bottom: 5px;
+  color: white;
   border: ${props => props.active ? '2px dashed black' : '1px solid black'};
-  background: ${props => props.status === 'CONDITION_MATCH' ? 'green' : 'red'};
+  background: ${props => props.status === 'CONDITION_MATCH' ? 'darkgreen' : 'darkred'};
 `
 
 const ActionExecution = styled.div`

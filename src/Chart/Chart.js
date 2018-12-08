@@ -33,17 +33,3 @@ const Row = styled.section`
   max-width: 300px;
   padding: 5px;
 `
-
-const Action = styled.div`
-  padding: 5px;
-  margin-bottom: 5px;
-  border: 1px solid black;
-  min-height: 50px;
-`
-
-const RuleExec = styled.div`
-  padding: 5px;
-  margin-bottom: 5px;
-  border: 1px solid black;
-  background: ${props => props.status === 'CONDITION_MATCH' ? 'green' : 'red'};
-`
