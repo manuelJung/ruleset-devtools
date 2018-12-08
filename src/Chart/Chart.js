@@ -26,10 +26,11 @@ export default observer<Props>(function Chart(){
 
 const Wrapper = styled.section`
   display: flex;
+  overflow-x: scroll;
 `
 
 const Row = styled.section`
-  min-width: 200px;
-  max-width: 300px;
+  min-width: 300px;
+  max-width: 400px;
   padding: 5px;
 `

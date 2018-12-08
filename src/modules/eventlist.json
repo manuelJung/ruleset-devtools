@@ -4783,7 +4783,10 @@
       "id": "test",
       "target": "search/TOGGLE_FILTER",
       "position": "INSERT_BEFORE",
-      "concurrency": "LAST"
+      "concurrency": "LAST",
+      "consequence": "function consequence(store, action, _ref) {\n    var addRule = _ref.addRule;\n\n    console.log('add');\n    addRule(tickRule);\n    return { type: 'MY_TEST' };\n  }",
+      "addWhen": "function addUntil(action) {\n    return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function addUntil$(_context2) {\n      while (1) {\n        switch (_context2.prev = _context2.next) {\n          case 0:\n            _context2.next = 2;\n            return action('search/REMOVE_FILTER');\n\n          case 2:\n            return _context2.abrupt(\"return\", 'RECREATE_RULE');\n\n          case 3:\n          case \"end\":\n            return _context2.stop();\n        }\n      }\n    }, addUntil, this);\n  }",
+      "addUntil": "function addUntil(action) {\n    return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function addUntil$(_context2) {\n      while (1) {\n        switch (_context2.prev = _context2.next) {\n          case 0:\n            _context2.next = 2;\n            return action('search/REMOVE_FILTER');\n\n          case 2:\n            return _context2.abrupt(\"return\", 'RECREATE_RULE');\n\n          case 3:\n          case \"end\":\n            return _context2.stop();\n        }\n      }\n    }, addUntil, this);\n  }"
     },
     "parentRuleId": null
   },
@@ -4793,7 +4796,8 @@
     "rule": {
       "id": "TICK",
       "target": "search/TOGGLE_FILTER",
-      "concurrency": "ONCE"
+      "concurrency": "ONCE",
+      "consequence": "function consequence() {\n    var interval = setInterval(function () {\n      return console.log('TICK');\n    }, 1000);\n    return function () {\n      return clearInterval(interval);\n    };\n  }"
     },
     "parentRuleId": "test"
   },
