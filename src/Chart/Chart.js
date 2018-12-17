@@ -27,6 +27,7 @@ export default observer<Props>(function Chart(){
 const Wrapper = styled.section`
   display: flex;
   overflow-x: scroll;
+  scroll-behavior: smooth;
 `
 
 const Row = styled.section`

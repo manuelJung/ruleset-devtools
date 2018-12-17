@@ -3,6 +3,7 @@ import React from 'react'
 import {observer} from 'mobx-react'
 import styled from 'styled-components'
 import uiStore from 'modules/ui'
+import { Link } from 'Scroller/Scroller'
 
 import type {RuleExecution, ActionExecution} from 'modules/entities'
 
@@ -29,9 +30,11 @@ const RuleExecutionDetails = observer<{store:RuleExecution}>(function RuleExecut
       <div className='row'>
         <div className='title'>dispatched actions</div>
         <div className='value'>{store.actionExecutions.map(o => (
-          <div className='link' key={o.id} onClick={() => uiStore.setActiveStore(o)}>
-            {o.action.type}
-          </div>
+          <Link key={o.id} to={'action-'+o.id}>
+            <div className='link' onClick={() => uiStore.setActiveStore(o)}>
+              {o.action.type}
+            </div>
+          </Link>
         ))}</div>
       </div>
       <div className='row'>
@@ -62,7 +65,9 @@ const ActionExecutionDetails = observer<{store:ActionExecution}>(function Action
         <div className='title'>invoked by rule</div>
         <div className='value'>
           {store.ruleExecution && <span className='link' onClick={() => uiStore.setActiveStore(store.ruleExecution)}>
-            {store.ruleExecution.rule.id}
+            <Link to={'rule-'+store.ruleExecution.id}>
+              {store.ruleExecution.rule.id}
+            </Link>
           </span>}
         </div>
       </div>
