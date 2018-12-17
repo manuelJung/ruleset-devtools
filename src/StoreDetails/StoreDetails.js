@@ -66,6 +66,17 @@ const ActionExecutionDetails = observer<{store:ActionExecution}>(function Action
           </span>}
         </div>
       </div>
+      <div className='row'>
+        <div className='title'>action</div>
+        <div className='value'>
+          <span>{JSON.stringify(store.action, null, 2).split('\n').map(line =>(
+          <React.Fragment key={line}>
+            <span>{line}</span>
+            <br/>
+          </React.Fragment>
+        ))}</span>
+        </div>
+      </div>
     </Wrapper>
   )
 })
