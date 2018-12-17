@@ -18,7 +18,7 @@ export default observer<Props>(function EntityBox({store}){
       </RuleExecution>
     )
     case 'ACTION_EXECUTION': return (
-      <ActionExecution active={uiStore.activeStore === store} onClick={() => uiStore.setActiveStore(store)}>
+      <ActionExecution removed={store.removed} active={uiStore.activeStore === store} onClick={() => uiStore.setActiveStore(store)}>
         <div className='title'>{store.action.type}</div>
         {store.ruleExecution && <div className='ruleExec'> {store.ruleExecution.rule.id} </div>}
       </ActionExecution>
@@ -41,6 +41,7 @@ const ActionExecution = styled.div`
   padding: 5px;
   cursor: pointer;
   margin-bottom: 5px;
+  background: ${props => props.removed ? 'red' : 'white'};
   border: ${props => props.active ? '2px dashed black' : '1px solid black'};
   min-height: 50px;
 `

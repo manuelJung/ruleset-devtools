@@ -2,6 +2,12 @@
 
 // STORES
 
+export type DispatchedAction = {
+  storeType: 'DISPATCHED_ACTION',
+  actionExecution: ActionExecution,
+  removed: boolean
+}
+
 export type RuleExecution = {
   storeType: 'RULE_EXECUTION',
   id: number,
@@ -20,6 +26,7 @@ export type ActionExecution = {
   action: Action,
   assignedRuleExecutions: RuleExecution[],
   ruleExecution: RuleExecution | null,
+  removed: boolean
 }
 
 export type Ruleset = {
@@ -70,6 +77,12 @@ export type ExecActionEvent = {
   action: Action
 }
 
+export type DispatchActionEvent = {
+  type: 'DISPATCH_ACTION',
+  actionExecId: number,
+  removed: boolean
+}
+
 export type ExecSagaEvent = {
   type: 'EXEC_SAGA',
   timestamp: number,
@@ -77,7 +90,7 @@ export type ExecSagaEvent = {
   result: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove
 }
 
-export type Event = AddRuleEvent | RemoveRuleEvent | ExecRuleEvent | ExecActionEvent | ExecSagaEvent
+export type Event = AddRuleEvent | RemoveRuleEvent | ExecRuleEvent | ExecActionEvent | ExecSagaEvent | DispatchActionEvent
 
 // // EVENTS
 

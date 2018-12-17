@@ -29,9 +29,9 @@ const RuleExecutionDetails = observer<{store:RuleExecution}>(function RuleExecut
       <div className='row'>
         <div className='title'>dispatched actions</div>
         <div className='value'>{store.actionExecutions.map(o => (
-          <span className='link' key={o.id} onClick={() => uiStore.setActiveStore(o)}>
+          <div className='link' key={o.id} onClick={() => uiStore.setActiveStore(o)}>
             {o.action.type}
-          </span>
+          </div>
         ))}</div>
       </div>
       <div className='row'>

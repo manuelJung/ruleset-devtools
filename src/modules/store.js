@@ -2,7 +2,7 @@
 import {observable, toJS} from 'mobx'
 import events from './events'
 
-import type {ActionExecution, RuleExecution, Ruleset} from './entities'
+import type {DispatchedAction, ActionExecution, RuleExecution, Ruleset} from './entities'
 
 type DataStore = {
   _ruleExecutions: {
@@ -18,6 +18,10 @@ type DataStore = {
   },
   _rulesets: {
     byId: {[ruleId:string]: Ruleset},
+  },
+  _dispatchedActions: {
+    all: DispatchedAction[],
+    byActionExecId: { [id:number]: DispatchedAction }
   },
   actionExecutions: ActionExecution[],
   toJS: (store?:any) => DataStore
@@ -35,11 +39,15 @@ const dataStore:DataStore = observable(({
     byRuleId: {}, // [],
     byExecutionId: {} // []
   },
+  _dispatchedActions: {
+    all: [],
+    byActionExecId: {}
+  },
   _rulesets: {
     byId: {}
   },
   get actionExecutions(){
-    return this._actionExecutions.allIds.map(id => this._actionExecutions.byId[id])
+    return dataStore._dispatchedActions.all.map(o => o.actionExecution)
   },
   toJS(store){
     if(store) return toJS(store)
@@ -99,6 +107,9 @@ const createActionExecution = event => {
     id: event.id,
     timestamp: event.timestamp,
     action: event.action,
+    get removed(){
+      return dataStore._dispatchedActions.byActionExecId[event.id].removed
+    },
     get assignedRuleExecutions(){
       return dataStore._ruleExecutions.byActionExecId[this.id] || []
     },
@@ -148,6 +159,17 @@ const createRuleset = event => {
   return store
 }
 
+const createDispatchedAction = event => {
+  const Store:DispatchedAction = observable(({
+    storeType: 'DISPATCHED_ACTION',
+    removed: event.removed,
+    get actionExecution(){
+      return dataStore._actionExecutions.byId[event.actionExecId]
+    }
+  }:DispatchedAction))
+  return Store
+}
+
 
 events.addListener(event => {
   if(event.type === 'EXEC_ACTION'){
@@ -162,6 +184,11 @@ events.addListener(event => {
       if(!dict.byRuleId[ruleId]) dict.byRuleId[ruleId] = []
       dict.byRuleId[ruleId].push(store)
     }
+  }
+  if(event.type === 'DISPATCH_ACTION'){
+    const store = createDispatchedAction(event)
+    dataStore._dispatchedActions.all.push(store)
+    dataStore._dispatchedActions.byActionExecId[event.actionExecId] = store
   }
   if(event.type === 'EXEC_RULE'){
     const store = createRuleExecution(event)
