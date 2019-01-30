@@ -49,4 +49,15 @@ const ActionExecution = styled.div`
   background: ${props => props.removed ? 'red' : 'white'};
   border: ${props => props.active ? '2px dashed black' : '1px solid black'};
   min-height: 50px;
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    flex: 1;
+  }
+
+  .ruleExec {
+    color: grey;
+    font-size: 12px;
+  }
 `
