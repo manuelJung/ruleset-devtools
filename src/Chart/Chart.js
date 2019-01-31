@@ -10,7 +10,7 @@ type Props = {}
 export default observer<Props>(function Chart(){
   return (
     <Wrapper>
-      {/* {store.actionExecutions.map(actionExecution => (
+      {store.actionExecutions.map(actionExecution => (
         <Row key={actionExecution.id}>
           <EntityBox store={actionExecution}/>
           <hr/>
@@ -18,7 +18,7 @@ export default observer<Props>(function Chart(){
             <EntityBox key={ruleExecution.id} store={ruleExecution}/>
           ))}
         </Row>
-      ))} */}
+      ))}
     </Wrapper>
   )
 })

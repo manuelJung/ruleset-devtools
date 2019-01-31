@@ -17,15 +17,19 @@ export default observer<{}>(function StoreDetails(){
   }
 })
 
+type Props1 = {
+  store: RuleExecution
+}
 
-const RuleExecutionDetails = observer<{store:RuleExecution}>(function RuleExecutionDetails({store}){
-  let ruleText = JSON.stringify(store.rule, null, 2) || ''
+
+const RuleExecutionDetails = observer<Props1>(function RuleExecutionDetails({store}:Props1){
+  let ruleText = JSON.stringify(store.ruleset.rule, null, 2) || ''
   ruleText = ruleText.replace(/ /g, ' ')
   return (
     <Wrapper className='RuleExecutionDetails'>
       <div className='headline'>
         <div className='store-type'>Rule</div>
-        <div className='store-title'>{store.rule.id}-{store.id}</div>
+        <div className='store-title'>{store.ruleset.rule.id}-{store.id}</div>
       </div>
       <div className='row'>
         <div className='title'>dispatched actions</div>
@@ -54,7 +58,9 @@ const RuleExecutionDetails = observer<{store:RuleExecution}>(function RuleExecut
   )
 })
 
-const ActionExecutionDetails = observer<{store:ActionExecution}>(function ActionExecutionDetails({store}){
+type Props2 = {store: ActionExecution}
+
+const ActionExecutionDetails = observer<Props2>(function ActionExecutionDetails({store}:Props2){
   return (
     <Wrapper className='ActionExecutionDetails'>
       <div className='headline'>
@@ -66,7 +72,7 @@ const ActionExecutionDetails = observer<{store:ActionExecution}>(function Action
         <div className='value'>
           {store.ruleExecution && <span className='link' onClick={() => uiStore.setActiveStore(store.ruleExecution)}>
             <Link to={'rule-'+store.ruleExecution.id}>
-              {store.ruleExecution.rule.id}
+              {store.ruleExecution.ruleset.rule.id}
             </Link>
           </span>}
         </div>

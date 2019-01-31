@@ -10,21 +10,21 @@ type Props = {
   store: Store
 }
 
-export default observer<Props>(function EntityBox({store}){
+export default observer<Props>(function EntityBox({store}:Props){
   switch(store.storeType){
     case 'RULE_EXECUTION': return (
       <Element name={'rule-'+store.id}>
         <RuleExecution active={uiStore.activeStore === store} status={store.status} onClick={() => uiStore.setActiveStore(store)}>
-          <div className='title'>{store.ruleId}</div>
-          {store.rule.target === '*' && <div className='global'>global-rule</div>}
+          <div className='title'>{store.ruleset.id}</div>
+          {store.ruleset.rule.target === '*' && <div className='global'>global-rule</div>}
         </RuleExecution>
       </Element>
     )
     case 'ACTION_EXECUTION': return (
       <Element name={'action-'+store.id}>
-        <ActionExecution removed={store.removed} active={uiStore.activeStore === store} onClick={() => uiStore.setActiveStore(store)}>
+        <ActionExecution removed={store.status === 'ABORTED'} active={uiStore.activeStore === store} onClick={() => uiStore.setActiveStore(store)}>
           <div className='title'>{store.action.type}</div>
-          {store.ruleExecution && <div className='ruleExec'> {store.ruleExecution.rule.id} </div>}
+          {store.ruleExecution && <div className='ruleExec'> {store.ruleExecution.ruleset.id} </div>}
         </ActionExecution>
       </Element>
     )
@@ -39,7 +39,7 @@ const RuleExecution = styled.div`
   margin-bottom: 5px;
   color: white;
   border: ${props => props.active ? '2px dashed black' : '1px solid black'};
-  background: ${props => props.status === 'CONDITION_MATCH' ? 'darkgreen' : 'darkred'};
+  background: ${props => props.status !== 'CONDITION_NOT_MATCH' ? 'darkgreen' : 'darkred'};
 `
 
 const ActionExecution = styled.div`
