@@ -5,11 +5,16 @@
 export type DispatchedAction = {
   storeType: 'DISPATCHED_ACTION',
   actionExecution: ActionExecution,
-  removed: boolean
+  actionExecId: number,
+  timestamp: number,
+  removed: boolean,
+  isReduxAction: boolean,
+  action: Action
 }
 
 export type RuleExecution = {
   storeType: 'RULE_EXECUTION',
+  id: number,
   timestampStart: number,
   timestampEnd: number | null,
   finished: boolean,
@@ -21,11 +26,12 @@ export type RuleExecution = {
 export type ActionExecution = {
   storeType: 'ACTION_EXECUTION',
   id: number,
-  timestamp: number,
+  timestampStart: number,
+  timestampEnd: number | null,
   action: Action,
   assignedRuleExecutions: RuleExecution[],
   ruleExecution: RuleExecution | null,
-  removed: boolean
+  status: 'PENDING' | 'DISPATCHED' | 'ABORTED'
 }
 
 export type Ruleset = {
@@ -126,6 +132,7 @@ export type YieldSagaEvent = {
 
 export type DispatchActionEvent = {
   type: 'DISPATCH_ACTION',
+  timestamp: number,
   actionExecId: number,
   removed: boolean,
   isReduxAction: boolean,

@@ -15,7 +15,7 @@ type DataStore = {
     allIds: number[],
     byId: {[actionId:number]: ActionExecution},
     byRuleId: {[ruleId:string]: ActionExecution[]},
-    byExecutionId: {[executionId:number]: ActionExecution[]}
+    byRuleExecId: {[executionId:number]: ActionExecution[]}
   },
   _rulesets: {
     byId: {[ruleId:string]: Ruleset},
@@ -38,7 +38,7 @@ const dataStore:DataStore = observable(({
     byId: {},
     allIds: [],
     byRuleId: {}, // [],
-    byExecutionId: {} // []
+    byRuleExecId: {} // []
   },
   _dispatchedActions: {
     all: [],
@@ -74,6 +74,7 @@ window.dataStore = dataStore
 const createRuleExecution = event => {
   const store:RuleExecution = observable(({
     storeType: 'RULE_EXECUTION',
+    id: event.ruleExecId,
     timestampStart: event.timestamp, 
     timestampEnd: null,
     finished: false,
@@ -84,7 +85,7 @@ const createRuleExecution = event => {
     },
     // get parentAction
     get actionExecutions(){
-      const dict = dataStore._actionExecutions.byExecutionId[this.id]
+      const dict = dataStore._actionExecutions.byRuleExecId[this.id]
       if(!dict) return []
       return dict
     }
@@ -112,6 +113,24 @@ const createRuleExecution = event => {
   } 
 }
 
+const createDispatchedAction = event => {
+  const store:DispatchedAction = observable({
+    storeType: 'DISPATCHED_ACTION',
+    actionExecId: event.actionExecId,
+    timestamp: event.timestamp,
+    action: event.action,
+    removed: event.removed,
+    isReduxAction: event.isReduxAction,
+    get actionExecution(){
+      return dataStore._actionExecutions.byId[event.actionExecId]
+    }
+  })
+  // attach
+  const dict = dataStore._dispatchedActions
+  dict.all.push(store)
+  dict.byActionExecId[event.actionExecId] = store
+}
+
 /*{
   type: 'ACTION',
   meta: {
@@ -122,26 +141,49 @@ const createRuleExecution = event => {
   },
   payload: action
 } */
-// const createActionExecution = event => {
-//   const store:ActionExecution = observable(({
-//     storeType: 'ACTION_EXECUTION',
-//     id: event.id,
-//     timestamp: event.timestamp,
-//     action: event.action,
-//     get removed(){
-//       return dataStore._dispatchedActions.byActionExecId[event.id].removed
-//     },
-//     get assignedRuleExecutions(){
-//       return dataStore._ruleExecutions.byActionExecId[this.id] || []
-//     },
-//     get ruleExecution(){
-//       const {ruleExecId} = event
-//       if(!ruleExecId) return null
-//       return dataStore._ruleExecutions.byId[ruleExecId]
-//     }
-//   }:ActionExecution))
-//   return store
-// }
+const createActionExecution = event => {
+  const store:ActionExecution = observable(({
+    storeType: 'ACTION_EXECUTION',
+    id: event.actionExecId,
+    timestampStart: event.timestamp,
+    timestampEnd: null,
+    action: event.action,
+    status: 'PENDING',
+    // get removed(){
+    //   return dataStore._dispatchedActions.byActionExecId[event.id].removed
+    // },
+    get assignedRuleExecutions(){
+      return dataStore._ruleExecutions.byActionExecId[this.id] || []
+    },
+    get ruleExecution(){
+      const {ruleExecId} = event
+      if(!ruleExecId) return null
+      return dataStore._ruleExecutions.byId[ruleExecId]
+    }
+  }:ActionExecution))
+  // listeners
+  const listener = events.addListener(e => {
+    switch(e.type){
+      case 'EXEC_ACTION_END': {
+        if(event.actionExecId === e.actionExecId){
+          store.status = e.result
+          store.timestampEnd = e.timestamp
+          events.removeListener(listener)
+        }
+      }
+    }
+  })
+  // attach
+  const dict = dataStore._actionExecutions
+  dict.byId[event.actionExecId] = store
+  dict.allIds.push(event.actionExecId)
+  if(event.ruleExecId){
+    const id = event.ruleExecId
+    dict.byRuleExecId[id] = push(dict.byRuleExecId[id], store)
+    const ruleId = dataStore._ruleExecutions.byId[id].ruleset.id
+    dict.byRuleId[ruleId] = push(dict.byRuleId[ruleId], store)
+  } 
+}
 
 /*{
   type: 'ADD_RULE',
@@ -188,21 +230,12 @@ const createRuleset = event => {
   dict.byId[id] = store
 }
 
-const createDispatchedAction = event => {
-  const Store:DispatchedAction = observable(({
-    storeType: 'DISPATCHED_ACTION',
-    removed: event.removed,
-    get actionExecution(){
-      return dataStore._actionExecutions.byId[event.actionExecId]
-    }
-  }:DispatchedAction))
-  return Store
-}
-
 
 events.addListener(e => {
   switch(e.type){
     case 'ADD_RULE': return createRuleset(e)
     case 'EXEC_RULE_START': return createRuleExecution(e)
+    case 'EXEC_ACTION_START': return createActionExecution(e)
+    case 'DISPATCH_ACTION': return createDispatchedAction(e)
   }
 }, true)
