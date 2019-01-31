@@ -1,0 +1,269 @@
+[
+  {
+    "type": "ADD_RULE",
+    "timestamp": 1545081531211,
+    "rule": {
+      "id": "feature/FETCH_COMPONENT_BLOCKS",
+      "target": "@@router/LOCATION_CHANGE",
+      "addOnce": true
+    },
+    "parentRuleId": null
+  },
+  {
+    "type": "ADD_RULE",
+    "timestamp": 1545081531211,
+    "rule": {
+      "id": "feature/HANDLE_ERROR",
+      "target": "staticblocks/FETCH_FAILURE",
+      "position": "INSERT_BEFORE"
+    },
+    "parentRuleId": null
+  },
+  {
+    "type": "ADD_RULE",
+    "timestamp": 1545081531211,
+    "rule": {
+      "id": "feature/DELAY_ERROR",
+      "target": "staticblocks/FETCH_FAILURE",
+      "position": "INSERT_INSTEAD"
+    },
+    "parentRuleId": null
+  },
+  {
+    "type": "ADD_RULE",
+    "timestamp": 1545081531218,
+    "rule": {
+      "id": "core/FETCH_STATIC_BLOCK",
+      "target": "staticblocks/FETCH_REQUEST"
+    },
+    "parentRuleId": null
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081531235,
+    "id": 1,
+    "ruleId": null,
+    "ruleExecId": null,
+    "action": {
+      "type": "@@router/LOCATION_CHANGE",
+      "payload": {
+        "pathname": "/",
+        "search": "",
+        "hash": ""
+      }
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 1,
+    "removed": false
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081531236,
+    "id": 2,
+    "ruleId": "feature/FETCH_COMPONENT_BLOCKS",
+    "ruleExecId": 1,
+    "action": {
+      "type": "staticblocks/FETCH_REQUEST",
+      "meta": {
+        "identifier": "sale-top"
+      }
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 2,
+    "removed": false
+  },
+  {
+    "type": "EXEC_RULE",
+    "timestamp": 1545081531237,
+    "id": 2,
+    "ruleId": "core/FETCH_STATIC_BLOCK",
+    "actionExecId": 2,
+    "result": "CONDITION_MATCH"
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081531237,
+    "id": 3,
+    "ruleId": "feature/FETCH_COMPONENT_BLOCKS",
+    "ruleExecId": 1,
+    "action": {
+      "type": "staticblocks/FETCH_REQUEST",
+      "meta": {
+        "identifier": "sale-bottom"
+      }
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 3,
+    "removed": false
+  },
+  {
+    "type": "EXEC_RULE",
+    "timestamp": 1545081531237,
+    "id": 3,
+    "ruleId": "core/FETCH_STATIC_BLOCK",
+    "actionExecId": 3,
+    "result": "CONDITION_MATCH"
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081531237,
+    "id": 4,
+    "ruleId": "feature/FETCH_COMPONENT_BLOCKS",
+    "ruleExecId": 1,
+    "action": {
+      "type": "staticblocks/FETCH_REQUEST",
+      "meta": {
+        "identifier": "sale-middle"
+      }
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 4,
+    "removed": false
+  },
+  {
+    "type": "EXEC_RULE",
+    "timestamp": 1545081531237,
+    "id": 4,
+    "ruleId": "core/FETCH_STATIC_BLOCK",
+    "actionExecId": 4,
+    "result": "CONDITION_MATCH"
+  },
+  {
+    "type": "EXEC_RULE",
+    "timestamp": 1545081531237,
+    "id": 1,
+    "ruleId": "feature/FETCH_COMPONENT_BLOCKS",
+    "actionExecId": 1,
+    "result": "CONDITION_MATCH"
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081537240,
+    "id": 5,
+    "ruleId": "core/FETCH_STATIC_BLOCK",
+    "ruleExecId": 2,
+    "action": {
+      "type": "staticblocks/FETCH_SUCCESS",
+      "meta": {
+        "identifier": "sale-top"
+      },
+      "payload": {
+        "identifier": "sale-top",
+        "content": "cms for sale page (top)"
+      }
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 5,
+    "removed": false
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081537246,
+    "id": 6,
+    "ruleId": "core/FETCH_STATIC_BLOCK",
+    "ruleExecId": 3,
+    "action": {
+      "type": "staticblocks/FETCH_SUCCESS",
+      "meta": {
+        "identifier": "sale-bottom"
+      },
+      "payload": {
+        "identifier": "sale-bottom",
+        "content": "cms for sale page (bottom)"
+      }
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 6,
+    "removed": false
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081537246,
+    "id": 7,
+    "ruleId": "core/FETCH_STATIC_BLOCK",
+    "ruleExecId": 4,
+    "action": {
+      "type": "staticblocks/FETCH_FAILURE",
+      "meta": {
+        "identifier": "sale-middle"
+      },
+      "payload": "could not find cms with identifier \"sale-middle\""
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 7,
+    "removed": true
+  },
+  {
+    "type": "EXEC_RULE",
+    "timestamp": 1545081537246,
+    "id": 5,
+    "ruleId": "feature/DELAY_ERROR",
+    "actionExecId": 7,
+    "result": "CONDITION_MATCH"
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081537747,
+    "id": 8,
+    "ruleId": "feature/DELAY_ERROR",
+    "ruleExecId": 5,
+    "action": {
+      "type": "staticblocks/FETCH_FAILURE",
+      "meta": {
+        "identifier": "sale-middle",
+        "skipRule": "feature/DELAY_ERROR"
+      },
+      "payload": "could not find cms with identifier \"sale-middle\""
+    }
+  },
+  {
+    "type": "EXEC_RULE",
+    "timestamp": 1545081537747,
+    "id": 6,
+    "ruleId": "feature/DELAY_ERROR",
+    "actionExecId": 8,
+    "result": "SKIP"
+  },
+  {
+    "type": "EXEC_ACTION",
+    "timestamp": 1545081537747,
+    "id": 9,
+    "ruleId": "feature/HANDLE_ERROR",
+    "ruleExecId": 7,
+    "action": {
+      "type": "ERROR_TYPE"
+    }
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 9,
+    "removed": false
+  },
+  {
+    "type": "EXEC_RULE",
+    "timestamp": 1545081537748,
+    "id": 7,
+    "ruleId": "feature/HANDLE_ERROR",
+    "actionExecId": 8,
+    "result": "CONDITION_MATCH"
+  },
+  {
+    "type": "DISPATCH_ACTION",
+    "actionExecId": 8,
+    "removed": false
+  }
+]

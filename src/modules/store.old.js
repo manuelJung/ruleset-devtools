@@ -1,7 +1,6 @@
 // @flow
 import {observable, toJS} from 'mobx'
 import events from './events'
-import {push} from 'utils/helpers'
 
 import type {DispatchedAction, ActionExecution, RuleExecution, Ruleset} from './entities'
 
@@ -74,42 +73,22 @@ window.dataStore = dataStore
 const createRuleExecution = event => {
   const store:RuleExecution = observable(({
     storeType: 'RULE_EXECUTION',
-    timestampStart: event.timestamp, 
-    timestampEnd: null,
+    id: event.id, 
+    ruleId: event.ruleId, 
+    timestamp: event.timestamp, 
     finished: false,
-    status: 'PENDING',
-    get ruleset(){
+    status: event.result,
+    get rule(){
       const {ruleId} = event
-      return dataStore._rulesets.byId[ruleId]
+      return dataStore._rulesets.byId[ruleId].rule
     },
-    // get parentAction
     get actionExecutions(){
       const dict = dataStore._actionExecutions.byExecutionId[this.id]
       if(!dict) return []
       return dict
     }
   }:RuleExecution))
-  // listeners
-  const listener = events.addListener(e => {
-    switch(e.type){
-      case 'EXEC_RULE_END': {
-        if(event.ruleExecId === e.ruleExecId){
-          store.finished = true
-          store.status = e.result
-          store.timestampEnd = e.timestamp
-          events.removeListener(listener)
-        }
-      }
-    }
-  })
-  // attach
-  const dict = dataStore._ruleExecutions
-  dict.byId[event.ruleExecId] = store
-  dict.byRuleId[event.ruleId] = push(dict.byRuleId[event.ruleId], store)
-  if(event.actionExecId){
-    const id = event.actionExecId
-    dict.byActionExecId[id] = push(dict.byActionExecId[id], store)
-  } 
+  return store
 }
 
 /*{
@@ -122,26 +101,26 @@ const createRuleExecution = event => {
   },
   payload: action
 } */
-// const createActionExecution = event => {
-//   const store:ActionExecution = observable(({
-//     storeType: 'ACTION_EXECUTION',
-//     id: event.id,
-//     timestamp: event.timestamp,
-//     action: event.action,
-//     get removed(){
-//       return dataStore._dispatchedActions.byActionExecId[event.id].removed
-//     },
-//     get assignedRuleExecutions(){
-//       return dataStore._ruleExecutions.byActionExecId[this.id] || []
-//     },
-//     get ruleExecution(){
-//       const {ruleExecId} = event
-//       if(!ruleExecId) return null
-//       return dataStore._ruleExecutions.byId[ruleExecId]
-//     }
-//   }:ActionExecution))
-//   return store
-// }
+const createActionExecution = event => {
+  const store:ActionExecution = observable(({
+    storeType: 'ACTION_EXECUTION',
+    id: event.id,
+    timestamp: event.timestamp,
+    action: event.action,
+    get removed(){
+      return dataStore._dispatchedActions.byActionExecId[event.id].removed
+    },
+    get assignedRuleExecutions(){
+      return dataStore._ruleExecutions.byActionExecId[this.id] || []
+    },
+    get ruleExecution(){
+      const {ruleExecId} = event
+      if(!ruleExecId) return null
+      return dataStore._ruleExecutions.byId[ruleExecId]
+    }
+  }:ActionExecution))
+  return store
+}
 
 /*{
   type: 'ADD_RULE',
@@ -156,11 +135,11 @@ const createRuleset = event => {
     storeType: 'RULESET',
     id: event.rule.id,
     rule: event.rule,
-    active: false,
-    addWhenSaga: null,
-    addUntilSaga: null,
+    active: false, //event.payload.addWhen ? false : true,
+    pendingWhen: false,// event.payload.addWhen ? true : false,
+    pendingUntil: false,
     subRules: [],
-    get parentRuleset():Ruleset|null{
+    get parentRuleset(){
       const ruleId = event.rule.id
       const dict = dataStore._rulesets.byId
       return dict[ruleId] || null
@@ -171,21 +150,13 @@ const createRuleset = event => {
       return ((Object.values(dict):any):RuleExecution[])
     }
   }:Ruleset))
-  // listeners
-  const listener = events.addListener(e => {
-    switch(e.type){
-      case 'REMOVE_RULE': {
-        if(e.ruleId === event.rule.id){
-          store.active = false
-          events.removeListener(listener)
-        }
-      }
-    }
-  })
-  // attach
-  const dict = dataStore._rulesets
-  const {id} = event.rule
-  dict.byId[id] = store
+  // events.addListener(event => {
+  //   if(event.type !== 'REMOVE_RULE') return
+  //   if(event.payload === store.rule.id){
+  //     store.active = false
+  //   }
+  // })
+  return store
 }
 
 const createDispatchedAction = event => {
@@ -200,9 +171,43 @@ const createDispatchedAction = event => {
 }
 
 
-events.addListener(e => {
-  switch(e.type){
-    case 'ADD_RULE': return createRuleset(e)
-    case 'EXEC_RULE_START': return createRuleExecution(e)
+events.addListener(event => {
+  if(event.type === 'EXEC_ACTION'){
+    const store = createActionExecution(event)
+    const dict = dataStore._actionExecutions
+    const {id, ruleExecId, ruleId} = event
+    dict.byId[id] = store
+    dict.allIds.push(id)
+    if(ruleExecId && ruleId) {
+      if(!dict.byExecutionId[ruleExecId]) dict.byExecutionId[ruleExecId] = []
+      dict.byExecutionId[ruleExecId].push(store)
+      if(!dict.byRuleId[ruleId]) dict.byRuleId[ruleId] = []
+      dict.byRuleId[ruleId].push(store)
+    }
+  }
+  if(event.type === 'DISPATCH_ACTION'){
+    const store = createDispatchedAction(event)
+    dataStore._dispatchedActions.all.push(store)
+    dataStore._dispatchedActions.byActionExecId[event.actionExecId] = store
+  }
+  if(event.type === 'EXEC_RULE'){
+    const store = createRuleExecution(event)
+    const dict = dataStore._ruleExecutions
+    const {id, ruleId, actionExecId} = event
+    // const rule = dataStore._rulesets.byId[ruleId].rule
+    // let actionTypes = rule.target === '*' ? ['global']
+    //   : Array.isArray(rule.target) ? rule.target : [rule.target]
+    dict.byId[id] = store
+    if(!dict.byActionExecId[actionExecId]) dict.byActionExecId[actionExecId] = []
+    dict.byActionExecId[actionExecId].push(store)
+    if(!dict.byRuleId[ruleId]) dict.byRuleId[ruleId] = []
+    dict.byRuleId[ruleId].push(store)
+
+  }
+  if(event.type === 'ADD_RULE'){
+    const store = createRuleset(event)
+    const dict = dataStore._rulesets
+    const {id} = event.rule
+    dict.byId[id] = store
   }
 }, true)

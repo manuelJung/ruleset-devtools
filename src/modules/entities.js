@@ -10,12 +10,11 @@ export type DispatchedAction = {
 
 export type RuleExecution = {
   storeType: 'RULE_EXECUTION',
-  id: number,
-  ruleId: string,
-  timestamp: number,
+  timestampStart: number,
+  timestampEnd: number | null,
   finished: boolean,
-  status: 'CONDITION_MATCH' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION',
-  rule: Rule,
+  status: 'RESOLVED' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION' | 'PENDING',
+  ruleset: Ruleset,
   actionExecutions: ActionExecution[], // ids of executed actions
 }
 
@@ -34,8 +33,8 @@ export type Ruleset = {
   id: string,
   rule: Rule,
   active: boolean,
-  pendingWhen: boolean,
-  pendingUntil: boolean,
+  addWhenSaga: null,
+  addUntilSaga: null,
   parentRuleset: Ruleset | null,
   subRules: Rule[],
   ruleExecutions: RuleExecution[],
@@ -59,68 +58,90 @@ export type RemoveRuleEvent = {
   removedByParent: boolean
 }
 
-export type ExecRuleEvent = {
-  type: 'EXEC_RULE',
+export type ExecRuleStartEvent = {
+  type: 'EXEC_RULE_START',
   timestamp: number,
-  id: number,
+  ruleExecId: number,
   ruleId: string,
-  actionExecId: number,
-  result: 'CONDITION_MATCH' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION'
+  actionExecId: number | null,
+  concurrencyFilter: string
 }
 
-export type ExecActionEvent = {
-  type: 'EXEC_ACTION',
+type ExecRuleEventResult = 'RESOLVED' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION'
+export type ExecRuleEndEvent = {
+  type: 'EXEC_RULE_END',
   timestamp: number,
-  id: number,
-  ruleId: string | null,
+  ruleExecId: number,
+  ruleId: string,
+  actionExecId: number | null,
+  concurrencyFilter: string,
+  result: ExecRuleEventResult
+}
+
+export type ExecActionStartEvent = {
+  type: 'EXEC_ACTION_START',
+  timestamp: number,
+  actionExecId: number,
   ruleExecId: number | null,
   action: Action
+}
+
+export type ExecActionEndEvent = {
+  type: 'EXEC_ACTION_END',
+  timestamp: number,
+  actionExecId: number,
+  ruleExecId: number | null,
+  action: Action,
+  result: 'DISPATCHED' | 'ABORTED'
+}
+
+export type ExecSagaStartEvent = {
+  type: 'EXEC_SAGA_START',
+  timestamp: number,
+  sagaId: number,
+  ruleId: string,
+  sagaType: 'ADD_WHEN' | 'ADD_UNTIL'
+}
+
+type ExecSagaEventResult = 'CANCELED' | LogicAdd | LogicRemove
+export type ExecSagaEndEvent = {
+  type: 'EXEC_SAGA_END',
+  timestamp: number,
+  sagaId: number,
+  ruleId: string,
+  sagaType: 'ADD_WHEN' | 'ADD_UNTIL',
+  result: ExecSagaEventResult
+}
+
+export type YieldSagaEvent = {
+  type: 'YIELD_SAGA',
+  timestamp: number,
+  sagaId: number,
+  ruleId: string,
+  sagaType: 'ADD_WHEN' | 'ADD_UNTIL',
+  action: Action,
+  ruleExecId: number | null,
+  result: 'REJECT' | 'RESOLVE'
 }
 
 export type DispatchActionEvent = {
   type: 'DISPATCH_ACTION',
   actionExecId: number,
-  removed: boolean
+  removed: boolean,
+  isReduxAction: boolean,
+  action: Action
 }
 
-export type ExecSagaEvent = {
-  type: 'EXEC_SAGA',
-  timestamp: number,
-  id: number,
-  result: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove
-}
-
-export type Event = AddRuleEvent | RemoveRuleEvent | ExecRuleEvent | ExecActionEvent | ExecSagaEvent | DispatchActionEvent
-
-// // EVENTS
-
-// export type AddRuleEvent = {
-//   type: 'ADD_RULE',
-//   meta: {id:string, timestamp:number},
-//   payload: Rule
-// }
-// export type ExecRuleEvent = {
-//   type: 'EXEC_RULE',
-//   meta: { 
-//     id: string, 
-//     timestamp: number, 
-//     ruleId: string,
-//     actionId: string,
-//   },
-//   payload: 'NO_CONDITION_MATCH' | 'SKIP_RULE' | 'CONDITION_MATCH'
-// }
-// export type ActionEvent = {
-//   type: 'ACTION',
-//   meta: { 
-//     id: string, 
-//     executionId: string | null, 
-//     ruleId: string | null, 
-//     timestamp: 0 
-//   },
-//   payload: Action
-// }
-
-// export type Event = AddRuleEvent | ExecRuleEvent | ActionEvent
+export type Event = AddRuleEvent 
+| RemoveRuleEvent 
+| ExecRuleStartEvent 
+| ExecRuleEndEvent 
+| ExecActionStartEvent 
+| ExecActionEndEvent 
+| ExecSagaStartEvent 
+| ExecSagaEndEvent 
+| YieldSagaEvent
+| DispatchActionEvent
 
 
 // REDUX-RULESET
