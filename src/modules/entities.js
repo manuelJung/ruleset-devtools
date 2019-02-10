@@ -143,6 +143,7 @@ export type YieldSagaEvent = {
   sagaType: 'ADD_WHEN' | 'ADD_UNTIL',
   action: Action,
   ruleExecId: number | null,
+  actionExecId: number,
   result: 'REJECT' | 'RESOLVE'
 }
 
