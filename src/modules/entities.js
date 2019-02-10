@@ -52,7 +52,8 @@ export type SagaStore = {
   timestampEnd: number | null,
   type: 'ADD_WHEN' | 'ADD_UNTIL',
   active: boolean,
-  status: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove
+  status: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove,
+  yields: SagaYieldStore[]
 }
 
 export type SagaYieldStore = {

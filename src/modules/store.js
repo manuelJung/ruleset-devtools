@@ -31,6 +31,11 @@ type DataStore = {
     all: DispatchedAction[],
     byActionExecId: { [id:number]: DispatchedAction }
   },
+  list: 
+    ({type: 'action', actionExecId: number}
+  | {type: 'add_rule', ruleId: string}
+  | {type: 'remove_rule', ruleId: string})[],
+
   actionExecutions: ActionExecution[],
   toJS: (store?:any) => DataStore
 }
@@ -61,6 +66,7 @@ const dataStore:DataStore = observable(({
   _rulesets: {
     byId: {}
   },
+  list: [],
   get actionExecutions(){
     return dataStore._dispatchedActions.all.map(o => o.actionExecution)
   },
@@ -129,6 +135,8 @@ const createDispatchedAction = event => {
       return dataStore._actionExecutions.byId[event.actionExecId]
     }
   })
+  // push to list
+  dataStore.list.push({type: 'action', actionExecId: event.actionExecId})
   // attach
   const dict = dataStore._dispatchedActions
   dict.all.push(store)
@@ -204,12 +212,15 @@ const createRuleset = event => {
     switch(e.type){
       case 'REMOVE_RULE': {
         if(e.ruleId === event.rule.id){
+          dataStore.list.push({type: 'remove_rule', ruleId: event.rule.id})
           store.active = false
           events.removeListener(listener)
         }
       }
     }
   })
+  // push to list
+  dataStore.list.push({type: 'add_rule', ruleId: event.rule.id})
   // attach
   const dict = dataStore._rulesets
   const {id} = event.rule
@@ -224,6 +235,10 @@ const createSagaStore = event => {
     type: event.sagaType,
     status: 'PENDING',
     active: true,
+    get yields(){
+      const yieldStore = dataStore._sagaYields
+      return yieldStore.bySagaId[event.sagaId] || []
+    }
   }:SagaStore))
   // listeners
   const listener = events.addListener(e => {
