@@ -55,14 +55,14 @@ export type SagaStore = {
   status: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove
 }
 
-export type SagaYield = {
-  storeType: 'SAGA_YIELD',
+export type SagaYieldStore = {
+  storeType: 'SAGA_YIELD_STORE',
   timestamp: number,
   action: Action,
-  result: 'RESOLVE' | 'REJECT'
+  result: 'REJECT' | 'RESOLVE'
 }
 
-export type Store = RuleExecution | ActionExecution | Ruleset
+export type Store = RuleExecution | ActionExecution | Ruleset | SagaStore | SagaYieldStore
 
 // EVENTS
 

@@ -3,7 +3,7 @@ import {observable, toJS} from 'mobx'
 import events from './events'
 import {push} from 'utils/helpers'
 
-import type {DispatchedAction, ActionExecution, RuleExecution, Ruleset, SagaStore, SagaYield} from './entities'
+import type {DispatchedAction, ActionExecution, RuleExecution, Ruleset, SagaStore, SagaYieldStore} from './entities'
 
 type DataStore = {
   _ruleExecutions: {
@@ -17,9 +17,12 @@ type DataStore = {
     byRuleId: {[ruleId:string]: ActionExecution[]},
     byRuleExecId: {[executionId:number]: ActionExecution[]}
   },
-  _sagaStores: {
+  _sagas: {
     byId: {[sagaId:number]: SagaStore},
     byRuleId: {[ruleId:string]: SagaStore[]}
+  },
+  _sagaYields: {
+    bySagaId: {[sagaId:number]: SagaYieldStore[]}
   },
   _rulesets: {
     byId: {[ruleId:string]: Ruleset},
@@ -44,9 +47,12 @@ const dataStore:DataStore = observable(({
     byRuleId: {}, // [],
     byRuleExecId: {} // []
   },
-  _sagaStores: {
+  _sagas: {
     byId: {},
     byRuleId: {}
+  },
+  _sagaYields: {
+    bySagaId: {}
   },
   _dispatchedActions: {
     all: [],
@@ -233,9 +239,21 @@ const createSagaStore = event => {
     }
   })
   // attach
-  const dict = dataStore._sagaStores
+  const dict = dataStore._sagas
   dict.byId[event.sagaId] = store
   dict.byRuleId[event.ruleId] = push(dict.byRuleId[event.ruleId], store)
+}
+
+const createSagaYieldStore = event => {
+  const store:SagaYieldStore = observable(({
+    storeType: 'SAGA_YIELD_STORE',
+    timestamp: event.timestamp,
+    action: event.action,
+    result: event.result
+  }:SagaYieldStore))
+  // attach
+  const dict = dataStore._sagaYields
+  dict.bySagaId[event.sagaId] = push(dict.bySagaId[event.sagaId], store)
 }
 
 
@@ -246,5 +264,6 @@ events.addListener(e => {
     case 'EXEC_ACTION_START': return createActionExecution(e)
     case 'DISPATCH_ACTION': return createDispatchedAction(e)
     case 'EXEC_SAGA_START': return createSagaStore(e)
+    case 'YIELD_SAGA': return createSagaYieldStore(e)
   }
 }, true)
