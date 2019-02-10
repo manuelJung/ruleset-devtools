@@ -3,7 +3,7 @@ import {observable, toJS} from 'mobx'
 import events from './events'
 import {push} from 'utils/helpers'
 
-import type {DispatchedAction, ActionExecution, RuleExecution, Ruleset} from './entities'
+import type {DispatchedAction, ActionExecution, RuleExecution, Ruleset, SagaStore, SagaYield} from './entities'
 
 type DataStore = {
   _ruleExecutions: {
@@ -16,6 +16,10 @@ type DataStore = {
     byId: {[actionId:number]: ActionExecution},
     byRuleId: {[ruleId:string]: ActionExecution[]},
     byRuleExecId: {[executionId:number]: ActionExecution[]}
+  },
+  _sagaStores: {
+    byId: {[sagaId:number]: SagaStore},
+    byRuleId: {[ruleId:string]: SagaStore[]}
   },
   _rulesets: {
     byId: {[ruleId:string]: Ruleset},
@@ -40,6 +44,10 @@ const dataStore:DataStore = observable(({
     byRuleId: {}, // [],
     byRuleExecId: {} // []
   },
+  _sagaStores: {
+    byId: {},
+    byRuleId: {}
+  },
   _dispatchedActions: {
     all: [],
     byActionExecId: {}
@@ -61,16 +69,6 @@ export default dataStore
 window.dataStore = dataStore
 
 
-
-/*{
-  type: 'EXEC_RULE',
-  meta: {
-    id: id++,
-    timestamp: Date.now(),
-    ruleId: rule.id
-  },
-  payload: 'CONDITION_MATCH'
-}*/
 const createRuleExecution = event => {
   const store:RuleExecution = observable(({
     storeType: 'RULE_EXECUTION',
@@ -131,16 +129,6 @@ const createDispatchedAction = event => {
   dict.byActionExecId[event.actionExecId] = store
 }
 
-/*{
-  type: 'ACTION',
-  meta: {
-    id,
-    executionId,
-    timestamp: Date.now(),
-    ruleId: rule ? rule.id : null,
-  },
-  payload: action
-} */
 const createActionExecution = event => {
   const store:ActionExecution = observable(({
     storeType: 'ACTION_EXECUTION',
@@ -185,14 +173,6 @@ const createActionExecution = event => {
   } 
 }
 
-/*{
-  type: 'ADD_RULE',
-  meta: {
-    id: id++,
-    timestamp: Date.now(),
-  },
-  payload: serializeRule(rule)
-} */
 const createRuleset = event => {
   const store:Ruleset = observable(({
     storeType: 'RULESET',
@@ -230,6 +210,34 @@ const createRuleset = event => {
   dict.byId[id] = store
 }
 
+const createSagaStore = event => {
+  const store:SagaStore = observable(({
+    storeType: 'SAGA_STORE',
+    timestampStart: event.timestamp,
+    timestampEnd: null,
+    type: event.sagaType,
+    status: 'PENDING',
+    active: true,
+  }:SagaStore))
+  // listeners
+  const listener = events.addListener(e => {
+    switch(e.type){
+      case 'EXEC_SAGA_END': {
+        if(e.sagaId === event.sagaId){
+          store.active = false
+          store.status = e.result
+          store.timestampEnd = e.timestamp
+          events.removeListener(listener)
+        }
+      }
+    }
+  })
+  // attach
+  const dict = dataStore._sagaStores
+  dict.byId[event.sagaId] = store
+  dict.byRuleId[event.ruleId] = push(dict.byRuleId[event.ruleId], store)
+}
+
 
 events.addListener(e => {
   switch(e.type){
@@ -237,5 +245,6 @@ events.addListener(e => {
     case 'EXEC_RULE_START': return createRuleExecution(e)
     case 'EXEC_ACTION_START': return createActionExecution(e)
     case 'DISPATCH_ACTION': return createDispatchedAction(e)
+    case 'EXEC_SAGA_START': return createSagaStore(e)
   }
 }, true)

@@ -46,6 +46,22 @@ export type Ruleset = {
   ruleExecutions: RuleExecution[],
 }
 
+export type SagaStore = {
+  storeType: 'SAGA_STORE',
+  timestampStart: number,
+  timestampEnd: number | null,
+  type: 'ADD_WHEN' | 'ADD_UNTIL',
+  active: boolean,
+  status: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove
+}
+
+export type SagaYield = {
+  storeType: 'SAGA_YIELD',
+  timestamp: number,
+  action: Action,
+  result: 'RESOLVE' | 'REJECT'
+}
+
 export type Store = RuleExecution | ActionExecution | Ruleset
 
 // EVENTS
