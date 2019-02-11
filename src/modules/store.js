@@ -33,8 +33,7 @@ type DataStore = {
   },
   list: 
     ({type: 'action', actionExecId: number}
-  | {type: 'add_rule', ruleId: string}
-  | {type: 'remove_rule', ruleId: string})[],
+  | {type: 'rules', removed: string[], added: string[]})[],
 
   actionExecutions: ActionExecution[],
   toJS: (store?:any) => DataStore
@@ -75,6 +74,27 @@ const dataStore:DataStore = observable(({
     return toJS(this)
   }
 }:DataStore))
+
+type Item = {type: 'action', actionExecId: number}
+| {type: 'add_rule', ruleId: string}
+| {type: 'remove_rule', ruleId: string}
+const addListItem = (item:Item) => {
+  if(item.type === 'action'){
+    dataStore.list.push(item)
+    return
+  }
+  let lastItem = dataStore.list[dataStore.list.length-1]
+  if(!lastItem || lastItem.type === 'action'){
+    dataStore.list.push({type: 'rules', added: [], removed: []})
+  }
+  lastItem = dataStore.list[dataStore.list.length-1]
+  if(item.type === 'add_rule' && lastItem.type === 'rules'){
+    lastItem.added.push(item.ruleId)
+  }
+  else if(item.type === 'remove_rule' && lastItem.type === 'rules'){
+    lastItem.removed.push(item.ruleId)
+  }
+}
 
 export default dataStore
 
@@ -136,7 +156,7 @@ const createDispatchedAction = event => {
     }
   })
   // push to list
-  dataStore.list.push({type: 'action', actionExecId: event.actionExecId})
+  addListItem({type: 'action', actionExecId: event.actionExecId})
   // attach
   const dict = dataStore._dispatchedActions
   dict.all.push(store)
@@ -212,7 +232,7 @@ const createRuleset = event => {
     switch(e.type){
       case 'REMOVE_RULE': {
         if(e.ruleId === event.rule.id){
-          dataStore.list.push({type: 'remove_rule', ruleId: event.rule.id})
+          addListItem({type: 'remove_rule', ruleId: event.rule.id})
           store.active = false
           events.removeListener(listener)
         }
@@ -220,7 +240,7 @@ const createRuleset = event => {
     }
   })
   // push to list
-  dataStore.list.push({type: 'add_rule', ruleId: event.rule.id})
+  addListItem({type: 'add_rule', ruleId: event.rule.id})
   // attach
   const dict = dataStore._rulesets
   const {id} = event.rule

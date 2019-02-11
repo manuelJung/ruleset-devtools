@@ -2,22 +2,50 @@
 import React from 'react'
 import {observer} from 'mobx-react'
 import styled from 'styled-components'
-import store from 'modules/store'
+import dataStore from 'modules/store'
 
 type Props = {}
 
 export default observer<Props>(function ActionLayout(){
   return (
     <Wrapper className='ActionLayout'>
-      <div className='action-list'>
-        {store.actionExecutions.map(actionExecution => (
-          <div key={actionExecution.id}>
-            {actionExecution.action.type}
-          </div>
-        ))}
+      <div className='list'>
+        {dataStore.list.map((item,i) => {
+          switch(item.type){
+            case 'action': return <Action key={i} actionExecId={item.actionExecId}/>
+            case 'rules': return <Rules key={i} added={item.added} removed={item.removed}/>
+            default: return <span key={i}/>
+          }
+        })}
       </div>
       <div className='content'></div>
     </Wrapper>
+  )
+})
+
+type ActionProps = {
+  actionExecId: number
+}
+
+const Action = observer<ActionProps>(function Action(props:ActionProps){
+  const store = dataStore._actionExecutions.byId[props.actionExecId]
+  return (
+    <ActionWrapper>
+      {store.action.type}
+    </ActionWrapper>
+  )
+})
+
+type RuleProps = {
+  removed: string[],
+  added: string[]
+}
+
+const Rules = observer<RuleProps>(function Rules(props:RuleProps){
+  return (
+    <RulesWrapper>
+      added: {props.added.length} -- removed: {props.removed.length}
+    </RulesWrapper>
   )
 })
 
@@ -25,7 +53,7 @@ const Wrapper = styled.section`
   display: flex;
   height: 100%;
 
-  > .action-list {
+  > .list {
     flex: 1;
     height: 100%;
     background: steelblue;
@@ -37,3 +65,7 @@ const Wrapper = styled.section`
     background: silver;
   }
 `
+
+const ActionWrapper = styled.div``
+
+const RulesWrapper = styled.div``
