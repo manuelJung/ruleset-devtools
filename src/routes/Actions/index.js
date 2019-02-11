@@ -3,6 +3,13 @@ import React from 'react'
 import {observer} from 'mobx-react'
 import styled from 'styled-components'
 import dataStore from 'modules/store'
+import {observable} from 'mobx'
+
+import RulesRoute from './routes/Rules'
+
+const state = observable({
+  activeActionExecId: null
+})
 
 type Props = {}
 
@@ -18,7 +25,9 @@ export default observer<Props>(function ActionLayout(){
           }
         })}
       </div>
-      <div className='content'></div>
+      <div className='content'>
+        <RulesRoute actionExecId={state.activeActionExecId} />
+      </div>
     </Wrapper>
   )
 })
@@ -30,7 +39,7 @@ type ActionProps = {
 const Action = observer<ActionProps>(function Action(props:ActionProps){
   const store = dataStore._actionExecutions.byId[props.actionExecId]
   return (
-    <ActionWrapper>
+    <ActionWrapper onClick={() => (state.activeActionExecId = store.id)}>
       {store.action.type}
       {!!store.assignedRuleExecutions.length && <span className='info num-rules'>{store.assignedRuleExecutions.length}</span>}
       {!!store.assignedSagaYields.length && <span className='info num-sagas'>{store.assignedSagaYields.length}</span>}
