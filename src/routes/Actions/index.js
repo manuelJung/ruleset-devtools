@@ -46,7 +46,9 @@ type RuleProps = {
 const Rules = observer<RuleProps>(function Rules(props:RuleProps){
   return (
     <RulesWrapper>
-      added: {props.added.length} -- removed: {props.removed.length}
+      {!!props.added.length && <span>added: {props.added.length}</span>}
+      {!!props.added.length && !!props.removed.length && <span> -- </span>}
+      {!!props.removed.length && <span>removed: {props.removed.length}</span>}
     </RulesWrapper>
   )
 })
