@@ -30,6 +30,7 @@ export type ActionExecution = {
   timestampEnd: number | null,
   action: Action,
   assignedRuleExecutions: RuleExecution[],
+  assignedSagaYields: SagaYieldStore[],
   ruleExecution: RuleExecution | null,
   status: 'PENDING' | 'DISPATCHED' | 'ABORTED'
 }

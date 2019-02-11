@@ -32,6 +32,8 @@ const Action = observer<ActionProps>(function Action(props:ActionProps){
   return (
     <ActionWrapper>
       {store.action.type}
+      {!!store.assignedRuleExecutions.length && <span className='info num-rules'>{store.assignedRuleExecutions.length}</span>}
+      {!!store.assignedSagaYields.length && <span className='info num-sagas'>{store.assignedSagaYields.length}</span>}
     </ActionWrapper>
   )
 })
@@ -56,7 +58,6 @@ const Wrapper = styled.section`
   > .list {
     flex: 1;
     height: 100%;
-    background: steelblue;
     overflow-y: scroll;
   }
 
@@ -71,8 +72,29 @@ const ActionWrapper = styled.div`
   position: relative;
   padding: 20px 10px;
   border: 1px solid whitesmoke;
-  background: #607d8b;
+  background: #52626a;
   color: #e8f1f5;
+
+  > .info {
+    position: absolute;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+  }
+
+  > .num-rules {
+    top: 5px;
+    background: #009688;
+  }
+
+  > .num-sagas {
+    bottom: 5px;
+    background: #673ab7;
+  }
 `
 
 const RulesWrapper = styled.div`

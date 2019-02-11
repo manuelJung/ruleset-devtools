@@ -22,7 +22,8 @@ type DataStore = {
     byRuleId: {[ruleId:string]: SagaStore[]}
   },
   _sagaYields: {
-    bySagaId: {[sagaId:number]: SagaYieldStore[]}
+    bySagaId: {[sagaId:number]: SagaYieldStore[]},
+    byActionExecId: {[actionExecId:number]: SagaYieldStore[]}
   },
   _rulesets: {
     byId: {[ruleId:string]: Ruleset},
@@ -56,7 +57,8 @@ const dataStore:DataStore = observable(({
     byRuleId: {}
   },
   _sagaYields: {
-    bySagaId: {}
+    bySagaId: {},
+    byActionExecId: {}
   },
   _dispatchedActions: {
     all: [],
@@ -175,7 +177,10 @@ const createActionExecution = event => {
     //   return dataStore._dispatchedActions.byActionExecId[event.id].removed
     // },
     get assignedRuleExecutions(){
-      return dataStore._ruleExecutions.byActionExecId[this.id] || []
+      return dataStore._ruleExecutions.byActionExecId[event.actionExecId] || []
+    },
+    get assignedSagaYields(){
+      return dataStore._sagaYields.byActionExecId[event.actionExecId] || []
     },
     get ruleExecution(){
       const {ruleExecId} = event
@@ -289,6 +294,7 @@ const createSagaYieldStore = event => {
   // attach
   const dict = dataStore._sagaYields
   dict.bySagaId[event.sagaId] = push(dict.bySagaId[event.sagaId], store)
+  dict.byActionExecId[event.actionExecId] = push(dict.byActionExecId[event.actionExecId], store)
 }
 
 
