@@ -117,7 +117,7 @@ const createRuleExecution = event => {
     },
     // get parentAction
     get actionExecutions(){
-      const dict = dataStore._actionExecutions.byRuleExecId[this.id]
+      const dict = dataStore._actionExecutions.byRuleExecId[event.ruleExecId]
       if(!dict) return []
       return dict
     }
@@ -182,6 +182,9 @@ const createActionExecution = event => {
     get assignedSagaYields(){
       return dataStore._sagaYields.byActionExecId[event.actionExecId] || []
     },
+    get dispatchedAction(){
+      return dataStore._dispatchedActions.byActionExecId[event.actionExecId]
+    },
     get ruleExecution(){
       const {ruleExecId} = event
       if(!ruleExecId) return null
@@ -227,9 +230,9 @@ const createRuleset = event => {
       return dict[ruleId] || null
     },
     get ruleExecutions(){
-      const dict = dataStore._ruleExecutions.byRuleId
+      const dict = dataStore._ruleExecutions.byRuleId[event.rule.id]
       if(!dict) return []
-      return ((Object.values(dict):any):RuleExecution[])
+      return dict
     }
   }:Ruleset))
   // listeners

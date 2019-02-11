@@ -7,8 +7,18 @@ import {observable} from 'mobx'
 
 import RulesRoute from './routes/Rules'
 
+function flatten(arr) {
+  return arr.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+  }, []);
+}
+
 const state = observable({
-  activeActionExecId: null
+  activeActionExecId: null,
+  relatedActionExecIds: {},
+  setRelatedActionExecIds: numbers => {
+    state.relatedActionExecIds = numbers.reduce((list,n) => (list[n]=n) && list, {})
+  }
 })
 
 type Props = {}
@@ -38,8 +48,16 @@ type ActionProps = {
 
 const Action = observer<ActionProps>(function Action(props:ActionProps){
   const store = dataStore._actionExecutions.byId[props.actionExecId]
+  const resolved = store.dispatchedAction && !store.dispatchedAction.removed
+  const active = state.activeActionExecId === store.id
+  const related = !!state.relatedActionExecIds[store.id]
+  const handleClick = () => {
+    state.activeActionExecId = store.id
+    const related = store.assignedRuleExecutions.map(store => store.actionExecutions.map(store =>  store.id))
+    state.setRelatedActionExecIds(flatten(related))
+  }
   return (
-    <ActionWrapper onClick={() => (state.activeActionExecId = store.id)}>
+    <ActionWrapper active={active} resolved={resolved} related={related} onClick={handleClick}>
       {store.action.type}
       {!!store.assignedRuleExecutions.length && <span className='info num-rules'>{store.assignedRuleExecutions.length}</span>}
       {!!store.assignedSagaYields.length && <span className='info num-sagas'>{store.assignedSagaYields.length}</span>}
@@ -83,7 +101,7 @@ const ActionWrapper = styled.div`
   position: relative;
   padding: 20px 10px;
   border: 1px solid whitesmoke;
-  background: #52626a;
+  background: ${props => props.active ? 'green' : props.related ? '#607d8b' : props.resolved ? '#52626a' : '#a31948'};
   color: #e8f1f5;
 
   > .info {

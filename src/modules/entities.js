@@ -29,6 +29,7 @@ export type ActionExecution = {
   timestampStart: number,
   timestampEnd: number | null,
   action: Action,
+  dispatchedAction: DispatchedAction,
   assignedRuleExecutions: RuleExecution[],
   assignedSagaYields: SagaYieldStore[],
   ruleExecution: RuleExecution | null,
