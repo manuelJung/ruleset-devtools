@@ -57,6 +57,7 @@ const Wrapper = styled.section`
     flex: 1;
     height: 100%;
     background: steelblue;
+    overflow-y: scroll;
   }
 
   > .content {
@@ -66,6 +67,16 @@ const Wrapper = styled.section`
   }
 `
 
-const ActionWrapper = styled.div``
+const ActionWrapper = styled.div`
+  position: relative;
+  padding: 20px 10px;
+  border: 1px solid whitesmoke;
+  background: #607d8b;
+  color: #e8f1f5;
+`
 
-const RulesWrapper = styled.div``
+const RulesWrapper = styled.div`
+  padding: 10px;
+  border: 1px solid whitesmoke;
+  background: #607d8bb3;
+`
