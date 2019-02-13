@@ -17,8 +17,19 @@ export default observer<Props>(function RulesRoute(props:Props){
     <Wrapper>
       {ruleExecutions.map(store => (
         <div key={store.id} className='rule-execution'>
-          <div className='title'>{store.ruleset.rule.id}</div>
-          <div className='status'>{store.status}</div>
+          <div className='headline'>
+            <div className='title'>{store.ruleset.rule.id}</div>
+            <RuleStatus status={store.status}>{store.status}</RuleStatus>
+          </div>
+          <div className='info'>
+            <div className='row'>
+              <div className='label'>rules added</div>
+              <div className='value'>
+                <div>first</div>
+                <div>second</div>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
     </Wrapper>
@@ -29,23 +40,44 @@ const Wrapper = styled.section`
   padding: 40px;
 
   > .rule-execution {
-    padding: 5px;
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    background: #52626a;
-    height: 40px;
-    border: 1px solid black;
-    > .title {
-      color: #e8f1f5;
-      flex: 1;
-      font-size: 19px;
-    }
-    > .status {
-      border: 1px solid black;
+    > .headline {
       padding: 5px;
-      margin-right: 10px;
-      background: #8bc34a;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      background: #52626a;
+      height: 40px;
+      border: 1px solid black;
+      > .title {
+        color: #e8f1f5;
+        flex: 1;
+        font-size: 16px;
+      }
+    }
+    > .info {
+      > .row {
+        border: 1px solid black;
+        border-top: none;
+        display: flex;
+        background: #d7e5ec;
+        > .label {
+          padding: 5px;
+          flex: 1;
+        }
+        > .value {
+          padding: 5px;
+          flex: 2;
+          > * {margin-right: 10px;}
+        }
+      }
     }
   }
+`
+
+const RuleStatus = styled.div`
+  border: 1px solid black;
+  padding: 5px;
+  margin-right: 10px;
+  font-size: 14px;
+  background: ${props => props.status === 'RESOLVED' ? '#8bc34a' : '#ffeb3b'};
 `
