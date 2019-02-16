@@ -13,13 +13,19 @@ function flatten(arr) {
   }, []);
 }
 
-const state = observable({
+type State = {
+  activeActionExecId: number | null,
+  relatedActionExecIds: {[actionExecId:number]:number},
+  setRelatedActionExecIds: (numbers:number[]) => void
+}
+
+const state:State = observable(({
   activeActionExecId: null,
   relatedActionExecIds: {},
   setRelatedActionExecIds: numbers => {
     state.relatedActionExecIds = numbers.reduce((list,n) => (list[n]=n) && list, {})
   }
-})
+}:State))
 
 type Props = {}
 
