@@ -3,29 +3,10 @@ import React from 'react'
 import {observer} from 'mobx-react'
 import styled from 'styled-components'
 import dataStore from 'modules/store'
+import uiStore from 'modules/ui'
 import {observable} from 'mobx'
 
 import RulesRoute from './routes/Rules'
-
-function flatten(arr) {
-  return arr.reduce(function (flat, toFlatten) {
-    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, []);
-}
-
-type State = {
-  activeActionExecId: number | null,
-  relatedActionExecIds: {[actionExecId:number]:number},
-  setRelatedActionExecIds: (numbers:number[]) => void
-}
-
-const state:State = observable(({
-  activeActionExecId: null,
-  relatedActionExecIds: {},
-  setRelatedActionExecIds: numbers => {
-    state.relatedActionExecIds = numbers.reduce((list,n) => (list[n]=n) && list, {})
-  }
-}:State))
 
 type Props = {}
 
@@ -42,7 +23,9 @@ export default observer<Props>(function ActionLayout(){
         })}
       </div>
       <div className='content'>
-        <RulesRoute actionExecId={state.activeActionExecId} />
+        {uiStore.activeStore && uiStore.activeStore.storeType === 'ACTION_EXECUTION' && (
+          <RulesRoute actionExecId={uiStore.activeStore.id} />
+        )}
       </div>
     </Wrapper>
   )
@@ -55,13 +38,12 @@ type ActionProps = {
 const Action = observer<ActionProps>(function Action(props:ActionProps){
   const store = dataStore._actionExecutions.byId[props.actionExecId]
   const resolved = store.dispatchedAction && !store.dispatchedAction.removed
-  const active = state.activeActionExecId === store.id
-  const related = !!state.relatedActionExecIds[store.id]
-  const handleClick = () => {
-    state.activeActionExecId = store.id
-    const related = store.assignedRuleExecutions.map(store => store.actionExecutions.map(store =>  store.id))
-    state.setRelatedActionExecIds(flatten(related))
+  const active = uiStore.activeStore === store
+  let related = false
+  if(uiStore.activeStore && uiStore.activeStore.storeType === 'ACTION_EXECUTION'){
+    related = !!uiStore.activeStore.relatedActionExecutionsDict[store.id]
   }
+  const handleClick = () => uiStore.setActiveStore(store)
   return (
     <ActionWrapper active={active} resolved={resolved} related={related} onClick={handleClick}>
       {store.action.type}

@@ -33,6 +33,8 @@ export type ActionExecution = {
   assignedRuleExecutions: RuleExecution[],
   assignedSagaYields: SagaYieldStore[],
   ruleExecution: RuleExecution | null,
+  relatedActionExecutions: ActionExecution[],
+  relatedActionExecutionsDict: {[id:number]: ActionExecution},
   status: 'PENDING' | 'DISPATCHED' | 'ABORTED'
 }
 

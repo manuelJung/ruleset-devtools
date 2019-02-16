@@ -185,6 +185,16 @@ const createActionExecution = event => {
     get dispatchedAction(){
       return dataStore._dispatchedActions.byActionExecId[event.actionExecId]
     },
+    get relatedActionExecutions(){
+      const list = store.assignedRuleExecutions.map(ruleExec => ruleExec.actionExecutions)
+      return [].concat(...list)
+    },
+    get relatedActionExecutionsDict(){
+      let dict = {}
+      const list = store.relatedActionExecutions
+      for(let i=0;i<list.length;i++){dict[list[i].id] = list[i]}
+      return dict
+    },
     get ruleExecution(){
       const {ruleExecId} = event
       if(!ruleExecId) return null
