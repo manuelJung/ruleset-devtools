@@ -41,7 +41,8 @@ const Action = observer<ActionProps>(function Action(props:ActionProps){
   const active = uiStore.activeStore === store
   let related = false
   if(uiStore.activeStore && uiStore.activeStore.storeType === 'ACTION_EXECUTION'){
-    related = !!uiStore.activeStore.relatedActionExecutionsDict[store.id]
+    related = !!uiStore.activeStore.relatedActionExecutionsDict[store.id] 
+    || !!store.relatedActionExecutionsDict[uiStore.activeStore.id]
   }
   const handleClick = () => uiStore.setActiveStore(store)
   return (
@@ -87,7 +88,7 @@ const Wrapper = styled.section`
 
 const ActionWrapper = styled.div`
   position: relative;
-  padding: 20px 10px;
+  padding: 15px 10px;
   border: 1px solid whitesmoke;
   background: ${props => props.active ? 'green' : props.related ? '#607d8b' : props.resolved ? '#52626a' : '#a31948'};
   color: #e8f1f5;
