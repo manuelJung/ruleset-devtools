@@ -1,15 +1,21 @@
 // @flow
-import React from 'react'
+import * as React from 'react'
 import {observer} from 'mobx-react'
+import {observable} from 'mobx'
 import styled from 'styled-components'
 import dataStore from 'modules/store'
 import uiStore from 'modules/ui'
-import {observable} from 'mobx'
 
 import RulesRoute from './routes/Rules'
 import ActionRoute from './routes/Action'
 
 type Props = {}
+
+const router = observable({
+  route: 'action',
+  setRoute: route => router.route = route
+})
+
 
 export default observer<Props>(function ActionLayout(){
   return (
@@ -24,10 +30,14 @@ export default observer<Props>(function ActionLayout(){
         })}
       </div>
       <div className='content'>
+        <div className='header'>
+          <div className='link' onClick={() => router.setRoute('action')}>Action</div>
+          <div className='link' onClick={() => router.setRoute('rules')}>Rules</div>
+        </div>
         {uiStore.activeStore && uiStore.activeStore.storeType === 'ACTION_EXECUTION' && (
           <React.Fragment>
-            <ActionRoute actionExecId={uiStore.activeStore.id} />
-            {/* <RulesRoute actionExecId={uiStore.activeStore.id} /> */}
+            {router.route === 'action' && <ActionRoute actionExecId={uiStore.activeStore.id} />}
+            {router.route === 'rules' && <RulesRoute actionExecId={uiStore.activeStore.id} />}
           </React.Fragment>
         )}
       </div>
@@ -87,6 +97,18 @@ const Wrapper = styled.section`
     flex: 2;
     height: 100%;
     background: silver;
+
+    > .header {
+      background: #52626a;
+      display: flex;
+      padding: 5px;
+      > .link {
+        margin: 5px;
+        padding: 5px 10px;
+        border: 2px solid white;
+        color: white;
+      }
+    }
   }
 `
 

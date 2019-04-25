@@ -26,7 +26,13 @@ export default observer<Props>(function RulesRoute(props:Props){
             <div className='row'>
               <div className='label'>rules added</div>
               <div className='value'>
-                <ReactJson name={null} src={{foo: 'bar', test: () => console.log('test')}} />
+                <ReactJson 
+                  name={null} 
+                  src={toJS(store.ruleset.rule)} 
+                  collapsed={2} 
+                  displayDataTypes={false} 
+                  collapseStringsAfterLength={200}
+                />
               </div>
             </div>
           </div>
