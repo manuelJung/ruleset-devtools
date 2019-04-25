@@ -7,6 +7,7 @@ import uiStore from 'modules/ui'
 import {observable} from 'mobx'
 
 import RulesRoute from './routes/Rules'
+import ActionRoute from './routes/Action'
 
 type Props = {}
 
@@ -24,7 +25,10 @@ export default observer<Props>(function ActionLayout(){
       </div>
       <div className='content'>
         {uiStore.activeStore && uiStore.activeStore.storeType === 'ACTION_EXECUTION' && (
-          <RulesRoute actionExecId={uiStore.activeStore.id} />
+          <React.Fragment>
+            <ActionRoute actionExecId={uiStore.activeStore.id} />
+            {/* <RulesRoute actionExecId={uiStore.activeStore.id} /> */}
+          </React.Fragment>
         )}
       </div>
     </Wrapper>
