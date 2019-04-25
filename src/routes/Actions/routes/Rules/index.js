@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import {observer} from 'mobx-react'
 import dataStore from 'modules/store'
 import {toJS} from 'mobx'
+import ReactJson from 'react-json-view'
 
 type Props = {
   actionExecId: number | null
@@ -25,8 +26,7 @@ export default observer<Props>(function RulesRoute(props:Props){
             <div className='row'>
               <div className='label'>rules added</div>
               <div className='value'>
-                <div>first</div>
-                <div>second</div>
+                <ReactJson name={null} src={{foo: 'bar', test: () => console.log('test')}} />
               </div>
             </div>
           </div>
