@@ -8,6 +8,7 @@ import uiStore from 'modules/ui'
 
 import RulesRoute from './routes/Rules'
 import ActionRoute from './routes/Action'
+import SagaYieldsRoute from './routes/SagaYields'
 
 type Props = {}
 
@@ -33,11 +34,13 @@ export default observer<Props>(function ActionLayout(){
         <div className='header'>
           <div className='link' onClick={() => router.setRoute('action')}>Action</div>
           <div className='link' onClick={() => router.setRoute('rules')}>Rules</div>
+          <div className='link' onClick={() => router.setRoute('sagaYields')}>Sagas</div>
         </div>
         {uiStore.activeStore && uiStore.activeStore.storeType === 'ACTION_EXECUTION' && (
           <React.Fragment>
             {router.route === 'action' && <ActionRoute actionExecId={uiStore.activeStore.id} />}
             {router.route === 'rules' && <RulesRoute actionExecId={uiStore.activeStore.id} />}
+            {router.route === 'sagaYields' && <SagaYieldsRoute actionExecId={uiStore.activeStore.id} />}
           </React.Fragment>
         )}
       </div>

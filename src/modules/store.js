@@ -266,6 +266,7 @@ const createRuleset = event => {
 }
 
 const createSagaStore = event => {
+  console.log(event.ruleId)
   const store:SagaStore = observable(({
     storeType: 'SAGA_STORE',
     timestampStart: event.timestamp,
@@ -276,6 +277,11 @@ const createSagaStore = event => {
     get yields(){
       const yieldStore = dataStore._sagaYields
       return yieldStore.bySagaId[event.sagaId] || []
+    },
+    get ruleset(){
+      console.log('ruleset', event.ruleId)
+      console.log(toJS(dataStore._rulesets.byId))
+      return dataStore._rulesets.byId[event.ruleId]
     }
   }:SagaStore))
   // listeners
@@ -302,7 +308,10 @@ const createSagaYieldStore = event => {
     storeType: 'SAGA_YIELD_STORE',
     timestamp: event.timestamp,
     action: event.action,
-    result: event.result
+    result: event.result,
+    get saga(){
+      return dataStore._sagas.byId[event.sagaId]
+    }
   }:SagaYieldStore))
   // attach
   const dict = dataStore._sagaYields
@@ -313,7 +322,7 @@ const createSagaYieldStore = event => {
 
 events.addListener(e => {
   switch(e.type){
-    case 'ADD_RULE': return createRuleset(e)
+    case 'REGISTER_RULE': return createRuleset(e)
     case 'EXEC_RULE_START': return createRuleExecution(e)
     case 'EXEC_ACTION_START': return createActionExecution(e)
     case 'DISPATCH_ACTION': return createDispatchedAction(e)

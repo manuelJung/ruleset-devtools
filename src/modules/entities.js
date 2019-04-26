@@ -57,24 +57,33 @@ export type SagaStore = {
   type: 'ADD_WHEN' | 'ADD_UNTIL',
   active: boolean,
   status: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove,
-  yields: SagaYieldStore[]
+  yields: SagaYieldStore[],
+  ruleset: Ruleset
 }
 
 export type SagaYieldStore = {
   storeType: 'SAGA_YIELD_STORE',
   timestamp: number,
   action: Action,
-  result: 'REJECT' | 'RESOLVE'
+  result: 'REJECT' | 'RESOLVE',
+  saga: SagaStore
 }
 
 export type Store = RuleExecution | ActionExecution | Ruleset | SagaStore | SagaYieldStore
 
 // EVENTS
 
+export type RegisterRuleEvent = {
+  type: 'REGISTER_RULE',
+  timestamp: number,
+  rule: Rule,
+  parentRuleId: string | null
+}
+
 export type AddRuleEvent = {
   type: 'ADD_RULE',
   timestamp: number,
-  rule: Rule,
+  ruleId: string,
   parentRuleId: string | null
 }
 
