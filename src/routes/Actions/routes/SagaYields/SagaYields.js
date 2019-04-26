@@ -18,7 +18,7 @@ export default observer<Props>(function SagaYields(props:Props){
   return (
     <Wrapper className='SagaYield'>
       {sagaYields.map(sagaYield => 
-        <div key={sagaYield.timestamp}>
+        <div key={sagaYield.saga.ruleset.rule.id}>
           {sagaYield.saga.ruleset.rule.id}
         </div>
       )}

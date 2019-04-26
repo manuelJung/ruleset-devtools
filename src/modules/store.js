@@ -248,17 +248,20 @@ const createRuleset = event => {
   // listeners
   const listener = events.addListener(e => {
     switch(e.type){
+      case 'ADD_RULE': {
+        if(e.ruleId === event.rule.id){
+          addListItem({type: 'add_rule', ruleId: event.rule.id})
+          store.active = true
+        }
+      }
       case 'REMOVE_RULE': {
         if(e.ruleId === event.rule.id){
           addListItem({type: 'remove_rule', ruleId: event.rule.id})
           store.active = false
-          events.removeListener(listener)
         }
       }
     }
   })
-  // push to list
-  addListItem({type: 'add_rule', ruleId: event.rule.id})
   // attach
   const dict = dataStore._rulesets
   const {id} = event.rule
@@ -266,7 +269,6 @@ const createRuleset = event => {
 }
 
 const createSagaStore = event => {
-  console.log(event.ruleId)
   const store:SagaStore = observable(({
     storeType: 'SAGA_STORE',
     timestampStart: event.timestamp,
@@ -279,8 +281,6 @@ const createSagaStore = event => {
       return yieldStore.bySagaId[event.sagaId] || []
     },
     get ruleset(){
-      console.log('ruleset', event.ruleId)
-      console.log(toJS(dataStore._rulesets.byId))
       return dataStore._rulesets.byId[event.ruleId]
     }
   }:SagaStore))
