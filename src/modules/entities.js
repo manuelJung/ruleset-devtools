@@ -66,7 +66,8 @@ export type SagaYieldStore = {
   timestamp: number,
   action: Action,
   result: 'REJECT' | 'RESOLVE',
-  saga: SagaStore
+  saga: SagaStore,
+  nextSagaStatus: 'PENDING' | 'CANCELED' | LogicAdd | LogicRemove
 }
 
 export type Store = RuleExecution | ActionExecution | Ruleset | SagaStore | SagaYieldStore

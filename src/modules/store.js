@@ -309,10 +309,18 @@ const createSagaYieldStore = event => {
     timestamp: event.timestamp,
     action: event.action,
     result: event.result,
+    nextSagaStatus: 'PENDING',
     get saga(){
       return dataStore._sagas.byId[event.sagaId]
     }
   }:SagaYieldStore))
+  // listeners
+  const listener = events.addListener(e => {
+    if(e.type === 'EXEC_SAGA_END' && e.sagaId === event.sagaId){
+      store.nextSagaStatus = e.result
+    }
+    events.removeListener(listener)
+  })
   // attach
   const dict = dataStore._sagaYields
   dict.bySagaId[event.sagaId] = push(dict.bySagaId[event.sagaId], store)
