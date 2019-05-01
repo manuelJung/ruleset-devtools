@@ -3,6 +3,5 @@ chrome.devtools.panels.create("Ruleset",
     "index.html",
     function(panel) {
       // code invoked on panel creation
-      console.log('created')
     }
 )
