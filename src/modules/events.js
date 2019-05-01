@@ -23,11 +23,14 @@ const events = {
   }
 }
 
+window.ruleEvents = events
+
 export default events
 
-
-setTimeout(() => {
-  EventList.forEach(event => {
-    events.push(event)
-  })
-}, 500)
+if(process.env.NODE_ENV === 'development'){
+  setTimeout(() => {
+    EventList.forEach(event => {
+      events.push(event)
+    })
+  }, 500)
+}
