@@ -22,24 +22,38 @@ function recieveFromBackgroundScript (cb) {
 
 let devtools =  null
 
+function start(global) {
+  devtools = global
+  sendToBackgroundScript({
+    isRulesetMessage: true,
+    direction: 'top-down',
+    type: 'OPEN_DEVTOOLS'
+  })
+}
+
 chrome.devtools.panels.create("Ruleset",
     "favicon.ico",
     "index.html",
     function(panel) {
       // code invoked on panel creation
-      panel.onShown.addListener(function (global){
-        devtools = global
+      panel.onShown.addListener(start)
+      panel.onHidden.addListener(() => {
+        devtools = null
+        panel.onShown.removeListener(start)
         sendToBackgroundScript({
           isRulesetMessage: true,
           direction: 'top-down',
-          type: 'OPEN_DEVTOOLS'
+          type: 'CLOSE_DEVTOOLS'
         })
       })
     }
 )
 
 recieveFromBackgroundScript(message => {
-  // DO SOMETHING
+  if(!devtools) return
+  if(message.type === 'UPDATE_RULESET_EVENTS'){
+    devtools.ruleEvents.push(...message.events)
+  }
 })
 
 

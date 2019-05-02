@@ -20,18 +20,9 @@ function recieveFromContentScript (cb) {
 
 let unlisten = null
 
-;(function(){
-  if(!window.__addRulesetEventListener) return
-
-  // unlisten = window.__addRulesetEventListener(event => sendToContentScript({
-  //   isRulesetMessage: true,
-  //   type: 'UPDATE_RULESET_EVENTS',
-  //   direction: 'bottom-up',
-  //   events: JSON.parse(JSON.stringify([event], null, 2)),
-  // }), true)
-})()
-
 recieveFromContentScript(message => {
+  if(!window.__addRulesetEventListener) return
+  console.log(message)
   if(message.data.type === 'OPEN_DEVTOOLS') {
     sendToContentScript({
       isRulesetMessage: true,
@@ -39,5 +30,17 @@ recieveFromContentScript(message => {
       direction: 'bottom-up',
       events: ['Hello World']
     })
+    unlisten = window.__addRulesetEventListener(event => sendToContentScript({
+      isRulesetMessage: true,
+      type: 'UPDATE_RULESET_EVENTS',
+      direction: 'bottom-up',
+      events: JSON.parse(JSON.stringify([event], null, 2)),
+    }), true)
+  }
+  if(message.data.type === 'CLOSE_DEVTOOLS') {
+    if(unlisten){
+      unlisten()
+      unlisten = null
+    }
   }
 })
