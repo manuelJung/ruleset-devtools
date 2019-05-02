@@ -6,22 +6,32 @@ function sendToBackgroundScript (message) {
   chrome.runtime.sendMessage(message)
 }
 
-function sendToPageScript (message) {}
-
-function recieveFromPageScript (cb) {
-  window.addEventListener('message', cb, false)
+function sendToPageScript (message) {
+  window.postMessage(message, '*')
 }
 
-function recieveFromBackgroundScript (cb) {}
+function recieveFromPageScript (cb) {
+  window.addEventListener('message', message => {
+    if(typeof message.data !== 'object') return
+    if(!message.data.isRulesetMessage) return
+    if(message.data.direction !== 'bottom-up') return
+    cb(message)
+  }, false)
+}
+
+function recieveFromBackgroundScript (cb) {
+  chrome.runtime.onMessage.addListener(cb)
+}
 
 
 // SCRIPT
 
 recieveFromPageScript(message => {
-  if(typeof message.data !== 'object') return
-  if(!message.data.isRulesetMessage) return
-  // console.log('cs:recieveFromPageScript', message)
   sendToBackgroundScript(message.data)
+})
+
+recieveFromBackgroundScript(message => {
+  sendToPageScript(message)
 })
 
 

@@ -8,7 +8,9 @@ var backgroundPageConnection = chrome.runtime.connect({
 
 // COMMUNICATION
 
-function sendToBackgroundScript (message) {}
+function sendToBackgroundScript (message) {
+  backgroundPageConnection.postMessage(message)
+}
 
 function recieveFromBackgroundScript (cb) {
   backgroundPageConnection.onMessage.addListener(cb)
@@ -19,7 +21,6 @@ function recieveFromBackgroundScript (cb) {
 
 
 let devtools =  null
-let buffer = []
 
 chrome.devtools.panels.create("Ruleset",
     "favicon.ico",
@@ -28,8 +29,11 @@ chrome.devtools.panels.create("Ruleset",
       // code invoked on panel creation
       panel.onShown.addListener(function (global){
         devtools = global
-        buffer.forEach(evt => devtools.ruleEvents.push(evt))
-        buffer = []
+        sendToBackgroundScript({
+          isRulesetMessage: true,
+          direction: 'top-down',
+          type: 'OPEN_DEVTOOLS'
+        })
       })
     }
 )
