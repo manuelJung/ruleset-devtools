@@ -43,7 +43,11 @@ console.log('devtools :)')
 recieveFromBackgroundScript(message => {
   if(typeof message.data !== 'object') return
   if(!message.data.isRulesetMessage) return
-  console.log(message)
+  sendToBackgroundScript({
+    isRulesetMessage: true,
+    direction: 'top-down',
+    type: 'MY_COOL_TYPE'
+  })
 })
 
 

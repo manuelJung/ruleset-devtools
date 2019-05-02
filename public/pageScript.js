@@ -33,14 +33,13 @@ let unlisten = null
 
 recieveFromContentScript(message => {
   console.log('page script', message.data)
+
+  if(message.data.type === 'OPEN_DEVTOOLS') {
+    sendToContentScript({
+      isRulesetMessage: true,
+      type: 'UPDATE_RULESET_EVENTS',
+      direction: 'bottom-up',
+      events: ['Hello World']
+    })
+  }
 })
-
-
-setTimeout(() => {
-  sendToContentScript({
-    isRulesetMessage: true,
-    type: 'UPDATE_RULESET_EVENTS',
-    direction: 'bottom-up',
-    events: ['Hello World'],
-  })
-}, 3000)

@@ -30,7 +30,11 @@ function sendToContentScript (message) {
 }
 
 function recieveFromContentScript (cb) {
-  chrome.runtime.onMessage.addListener(cb)
+  chrome.runtime.onMessage.addListener(message => {
+    if(typeof message.data !== 'object') return
+    if(!message.data.isRulesetMessage) return
+    cb(message)
+  })
 }
 
 function recieveFromDevtools (cb) {}
@@ -40,8 +44,11 @@ function recieveFromDevtools (cb) {}
 
 
 recieveFromContentScript(message => {
-  if(typeof message.data !== 'object') return
-  if(!message.data.isRulesetMessage) return
-  // console.log('bg:recieveFromContentScript', message)
+  sendToContentScript({
+    isRulesetMessage: true,
+    direction: 'top-down',
+    type: 'bg-LOG',
+    payload: message.data
+  })
   sendToDevtools(message.data)
 })
