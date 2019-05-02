@@ -2,14 +2,14 @@
 // COMUNICATION
 
 function sendToBackgroundScript (message) {
-  console.log('cs:sendToBackgroundScript', message)
+  // console.log('cs:sendToBackgroundScript', message)
   chrome.runtime.sendMessage(message)
 }
 
 function sendToPageScript (message) {}
 
 function recieveFromPageScript (cb) {
-  window.addEventListener('message', cb)
+  window.addEventListener('message', cb, false)
 }
 
 function recieveFromBackgroundScript (cb) {}
@@ -20,7 +20,7 @@ function recieveFromBackgroundScript (cb) {}
 recieveFromPageScript(message => {
   if(typeof message.data !== 'object') return
   if(!message.data.isRulesetMessage) return
-  console.log('cs:recieveFromPageScript', message)
+  // console.log('cs:recieveFromPageScript', message)
   sendToBackgroundScript(message.data)
 })
 

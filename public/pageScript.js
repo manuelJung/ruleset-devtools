@@ -2,7 +2,7 @@
 // COMMUNICATION
 
 function sendToContentScript (message) {
-  console.log('pageScript:sendToContentScript', message)
+  // console.log('pageScript:sendToContentScript', message)
   window.postMessage(message, '*')
 }
 

@@ -42,8 +42,8 @@ function recieveFromDevtools (cb) {}
 
 
 recieveFromContentScript(message => {
-  console.log('bg:recieveFromContentScript', message)
   if(typeof message.data !== 'object') return
   if(!message.data.isRulesetMessage) return
+  // console.log('bg:recieveFromContentScript', message)
   sendToDevtools(message.data)
 })

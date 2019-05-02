@@ -1,9 +1,18 @@
 
+// SETUP
+
+var backgroundPageConnection = chrome.runtime.connect({
+    name: "Ruleset"
+});
+
+
 // COMMUNICATION
 
 function sendToBackgroundScript (message) {}
 
-function recieveFromBackgroundScript (cb) {}
+function recieveFromBackgroundScript (cb) {
+  backgroundPageConnection.onMessage.addListener(cb)
+}
 
 
 // SCRIPT
@@ -25,22 +34,13 @@ chrome.devtools.panels.create("Ruleset",
     }
 )
 
-// Create a connection to the background page
-var backgroundPageConnection = chrome.runtime.connect({
-    name: "Ruleset"
-});
+console.log('devtools :)')
 
-
-backgroundPageConnection.onMessage.addListener(function(message){
-  if(message.type !== "UPDATE_RULESET_EVENTS") return
-  
-  if(!devtools) buffer.push(...message.events)
-  else message.events.forEach(evt => devtools.ruleEvents.push(evt))
+recieveFromBackgroundScript(message => {
+  if(typeof message.data !== 'object') return
+  if(!message.data.isRulesetMessage) return
+  console.log(message)
 })
 
 
-backgroundPageConnection.postMessage({
-  type: 'init',
-  name: 'Ruleset'
-})
 
