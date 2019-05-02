@@ -19,6 +19,7 @@ function recieveFromContentScript (cb) {
 // SCRIPT
 
 let unlisten = null
+let initial = true
 
 recieveFromContentScript(message => {
   if(!window.__addRulesetEventListener) return
@@ -35,7 +36,8 @@ recieveFromContentScript(message => {
       type: 'UPDATE_RULESET_EVENTS',
       direction: 'bottom-up',
       events: JSON.parse(JSON.stringify([event], null, 2)),
-    }), true)
+    }), initial)
+    initial = false
   }
   if(message.data.type === 'CLOSE_DEVTOOLS') {
     if(unlisten){
