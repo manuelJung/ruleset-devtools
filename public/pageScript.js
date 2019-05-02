@@ -32,8 +32,6 @@ let unlisten = null
 })()
 
 recieveFromContentScript(message => {
-  console.log('page script', message.data)
-
   if(message.data.type === 'OPEN_DEVTOOLS') {
     sendToContentScript({
       isRulesetMessage: true,

@@ -18,8 +18,8 @@ chrome.runtime.onConnect.addListener(function (port) {
 // COMMUNICATION
 
 function sendToDevtools (message) {
-  if(typeof message.data !== 'object') return
-  if(!message.data.isRulesetMessage) return
+  if(typeof message !== 'object') return
+  if(!message.isRulesetMessage) return
   connection.postMessage(message)
 }
 
@@ -31,8 +31,8 @@ function sendToContentScript (message) {
 
 function recieveFromContentScript (cb) {
   chrome.runtime.onMessage.addListener(message => {
-    if(typeof message.data !== 'object') return
-    if(message.data.isRulesetMessage) return
+    if(typeof message !== 'object') return
+    if(!message.isRulesetMessage) return
     cb(message)
   })
 }
@@ -44,11 +44,5 @@ function recieveFromDevtools (cb) {}
 
 
 recieveFromContentScript(message => {
-  sendToContentScript({
-    isRulesetMessage: true,
-    direction: 'top-down',
-    type: 'bg-LOG',
-    payload: message.data
-  })
-  sendToDevtools(message.data)
+  sendToDevtools(message)
 })

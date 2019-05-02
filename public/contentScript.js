@@ -27,12 +27,6 @@ function recieveFromBackgroundScript (cb) {
 // SCRIPT
 
 recieveFromPageScript(message => {
-  sendToPageScript({
-    isRulesetMessage: true,
-    direction: 'top-down',
-    type: 'cs-LOG',
-    payload: message.data
-  })
   sendToBackgroundScript(message.data)
 })
 
