@@ -32,7 +32,7 @@ function sendToContentScript (message) {
 function recieveFromContentScript (cb) {
   chrome.runtime.onMessage.addListener(message => {
     if(typeof message.data !== 'object') return
-    if(!message.data.isRulesetMessage) return
+    if(message.data.isRulesetMessage) return
     cb(message)
   })
 }
