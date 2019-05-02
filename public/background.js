@@ -1,33 +1,49 @@
-let connection = null;
-let buffer = []
+// SETUP
+
+let connection = null
 
 chrome.runtime.onConnect.addListener(function (port) {
-    if(port.name !== 'Ruleset') return
+  if(port.name !== 'Ruleset') return
+  connection = port
 
-    function devtoolsConnection (message){
-        if(message.type === 'init'){
-            connection = port
-            buffer.forEach(message => connection.postMessage(message))
-            buffer = []
-        }
-    }
+  console.log('connected')
 
-    port.onDisconnect.addListener(function(port) {
-        connection = null
-        port.onMessage.removeListener(devtoolsConnection)
-    });
+  function devtoolsConnection (message){
+    
+  }
 
-    port.onMessage.addListener(devtoolsConnection)
+  port.onDisconnect.addListener(function(port) {
+      connection = null
+      port.onMessage.removeListener(devtoolsConnection)
+  });
 
+  port.onMessage.addListener(devtoolsConnection)
 });
 
-// Receive message from content script and relay to the devTools page for the
-// current tab
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    console.log(message)
-    if(!connection) {
-        buffer.push(message)
-        return
-    }
-    connection.postMessage(message);
-});
+
+// COMMUNICATION
+
+function sendToDevtools (message) {
+  if(typeof message.data !== 'object') return
+  if(!message.data.isRulesetMessage) return
+  connection.postMessage(message)
+}
+
+function sendToContentScript (message) {}
+
+function recieveFromContentScript (cb) {
+  chrome.runtime.onMessage.addListener(cb)
+}
+
+function recieveFromDevtools (cb) {}
+
+
+// SCRIPT
+
+
+recieveFromContentScript(message => {
+  console.log('bg:recieveFromContentScript', message)
+  if(typeof message.data !== 'object') return
+  if(!message.data.isRulesetMessage) return
+  sendToDevtools(message.data)
+})

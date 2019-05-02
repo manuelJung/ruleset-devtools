@@ -1,3 +1,14 @@
+
+// COMMUNICATION
+
+function sendToBackgroundScript (message) {}
+
+function recieveFromBackgroundScript (cb) {}
+
+
+// SCRIPT
+
+
 let devtools =  null
 let buffer = []
 

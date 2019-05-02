@@ -1,9 +1,28 @@
 
-window.addEventListener("message", msg => {
-  if(typeof msg.data !== 'object') return
-  if(!msg.data.isRulesetMessage) return
-  chrome.runtime.sendMessage(msg.data)
-}, false)
+// COMUNICATION
+
+function sendToBackgroundScript (message) {
+  console.log('cs:sendToBackgroundScript', message)
+  chrome.runtime.sendMessage(message)
+}
+
+function sendToPageScript (message) {}
+
+function recieveFromPageScript (cb) {
+  window.addEventListener('message', cb)
+}
+
+function recieveFromBackgroundScript (cb) {}
+
+
+// SCRIPT
+
+recieveFromPageScript(message => {
+  if(typeof message.data !== 'object') return
+  if(!message.data.isRulesetMessage) return
+  console.log('cs:recieveFromPageScript', message)
+  sendToBackgroundScript(message.data)
+})
 
 
 // add pageScript
