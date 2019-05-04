@@ -18,6 +18,7 @@ export default observer<Props>(function Action(props:Props){
     <Wrapper className='Action'>
       <ReactJson 
         name={null} 
+        enableClipboard={false}
         src={toJS(actionExecution.action)} 
         collapsed={2} 
         displayDataTypes={false} 

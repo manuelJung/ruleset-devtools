@@ -93,6 +93,7 @@ const Wrapper = styled.section`
   > .list {
     flex: 1;
     height: 100%;
+    min-width: 250px;
     overflow-y: scroll;
   }
 
