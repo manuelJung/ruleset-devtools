@@ -28,6 +28,7 @@ export default observer<Props>(function RulesRoute(props:Props){
               <div className='value'>
                 <ReactJson 
                   name={null} 
+                  enableClipboard={false}
                   src={toJS(store.ruleset.rule)} 
                   collapsed={2} 
                   displayDataTypes={false} 

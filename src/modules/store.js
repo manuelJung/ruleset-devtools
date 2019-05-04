@@ -252,12 +252,14 @@ const createRuleset = event => {
         if(e.ruleId === event.rule.id){
           addListItem({type: 'add_rule', ruleId: event.rule.id})
           store.active = true
+          return
         }
       }
       case 'REMOVE_RULE': {
         if(e.ruleId === event.rule.id){
           addListItem({type: 'remove_rule', ruleId: event.rule.id})
           store.active = false
+          return
         }
       }
     }
