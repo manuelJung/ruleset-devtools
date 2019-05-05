@@ -72,8 +72,8 @@ const Action = observer<ActionProps>(function Action(props:ActionProps){
 })
 
 type RuleProps = {
-  removed: string[],
-  added: string[]
+  removed: *,
+  added: *
 }
 
 const Rules = observer<RuleProps>(function Rules(props:RuleProps){

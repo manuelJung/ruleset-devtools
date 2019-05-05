@@ -34,7 +34,7 @@ type DataStore = {
   },
   list: 
     ({type: 'action', actionExecId: number}
-  | {type: 'rules', removed: string[], added: string[]})[],
+  | {type: 'rules', removed: Ruleset[], added: Ruleset[]})[],
 
   actionExecutions: ActionExecution[],
   toJS: (store?:any) => DataStore
@@ -91,10 +91,10 @@ const addListItem = (item:Item) => {
   }
   lastItem = dataStore.list[dataStore.list.length-1]
   if(item.type === 'add_rule' && lastItem.type === 'rules'){
-    lastItem.added.push(item.ruleId)
+    lastItem.added.push(dataStore._rulesets.byId[item.ruleId])
   }
   else if(item.type === 'remove_rule' && lastItem.type === 'rules'){
-    lastItem.removed.push(item.ruleId)
+    lastItem.removed.push(dataStore._rulesets.byId[item.ruleId])
   }
 }
 
