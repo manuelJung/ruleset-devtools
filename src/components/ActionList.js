@@ -1,6 +1,6 @@
 // @flow
-import React from 'react'
-import {observer} from 'mobx-react'
+import * as React from 'react'
+import {useObserver} from 'mobx-react'
 import styled from 'styled-components'
 import dataStore from 'modules/store'
 import uiStore from 'modules/ui'
@@ -11,12 +11,27 @@ type Props = {
   activeActionExecId: number | null | false
 }
 
-export default observer<Props>(function ActionList(props:Props){
+export default function ActionList(props:Props){
   const activeActionExecution = props.activeActionExecId ? dataStore._actionExecutions.byId[props.activeActionExecId] : null
-  return (
+  const [filter, setFilter] = React.useState('')
+  const list = React.useMemo(() =>  {
+    if(!filter) return dataStore.list
+    let regex = ''
+    try{ regex = new RegExp(filter)} catch(e){}
+    if(!regex) return dataStore.list
+    return dataStore.list.filter(item => {
+      if(item.type !== 'action') return true
+      const actionExecution = dataStore._actionExecutions.byId[item.actionExecId]
+      return actionExecution.action.type.match(regex)
+    })
+  },[filter])
+  return useObserver(() => (
     <Wrapper className='ActionList'>
+      <div className='filter'>
+        <input type='text' value={filter} onChange={e => setFilter(e.target.value)} placeholder='regex'/>
+      </div>
       <div className='list'>
-        {dataStore.list.map((item,i) => {
+        {list.map((item,i) => {
           switch(item.type){
             case 'action': {
               const actionExecution = dataStore._actionExecutions.byId[item.actionExecId]
@@ -50,13 +65,27 @@ export default observer<Props>(function ActionList(props:Props){
         })}
       </div>
     </Wrapper>
-  )
-})
+  ))
+}
 
 
 const Wrapper = styled.section`
-  display: flex;
   height: 100%;
+
+  > .filter {
+    height: 50px;
+    background: #51626A;
+    padding: 5px;
+
+    > input {
+      background: none;
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 30px;
+      outline: none;
+    }
+  }
 
   > .list {
     flex: 1;
