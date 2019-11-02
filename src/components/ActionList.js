@@ -14,6 +14,7 @@ type Props = {
 export default function ActionList(props:Props){
   const activeActionExecution = props.activeActionExecId ? dataStore._actionExecutions.byId[props.activeActionExecId] : null
   const [filter, setFilter] = React.useState('')
+  const [inverseFilter, setInverseFilter] = React.useState(false)
   const list = React.useMemo(() =>  {
     if(!filter) return dataStore.list
     let regex = ''
@@ -22,13 +23,17 @@ export default function ActionList(props:Props){
     return dataStore.list.filter(item => {
       if(item.type !== 'action') return true
       const actionExecution = dataStore._actionExecutions.byId[item.actionExecId]
-      return actionExecution.action.type.match(regex)
+      const type = actionExecution.action.type
+      return inverseFilter ? !type.match(regex) : type.match(regex)
     })
-  },[filter])
+  },[filter, inverseFilter])
   return useObserver(() => (
-    <Wrapper className='ActionList'>
+    <Wrapper className='ActionList' inverseFilter={inverseFilter}>
       <div className='filter'>
         <input type='text' value={filter} onChange={e => setFilter(e.target.value)} placeholder='regex'/>
+        <button onClick={() => setInverseFilter(!inverseFilter)}>
+          not
+        </button>
       </div>
       <div className='list'>
         {list.map((item,i) => {
@@ -84,6 +89,16 @@ const Wrapper = styled.section`
       font-weight: bold;
       font-size: 30px;
       outline: none;
+    }
+
+    > button {
+      padding: 8px;
+      border: 2px solid white;
+      color: white;
+      cursor: pointer;
+      &:focus {outline:none;}
+
+      background: ${props => props.inverseFilter ? 'grey' : 'none'};
     }
   }
 
