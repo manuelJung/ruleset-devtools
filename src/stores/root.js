@@ -105,7 +105,7 @@ const rootStore:RootStore = observable(({
       byRuleExecId: {},
     },
     dispatchedActions: {
-      byDispatchedActionId: {}
+      byActionExecId: {}
     },
     ruleExecutions: {
       byRuleExecId: {},
