@@ -1,22 +1,18 @@
 // @flow
-import React from 'react'
-// import Chart from 'Chart'
-// import StoreDetails from 'StoreDetails'
+import * as React from 'react'
+import styled from 'styled-components'
+import {useObserver} from 'mobx-react'
+import 'stores/root'
 
-import ActionRoute from './routes/Actions'
-import {Router} from 'react-router'
-import {createBrowserHistory} from 'history'
-
-export default class App extends React.Component<{}> {
-  render() {
-    return (
-      <div className="App" style={{height:'100%'}}>
-        <Router history={createBrowserHistory()}>
-          <ActionRoute/>
-        </Router>
-        {/* <Chart />
-        <StoreDetails/> */}
-      </div>
-    )
-  }
+export default function App () {
+  return useObserver(() =>
+    <Wrapper className='App'>
+      <div className='left-panel-wrapper'>left</div>
+      <div className='top-panel-wrapper'>top</div>
+      <div className='content-panel-wrapper'>content</div>
+      <div className='context-panel-wrapper'>context</div>
+    </Wrapper>
+  )
 }
+
+const Wrapper = styled.div``

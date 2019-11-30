@@ -129,7 +129,7 @@ const rootStore:RootStore = observable(({
   }
 }:RootStore))
 
-
+window.rootStore = rootStore
 
 events.addListener(e => {
   switch(e.type){
