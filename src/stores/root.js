@@ -5,24 +5,14 @@ import type {Rule} from './subStores/rule'
 import createRule from './subStores/rule'
 import type {Action} from './subStores/action'
 import createAction from './subStores/action'
-
-export type ActionExecution = {
-  storeType: 'ACTION_EXECUTION',
-  id: number,
-  action: Action,
-  ruleExecution: RuleExecution | void
-}
+import type {ActionExecution} from './subStores/actionExecution'
+import createActionExecution from './subStores/actionExecution'
+import type {RuleExecution} from './subStores/ruleExecution'
+import createRuleExecution from './subStores/ruleExecution'
 
 export type DispatchedAction = {
   storeType: 'DISPATCHED_ACTION',
   id: number
-}
-
-export type RuleExecution = {
-  storeType: 'RULE_EXECUTION',
-  id: number,
-  actionExecutions: ActionExecution[],
-  rule: Rule
 }
 
 export type Saga = {
@@ -72,7 +62,7 @@ export type RootStore = {
     actionExecutions: {
       byActionExecId: {[number]: ActionExecution},
       byActionType: {[string]: ActionExecution[]},
-      byRuleExecutionId: {[string]: ActionExecution[]},
+      byRuleExecId: {[number]: ActionExecution[]},
     },
     dispatchedActions: {
       byDispatchedActionId: {[number]: DispatchedAction}
@@ -119,7 +109,7 @@ const rootStore:RootStore = observable(({
     actionExecutions: {
       byActionExecId: {},
       byActionType: {},
-      byRuleExecutionId: {},
+      byRuleExecId: {},
     },
     dispatchedActions: {
       byDispatchedActionId: {}
@@ -162,8 +152,8 @@ events.addListener(e => {
         e.rule.target.forEach(type => createAction(e, rootStore, type))
       }
     }
-    // case 'EXEC_RULE_START': return createRuleExecution(e)
-    // case 'EXEC_ACTION_START': return createActionExecution(e)
+    case 'EXEC_RULE_START': return createRuleExecution(e, rootStore)
+    case 'EXEC_ACTION_START': return createActionExecution(e, rootStore)
     // case 'DISPATCH_ACTION': return createDispatchedAction(e)
     // case 'EXEC_SAGA_START': return createSagaStore(e)
     // case 'YIELD_SAGA': return createSagaYieldStore(e)

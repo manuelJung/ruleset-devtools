@@ -4,6 +4,7 @@ import events from '../events'
 import type {ExecActionStartEvent} from '../events'
 import type {RootStore} from '../root'
 import type {Action} from './action'
+import type {RuleExecution} from './ruleExecution'
 import {push} from 'utils/helpers'
 
 export type ActionExecution = {
@@ -25,7 +26,7 @@ export default function createRule (
       return rootStore.private.actions.byActionType[event.action.type]
     },
     get ruleExecution(){
-      return undefined
+      return rootStore.private.ruleExecutions.byActionExecId[event.actionExecId]
     },
     get sagas(){
       return []

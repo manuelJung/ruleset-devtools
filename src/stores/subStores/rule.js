@@ -11,7 +11,7 @@ export type Rule = {
   id: string,
   targetActions: Action[],
   outputActions: Action[],
-  sagas: Saga[],
+  // sagas: Saga[],
   toJs: () => Rule
 }
 
