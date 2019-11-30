@@ -9,6 +9,7 @@ export type ActionExecution = {
   id: number,
   action: t.Action,
   ruleExecution: t.RuleExecution | void,
+  dispatchedAction: t.DispatchedAction | null,
   toJs: () => ActionExecution
 }
 
@@ -26,8 +27,8 @@ export default function createRule (
     get ruleExecution(){
       return rootStore.private.ruleExecutions.byActionExecId[event.actionExecId]
     },
-    get sagas(){
-      return []
+    get dispatchedAction(){
+      return rootStore.private.dispatchedActions.byActionExecId[event.actionExecId]
     },
     
     toJs(){

@@ -58,7 +58,7 @@ export type RootStore = {
       byRuleExecId: {[number]: t.ActionExecution[]},
     },
     dispatchedActions: {
-      byDispatchedActionId: {[number]: t.DispatchedAction}
+      byActionExecId: {[number]: t.DispatchedAction}
     },
     ruleExecutions: {
       byRuleExecId: {[number]: t.RuleExecution},
