@@ -53,9 +53,9 @@ export type RootStore = {
   private: {
     actions: {
       byActionType: {[string] : Action},
-      byRuleTarget: {[string]: Action[]},
-      byRuleOutput: {[string]: Action[]},
-      byActionExecId: {[number]: Action}
+      // byRuleTarget: {[string]: Action[]},
+      // byRuleOutput: {[string]: Action[]},
+      // byActionExecId: {[number]: Action}
     },
     rules: {
       byRuleId: {[string] : Rule},
@@ -100,9 +100,9 @@ const rootStore:RootStore = observable(({
   private: {
     actions: {
       byActionType: {},
-      byRuleTarget: {},
-      byRuleOutput: {},
-      byActionExecId: {}
+      // byRuleTarget: {},
+      // byRuleOutput: {},
+      // byActionExecId: {}
     },
     rules: {
       byRuleId: {},

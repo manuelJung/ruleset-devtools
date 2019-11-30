@@ -19,15 +19,16 @@ export default function createAction (
   rootStore:RootStore,
   type: string
 ) {
+  if(rootStore.private.actions.byActionType[type]) return
   const store:Action = observable(({
     storeType: 'ACTION',
     type: type,
 
     get attachedRules(){
-      return []
+      return rootStore.private.rules.byRuleTarget[type] || []
     },
     get creatorRules(){
-      return []
+      return rootStore.private.rules.byRuleOutput[type] || []
     },
     get executions(){
       return []
