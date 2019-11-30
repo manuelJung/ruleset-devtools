@@ -9,11 +9,8 @@ import type {ActionExecution} from './subStores/actionExecution'
 import createActionExecution from './subStores/actionExecution'
 import type {RuleExecution} from './subStores/ruleExecution'
 import createRuleExecution from './subStores/ruleExecution'
-
-export type DispatchedAction = {
-  storeType: 'DISPATCHED_ACTION',
-  id: number
-}
+import type {DispatchedAction} from './subStores/dispatchedAction'
+import createDispatchedAction from './subStores/dispatchedAction'
 
 export type Saga = {
   storeType: 'SAGA',
@@ -154,7 +151,7 @@ events.addListener(e => {
     }
     case 'EXEC_RULE_START': return createRuleExecution(e, rootStore)
     case 'EXEC_ACTION_START': return createActionExecution(e, rootStore)
-    // case 'DISPATCH_ACTION': return createDispatchedAction(e)
+    case 'DISPATCH_ACTION': return createDispatchedAction(e, rootStore)
     // case 'EXEC_SAGA_START': return createSagaStore(e)
     // case 'YIELD_SAGA': return createSagaYieldStore(e)
   }
