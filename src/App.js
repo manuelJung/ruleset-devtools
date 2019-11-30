@@ -5,6 +5,7 @@ import {useObserver} from 'mobx-react'
 import 'stores/root'
 import browser from 'stores/browser'
 import useResizer from 'hooks/useResizer'
+import ActionList from 'widgets/ActionList'
 
 export default function App () {
   const [leftSize,refLeft] = useResizer(230)
@@ -13,6 +14,7 @@ export default function App () {
   return useObserver(() =>
     <Wrapper className='App'>
       <div className='left' style={{width:leftSize}}>
+        <ActionList />
         <div className='resize-angle' ref={refLeft}/>
       </div>
       <div className='right'>
