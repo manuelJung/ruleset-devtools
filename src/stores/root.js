@@ -1,22 +1,18 @@
 // @flow
 import {observable, toJS} from 'mobx'
 import events from './events'
-import type {Rule} from './subStores/rule'
 import createRule from './subStores/rule'
-import type {Action} from './subStores/action'
 import createAction from './subStores/action'
-import type {ActionExecution} from './subStores/actionExecution'
 import createActionExecution from './subStores/actionExecution'
-import type {RuleExecution} from './subStores/ruleExecution'
 import createRuleExecution from './subStores/ruleExecution'
-import type {DispatchedAction} from './subStores/dispatchedAction'
 import createDispatchedAction from './subStores/dispatchedAction'
+import * as t from './types'
 
 export type Saga = {
   storeType: 'SAGA',
   id: number,
   type: 'ADD_WHEN' | 'ADD_UNTIL',
-  rule: Rule,
+  rule: t.Rule,
   sagaExecutions: SagaExecution[]
 }
 
@@ -25,7 +21,7 @@ export type SagaExecution = {
   id: number,
   status: 'PENDING' | 'RESOLVED' | 'ABORTED',
   saga: Saga,
-  rule: Rule,
+  rule: t.Rule,
   sagaYields: SagaYield[]
 }
 
@@ -33,41 +29,41 @@ export type SagaYield = {
   storeType: 'SAGA_YIELD',
   id: number,
   sagaExecution: SagaExecution,
-  rule: Rule
+  rule: t.Rule
 }
 
 export type RootStore = {
   private: {
     actions: {
-      byActionType: {[string] : Action},
+      byActionType: {[string] : t.Action},
       // byRuleTarget: {[string]: Action[]},
       // byRuleOutput: {[string]: Action[]},
       // byActionExecId: {[number]: Action}
     },
     rules: {
-      byRuleId: {[string] : Rule},
-      byRuleTarget: {[string]: Rule[]},
-      byRuleOutput: {[string]: Rule[]},
-      bySagaId: {[number]: Rule},
-      bySagaExecId: {[number]: Rule},
-      bySagaYieldId: {[number]: Rule}
+      byRuleId: {[string] : t.Rule},
+      byRuleTarget: {[string]: t.Rule[]},
+      byRuleOutput: {[string]: t.Rule[]},
+      bySagaId: {[number]: t.Rule},
+      bySagaExecId: {[number]: t.Rule},
+      bySagaYieldId: {[number]: t.Rule}
     },
     sagas: {
       bySagaId: {[number]:Saga},
       byRuleId: {[string]: Saga[]}
     },
     actionExecutions: {
-      byActionExecId: {[number]: ActionExecution},
-      byActionType: {[string]: ActionExecution[]},
-      byRuleExecId: {[number]: ActionExecution[]},
+      byActionExecId: {[number]: t.ActionExecution},
+      byActionType: {[string]: t.ActionExecution[]},
+      byRuleExecId: {[number]: t.ActionExecution[]},
     },
     dispatchedActions: {
-      byDispatchedActionId: {[number]: DispatchedAction}
+      byDispatchedActionId: {[number]: t.DispatchedAction}
     },
     ruleExecutions: {
-      byRuleExecId: {[number]: RuleExecution},
-      byRuleId: {[string]: RuleExecution[]},
-      byActionExecId: {[number]: RuleExecution},
+      byRuleExecId: {[number]: t.RuleExecution},
+      byRuleId: {[string]: t.RuleExecution[]},
+      byActionExecId: {[number]: t.RuleExecution},
     },
     sagaExecutions: {
       bySagaExecId: {[number]: SagaExecution},

@@ -1,22 +1,19 @@
 // @flow
 import {observable, toJS} from 'mobx'
 import events from '../events'
-import type {ExecActionStartEvent} from '../events'
-import type {RootStore} from '../root'
-import type {Action} from './action'
-import type {RuleExecution} from './ruleExecution'
+import * as t from '../types'
 import {push} from 'utils/helpers'
 
 export type ActionExecution = {
   storeType: 'ACTION_EXECUTION',
   id: number,
-  action: Action,
-  ruleExecution: RuleExecution | void
+  action: t.Action,
+  ruleExecution: t.RuleExecution | void
 }
 
 export default function createRule (
-  event:ExecActionStartEvent, 
-  rootStore:RootStore
+  event:t.ExecActionStartEvent, 
+  rootStore:t.RootStore
 ) {
   const store:ActionExecution = observable(({
     storeType: 'ACTION_EXECUTION',

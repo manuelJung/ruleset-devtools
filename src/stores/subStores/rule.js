@@ -1,23 +1,21 @@
 // @flow
 import {observable, toJS} from 'mobx'
 import events from '../events'
-import type {RegisterRuleEvent} from '../events'
-import type {RootStore} from '../root'
-import type {Action} from './action'
+import * as t from '../types'
 import {push} from 'utils/helpers'
 
 export type Rule = {
   storeType: 'RULE',
   id: string,
-  targetActions: Action[],
-  outputActions: Action[],
+  targetActions: t.Action[],
+  outputActions: t.Action[],
   // sagas: Saga[],
   toJs: () => Rule
 }
 
 export default function createRule (
-  event:RegisterRuleEvent, 
-  rootStore:RootStore
+  event:t.RegisterRuleEvent, 
+  rootStore:t.RootStore
 ) {
   const store:Rule = observable(({
     storeType: 'RULE',
@@ -34,7 +32,7 @@ export default function createRule (
       if(Array.isArray(target)){
         let result = []
         let actionsByType = rootStore.private.actions.byActionType
-        target.forEach(type => result.push(...(actionsByType[type] || [])))
+        target.forEach(type => result.push(actionsByType[type]))
         return result
       }
       return []
@@ -51,7 +49,7 @@ export default function createRule (
       if(Array.isArray(output)){
         let result = []
         let actionsByType = rootStore.private.actions.byActionType
-        output.forEach(type => result.push(...(actionsByType[type] || [])))
+        output.forEach(type => result.push(actionsByType[type]))
         return result
       }
       return []

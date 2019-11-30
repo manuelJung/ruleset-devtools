@@ -1,23 +1,20 @@
 // @flow
 import {observable, toJS} from 'mobx'
 import events from '../events'
-import type {RegisterRuleEvent} from '../events'
-import type {RootStore} from '../root'
-import type {Rule} from './rule'
-import type {ActionExecution} from './actionExecution'
+import * as t from '../types'
 
 export type Action = {
   storeType: 'ACTION',
   type: string,
-  attachedRules: Rule[],
-  creatorRules: Rule[],
-  executions: ActionExecution[],
+  attachedRules: t.Rule[],
+  creatorRules: t.Rule[],
+  executions: t.ActionExecution[],
   toJs: () => Action
 }
 
 export default function createAction (
-  event:RegisterRuleEvent, 
-  rootStore:RootStore,
+  event:t.RegisterRuleEvent, 
+  rootStore:t.RootStore,
   type: string
 ) {
   if(rootStore.private.actions.byActionType[type]) return

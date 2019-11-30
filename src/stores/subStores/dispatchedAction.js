@@ -1,10 +1,7 @@
 // @flow
 import {observable, toJS} from 'mobx'
 import events from '../events'
-import type {DispatchActionEvent} from '../events'
-import type {RootStore} from '../root'
-import type {Rule} from './rule'
-import type {ActionExecution} from './actionExecution'
+import * as t from '../types'
 
 export type DispatchedAction = {
   storeType: 'DISPATCHED_ACTION',
@@ -12,8 +9,8 @@ export type DispatchedAction = {
 }
 
 export default function createAction (
-  event:DispatchActionEvent, 
-  rootStore:RootStore
+  event:t.DispatchActionEvent, 
+  rootStore:t.RootStore
 ) {
   const store:DispatchedAction = observable(({
     storeType: 'DISPATCHED_ACTION',

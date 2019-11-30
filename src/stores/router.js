@@ -1,5 +1,5 @@
 // @flow
-import * as t from './root'
+import * as t from './types'
 
 export type RouterStore = {
   route: Route,
@@ -19,7 +19,7 @@ export type RuleListRoute = {
   activeRule?: t.Rule
 }
 
-export type GrapRoute = {
+export type GraphRoute = {
   type: 'GRAPH'
 }
 
