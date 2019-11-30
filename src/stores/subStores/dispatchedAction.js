@@ -5,7 +5,8 @@ import * as t from '../types'
 
 export type DispatchedAction = {
   storeType: 'DISPATCHED_ACTION',
-  id: number
+  id: number,
+  toJs: () => DispatchedAction
 }
 
 export default function createAction (
@@ -15,6 +16,10 @@ export default function createAction (
   const store:DispatchedAction = observable(({
     storeType: 'DISPATCHED_ACTION',
     id: event.actionExecId,
+
+    toJs(){
+      return toJS(this)
+    }
   }:DispatchedAction))
 
   // listeners

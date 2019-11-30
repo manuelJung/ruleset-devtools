@@ -7,7 +7,8 @@ export type RuleExecution = {
   storeType: 'RULE_EXECUTION',
   id: number,
   actionExecutions: t.ActionExecution[],
-  rule: t.Rule
+  rule: t.Rule,
+  toJs: () => RuleExecution
 }
 
 export default function createAction (
@@ -24,6 +25,10 @@ export default function createAction (
 
     get rule () {
       return rootStore.private.rules.byRuleId[event.ruleId]
+    },
+
+    toJs(){
+      return toJS(this)
     }
   }:RuleExecution))
 

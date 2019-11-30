@@ -8,7 +8,8 @@ export type ActionExecution = {
   storeType: 'ACTION_EXECUTION',
   id: number,
   action: t.Action,
-  ruleExecution: t.RuleExecution | void
+  ruleExecution: t.RuleExecution | void,
+  toJs: () => ActionExecution
 }
 
 export default function createRule (
