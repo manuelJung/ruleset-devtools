@@ -70,7 +70,7 @@ export default function createRule (
 
   // attach
   const {target, output} = event.rule
-  rootStore.private.rules.byRuleId[store.id]
+  rootStore.private.rules.byRuleId[store.id] = store
   if(target === '*'){
 
   }

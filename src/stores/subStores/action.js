@@ -4,6 +4,7 @@ import events from '../events'
 import type {RegisterRuleEvent} from '../events'
 import type {RootStore} from '../root'
 import type {Rule} from './rule'
+import type {ActionExecution} from './actionExecution'
 
 export type Action = {
   storeType: 'ACTION',
@@ -31,7 +32,7 @@ export default function createAction (
       return rootStore.private.rules.byRuleOutput[type] || []
     },
     get executions(){
-      return []
+      return rootStore.private.actionExecutions.byActionType[type] || []
     },
     
     toJs(){
@@ -43,5 +44,5 @@ export default function createAction (
   const listener = events.addListener(e => {})
 
   // attach
-  rootStore.private.actions.byActionType[store.type]
+  rootStore.private.actions.byActionType[store.type] = store
 }
