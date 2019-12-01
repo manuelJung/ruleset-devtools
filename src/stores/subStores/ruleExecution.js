@@ -12,7 +12,7 @@ export type RuleExecution = {
   toJs: () => RuleExecution
 }
 
-export default function createAction (
+export default function createRuleExecution (
   event:t.ExecRuleStartEvent, 
   rootStore:t.RootStore
 ) {

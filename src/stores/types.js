@@ -6,6 +6,7 @@ export type {Action} from './subStores/action'
 export type {ActionExecution} from './subStores/actionExecution'
 export type {RuleExecution} from './subStores/ruleExecution'
 export type {DispatchedAction} from './subStores/dispatchedAction'
+export type {SagaExecution} from './subStores/sagaExecution'
 
 export type {RegisterRuleEvent} from './events'
 export type {AddRuleEvent} from './events'

@@ -6,6 +6,7 @@ import createAction from './subStores/action'
 import createActionExecution from './subStores/actionExecution'
 import createRuleExecution from './subStores/ruleExecution'
 import createDispatchedAction from './subStores/dispatchedAction'
+import createSagaExecution from './subStores/sagaExecution'
 import * as t from './types'
 
 export type Saga = {
@@ -13,22 +14,13 @@ export type Saga = {
   id: number,
   type: 'ADD_WHEN' | 'ADD_UNTIL',
   rule: t.Rule,
-  sagaExecutions: SagaExecution[]
-}
-
-export type SagaExecution = {
-  storeType: 'SAGA_EXECUTION',
-  id: number,
-  status: 'PENDING' | 'RESOLVED' | 'ABORTED',
-  saga: Saga,
-  rule: t.Rule,
-  sagaYields: SagaYield[]
+  sagaExecutions: t.SagaExecution[]
 }
 
 export type SagaYield = {
   storeType: 'SAGA_YIELD',
   id: number,
-  sagaExecution: SagaExecution,
+  sagaExecution: t.SagaExecution,
   rule: t.Rule
 }
 
@@ -67,9 +59,9 @@ export type RootStore = {
       byActionExecId: {[number]: t.RuleExecution[]},
     },
     sagaExecutions: {
-      bySagaExecId: {[number]: SagaExecution},
-      bySagaId: {[number]: SagaExecution[]},
-      bySagaYieldId: {[number]: SagaExecution}
+      bySagaExecId: {[number]: t.SagaExecution},
+      // bySagaId: {[number]: t.SagaExecution[]},
+      // bySagaYieldId: {[number]: t.SagaExecution}
     },
     sagaYields: {
       bySagaYieldId: {[number]: SagaYield},
@@ -117,8 +109,8 @@ const rootStore:RootStore = observable(({
     },
     sagaExecutions: {
       bySagaExecId: {},
-      bySagaId: {},
-      bySagaYieldId: {}
+      // bySagaId: {},
+      // bySagaYieldId: {}
     },
     sagaYields: {
       bySagaYieldId: {},
@@ -154,7 +146,7 @@ events.addListener(e => {
     case 'EXEC_RULE_START': return createRuleExecution(e, rootStore)
     case 'EXEC_ACTION_START': return createActionExecution(e, rootStore)
     case 'DISPATCH_ACTION': return createDispatchedAction(e, rootStore)
-    // case 'EXEC_SAGA_START': return createSagaStore(e)
+    case 'EXEC_SAGA_START': return createSagaExecution(e, rootStore)
     // case 'YIELD_SAGA': return createSagaYieldStore(e)
   }
 }, true)
