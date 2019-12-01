@@ -7,6 +7,7 @@ import createActionExecution from './subStores/actionExecution'
 import createRuleExecution from './subStores/ruleExecution'
 import createDispatchedAction from './subStores/dispatchedAction'
 import createSagaExecution from './subStores/sagaExecution'
+import createSagaYield from './subStores/sagaYield'
 import * as t from './types'
 
 export type Saga = {
@@ -15,13 +16,6 @@ export type Saga = {
   type: 'ADD_WHEN' | 'ADD_UNTIL',
   rule: t.Rule,
   sagaExecutions: t.SagaExecution[]
-}
-
-export type SagaYield = {
-  storeType: 'SAGA_YIELD',
-  id: number,
-  sagaExecution: t.SagaExecution,
-  rule: t.Rule
 }
 
 export type RootStore = {
@@ -64,9 +58,8 @@ export type RootStore = {
       // bySagaYieldId: {[number]: t.SagaExecution}
     },
     sagaYields: {
-      bySagaYieldId: {[number]: SagaYield},
-      bySagaExecId: {[number]: SagaYield[]},
-      byActionExecId: {[number]: SagaYield[]}
+      bySagaExecId: {[number]: t.SagaYield[]},
+      // byActionExecId: {[number]: SagaYield[]}
     }
   },
   dispatchedActions: t.DispatchedAction[],
@@ -113,9 +106,8 @@ const rootStore:RootStore = observable(({
       // bySagaYieldId: {}
     },
     sagaYields: {
-      bySagaYieldId: {},
       bySagaExecId: {},
-      byActionExecId: {}
+      // byActionExecId: {}
     }
   },
   get dispatchedActions() {
@@ -147,7 +139,7 @@ events.addListener(e => {
     case 'EXEC_ACTION_START': return createActionExecution(e, rootStore)
     case 'DISPATCH_ACTION': return createDispatchedAction(e, rootStore)
     case 'EXEC_SAGA_START': return createSagaExecution(e, rootStore)
-    // case 'YIELD_SAGA': return createSagaYieldStore(e)
+    case 'YIELD_SAGA': return createSagaYield(e, rootStore)
   }
 }, true)
 
