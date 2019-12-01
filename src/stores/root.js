@@ -64,7 +64,7 @@ export type RootStore = {
     ruleExecutions: {
       byRuleExecId: {[number]: t.RuleExecution},
       byRuleId: {[string]: t.RuleExecution[]},
-      byActionExecId: {[number]: t.RuleExecution},
+      byActionExecId: {[number]: t.RuleExecution[]},
     },
     sagaExecutions: {
       bySagaExecId: {[number]: SagaExecution},

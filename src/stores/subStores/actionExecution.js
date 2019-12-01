@@ -8,7 +8,6 @@ export type ActionExecution = {
   storeType: 'ACTION_EXECUTION',
   id: number,
   action: t.Action,
-  creatorRuleExecution: t.RuleExecution | void,
   dispatchedAction: t.DispatchedAction | null,
   assignedRuleExecutions: t.RuleExecution[],
   toJs: () => ActionExecution
@@ -25,14 +24,11 @@ export default function createRule (
     get action(){
       return rootStore.private.actions.byActionType[event.action.type]
     },
-    get creatorRuleExecution(){
-      return rootStore.private.ruleExecutions.byActionExecId[event.actionExecId]
-    },
     get dispatchedAction(){
       return rootStore.private.dispatchedActions.byActionExecId[event.actionExecId]
     },
     get assignedRuleExecutions(){
-      return []
+      return rootStore.private.ruleExecutions.byActionExecId[event.actionExecId]
     },
     
     toJs(){
@@ -45,5 +41,5 @@ export default function createRule (
 
   // attach
   rootStore.private.actionExecutions.byActionExecId[store.id] = store
-  push(rootStore.private.actionExecutions.byActionType[event.action.type], store)
+  push(rootStore.private.actionExecutions.byActionType, event.action.type, store)
 }

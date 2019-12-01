@@ -2,6 +2,7 @@
 import {observable, toJS} from 'mobx'
 import events from '../events'
 import * as t from '../types'
+import {push} from 'utils/helpers'
 
 export type RuleExecution = {
   storeType: 'RULE_EXECUTION',
@@ -38,6 +39,6 @@ export default function createAction (
   // attach
   rootStore.private.ruleExecutions.byRuleExecId[store.id] = store
   if(event.actionExecId){
-    rootStore.private.ruleExecutions.byActionExecId[event.actionExecId] = store
+    push(rootStore.private.ruleExecutions.byActionExecId, event.actionExecId, store)
   }
 }

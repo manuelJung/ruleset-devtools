@@ -26,7 +26,7 @@ export default function createDispatchedAction (
     },
 
     get assignedRuleExecutions () {
-      return store.actionExecution.assignedRuleExecutions
+      return store.actionExecution.assignedRuleExecutions || []
     },
 
     toJs(){

@@ -13,8 +13,10 @@ export default observer(function ActionList () {
           <div className='item' key={dispatchedAction.id}>
             <div className='label'>{dispatchedAction.data.type}</div>
             <div className='badges'>
-              {/* <div className='rule-executions'>4</div>
-              <div className='saga-yields'>2</div> */}
+              {!!dispatchedAction.assignedRuleExecutions.length && (
+                <div className='rule-executions'>{dispatchedAction.assignedRuleExecutions.length}</div>
+              )}
+              {/* <div className='saga-yields'>2</div> */}
             </div>
           </div>
         ))}

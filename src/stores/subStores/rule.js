@@ -73,17 +73,17 @@ export default function createRule (
 
   }
   else if(typeof target === 'string'){
-    push(rootStore.private.rules.byRuleTarget[target], store)
+    push(rootStore.private.rules.byRuleTarget, target, store)
   }
   else if(Array.isArray(target)){
-    target.forEach(type => push(rootStore.private.rules.byRuleTarget[type], store))
+    target.forEach(type => push(rootStore.private.rules.byRuleTarget, type, store))
   }
 
   if(!output){}
   else if(typeof output === 'string'){
-    push(rootStore.private.rules.byRuleOutput[output], store)
+    push(rootStore.private.rules.byRuleOutput, output, store)
   }
   else if(Array.isArray(output)){
-    output.forEach(type => push(rootStore.private.rules.byRuleOutput[type], store))
+    output.forEach(type => push(rootStore.private.rules.byRuleOutput, type, store))
   }
 }
