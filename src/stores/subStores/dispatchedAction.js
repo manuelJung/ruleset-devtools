@@ -7,6 +7,7 @@ export type DispatchedAction = {
   storeType: 'DISPATCHED_ACTION',
   id: number,
   actionExecution: t.ActionExecution,
+  data: {type:string},
   toJs: () => DispatchedAction
 }
 
@@ -17,6 +18,7 @@ export default function createDispatchedAction (
   const store:DispatchedAction = observable(({
     storeType: 'DISPATCHED_ACTION',
     id: event.actionExecId,
+    data: event.action,
 
     get actionExecution () {
       return rootStore.private.actionExecutions.byActionExecId[event.actionExecId]
@@ -32,4 +34,5 @@ export default function createDispatchedAction (
 
   // attach
   rootStore.private.dispatchedActions.byActionExecId[event.actionExecId] = store
+  rootStore.private.dispatchedActions.ordered.push(store)
 }

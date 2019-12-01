@@ -58,7 +58,8 @@ export type RootStore = {
       byRuleExecId: {[number]: t.ActionExecution[]},
     },
     dispatchedActions: {
-      byActionExecId: {[number]: t.DispatchedAction}
+      ordered: t.DispatchedAction[],
+      byActionExecId: {[number]: t.DispatchedAction},
     },
     ruleExecutions: {
       byRuleExecId: {[number]: t.RuleExecution},
@@ -76,6 +77,7 @@ export type RootStore = {
       byActionExecId: {[number]: SagaYield[]}
     }
   },
+  dispatchedActions: t.DispatchedAction[],
   toJS: (store?:any) => RootStore
 }
 
@@ -105,6 +107,7 @@ const rootStore:RootStore = observable(({
       byRuleExecId: {},
     },
     dispatchedActions: {
+      ordered: [],
       byActionExecId: {}
     },
     ruleExecutions: {
@@ -122,6 +125,9 @@ const rootStore:RootStore = observable(({
       bySagaExecId: {},
       byActionExecId: {}
     }
+  },
+  get dispatchedActions() {
+    return rootStore.private.dispatchedActions.ordered
   },
   toJS(store){
     if(store) return toJS(store)
@@ -152,3 +158,5 @@ events.addListener(e => {
     // case 'YIELD_SAGA': return createSagaYieldStore(e)
   }
 }, true)
+
+export default rootStore

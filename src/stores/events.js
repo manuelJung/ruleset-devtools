@@ -1,5 +1,6 @@
 // @flow
 import EventList from './eventlist'
+import {runInAction} from 'mobx'
 
 export type Action = { 
   type: string,
@@ -180,8 +181,10 @@ export default events
 
 if(process.env.NODE_ENV === 'development'){
   setTimeout(() => {
-    EventList.forEach(event => {
-      events.push(event)
+    runInAction(() => {
+      EventList.forEach(event => {
+        events.push(event)
+      })
     })
   }, 500)
 }
