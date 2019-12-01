@@ -8,6 +8,7 @@ export type DispatchedAction = {
   id: number,
   actionExecution: t.ActionExecution,
   assignedRuleExecutions: t.RuleExecution[],
+  sagaYields: t.SagaYield[],
   data: {type:string},
   toJs: () => DispatchedAction
 }
@@ -27,6 +28,10 @@ export default function createDispatchedAction (
 
     get assignedRuleExecutions () {
       return store.actionExecution.assignedRuleExecutions || []
+    },
+
+    get sagaYields () {
+      return store.actionExecution.sagaYields || []
     },
 
     toJs(){

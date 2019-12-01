@@ -28,4 +28,5 @@ export default function createSagaYield (
 
   // attach
   push(rootStore.private.sagaYields.bySagaExecId, event.sagaId, store)
+  push(rootStore.private.sagaYields.byActionExecId, event.actionExecId, store)
 }

@@ -16,7 +16,9 @@ export default observer(function ActionList () {
               {!!dispatchedAction.assignedRuleExecutions.length && (
                 <div className='rule-executions'>{dispatchedAction.assignedRuleExecutions.length}</div>
               )}
-              {/* <div className='saga-yields'>2</div> */}
+              {!!dispatchedAction.sagaYields.length && (
+                <div className='saga-yields'>{dispatchedAction.sagaYields.length}</div>
+              )}
             </div>
           </div>
         ))}
