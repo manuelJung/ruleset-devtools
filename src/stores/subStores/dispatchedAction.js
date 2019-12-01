@@ -7,6 +7,7 @@ export type DispatchedAction = {
   storeType: 'DISPATCHED_ACTION',
   id: number,
   actionExecution: t.ActionExecution,
+  assignedRuleExecutions: t.RuleExecution[],
   data: {type:string},
   toJs: () => DispatchedAction
 }
@@ -22,6 +23,10 @@ export default function createDispatchedAction (
 
     get actionExecution () {
       return rootStore.private.actionExecutions.byActionExecId[event.actionExecId]
+    },
+
+    get assignedRuleExecutions () {
+      return store.actionExecution.assignedRuleExecutions
     },
 
     toJs(){
