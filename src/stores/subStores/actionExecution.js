@@ -9,6 +9,7 @@ export type ActionExecution = {
   id: number,
   action: t.Action,
   dispatchedAction: t.DispatchedAction | null,
+  canceled: boolean,
   assignedRuleExecutions: t.RuleExecution[],
   creatorRuleExecution: t.RuleExecution | null,
   sagaYields: t.SagaYield[],
@@ -22,6 +23,7 @@ export default function createRule (
   const store:ActionExecution = observable(({
     storeType: 'ACTION_EXECUTION',
     id: event.actionExecId,
+    canceled: false,
 
     get action(){
       return rootStore.private.actions.byActionType[event.action.type]
@@ -30,7 +32,8 @@ export default function createRule (
       return rootStore.private.dispatchedActions.byActionExecId[event.actionExecId]
     },
     get assignedRuleExecutions(){
-      return rootStore.private.ruleExecutions.byActionExecId[event.actionExecId]
+      const ruleExecutions = rootStore.private.ruleExecutions.byActionExecId[event.actionExecId] || []
+      return ruleExecutions
     },
     get sagaYields(){
       return rootStore.private.sagaYields.byActionExecId[event.actionExecId]
@@ -46,7 +49,13 @@ export default function createRule (
   }:ActionExecution))
 
   // listeners
-  const listener = events.addListener(e => {})
+  const listener = events.addListener(e => {
+    if(e.type === 'EXEC_ACTION_END' && e.actionExecId === event.actionExecId){
+      if(e.result === 'ABORTED'){
+        store.canceled = true
+      }
+    }
+  })
 
   // attach
   rootStore.private.actionExecutions.byActionExecId[store.id] = store

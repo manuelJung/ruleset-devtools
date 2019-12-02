@@ -9,6 +9,7 @@ export type Rule = {
   id: string,
   position: 'AFTER' | 'BEFORE' | 'INSTEAD',
   status: 'ACTIVE' | 'REMOVED' | 'INACTIVE',
+  weight: number,
   targetActions: t.Action[],
   outputActions: t.Action[],
   // sagas: Saga[],
@@ -25,6 +26,7 @@ export default function createRule (
     id: event.rule.id,
     position: event.rule.position || 'AFTER',
     status: event.rule.addWhen ? 'INACTIVE' : 'ACTIVE',
+    weight: event.rule.weight || 0,
 
     get targetActions(){
       const {target} = event.rule

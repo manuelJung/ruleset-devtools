@@ -34,7 +34,7 @@ type Rule = {
   target: '*' | string | string[],
   output?: '*' | string | string[],
   position?: Position,
-  zIndex?: number,
+  weight?: number,
   meta?: {
     throttle?: number,
     debounce?: number

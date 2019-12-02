@@ -22,7 +22,14 @@ export default function createAction (
       type: type,
 
       get attachedRules(){
-        return rootStore.private.rules.byRuleTarget[type] || []
+        const rules = rootStore.private.rules.byRuleTarget[type] || []
+        return rules.sort((a,b) => {
+          if(a.position === 'INSTEAD' && b.position !== 'INSTEAD') return -1
+          if(b.position === 'INSTEAD' && a.position !== 'INSTEAD') return 1
+          if(a.position === 'BEFORE' && b.position !== 'BEFORE') return -1
+          if(b.position === 'BEFORE' && a.position !== 'BEFORE') return 1
+          return a.weight > b.weight ? 1 : -1
+        })
       },
       get creatorRules(){
         const rules = rootStore.private.rules.byRuleOutput[type] || []

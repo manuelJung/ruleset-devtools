@@ -49,7 +49,9 @@ function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecuti
       status: (()=> {
         if(!actionExecution) return null
         const ruleExecution = actionExecution.assignedRuleExecutions.find(ruleExecution => ruleExecution.rule === rule)
-        if(!ruleExecution) return null
+        if(!ruleExecution) return actionExecution.canceled
+        ? {color: '#8e8532', label: 'not reached'}
+        : {color: '#8e8532', label: 'not active'}
         switch(ruleExecution.status){
           case 'PENDING': return {color: '#009688', label: 'pending'}
           case 'RESOLVED': return {color: '#009688', label: 'executed'}
