@@ -194,7 +194,7 @@ const _Item = posed.div({
       if(direction === 'right') return 300
       return 0
     },
-    opacity: 1,
+    opacity: 0,
     transition: tween
   },
   exit: {
