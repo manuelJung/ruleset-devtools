@@ -15,7 +15,9 @@ function calculateActionGraph (action:t.Action) {
     y: i,
     data: {
       label: rule.id,
-      store: rule
+      store: rule,
+      creators: rule.targetActions.length,
+      assigned: rule.outputActions.length
     }
   }))
   // target
@@ -24,7 +26,9 @@ function calculateActionGraph (action:t.Action) {
     y: 0,
     data: {
       label: action.type,
-      store: action
+      store: action,
+      creators: 0,
+      assigned: 0
     }
   })
   // assigned rules
@@ -33,7 +37,9 @@ function calculateActionGraph (action:t.Action) {
     y: i,
     data: {
       label: rule.id,
-      store: rule
+      store: rule,
+      creators: rule.targetActions.length,
+      assigned: rule.outputActions.length
     }
   }))
   return graph
@@ -47,7 +53,9 @@ function calculateRuleGraph (rule:t.Rule) {
     y:i,
     data: {
       label: action.type,
-      store: action
+      store: action,
+      creators: action.creatorRules.length,
+      assigned: action.attachedRules.length
     }
   }))
   // target
@@ -56,7 +64,9 @@ function calculateRuleGraph (rule:t.Rule) {
     y:0,
     data: {
       label: rule.id,
-      store: rule
+      store: rule,
+      creators: 0,
+      assigned: 0
     }
   })
   // output actions
@@ -65,7 +75,9 @@ function calculateRuleGraph (rule:t.Rule) {
     y:i,
     data: {
       label: action.type,
-      store: action
+      store: action,
+      creators: action.creatorRules.length,
+      assigned: action.attachedRules.length
     }
   }))
 
@@ -102,6 +114,8 @@ export default observer(function Graph () {
               <React.Fragment>
                 {item.data.store.storeType === 'RULE' && <div className='background'><IoIosMedal/></div>}
                 <div className='box'>{item.data.label}</div>
+                {item.data.creators > 0 && <div className='creators'>{item.data.creators}</div>}
+                {item.data.assigned > 0 && <div className='assigned'>{item.data.assigned}</div>}
               </React.Fragment>
             }
           />
@@ -171,6 +185,19 @@ const Item = styled(_Item)`
     left: calc(50% - 30px);
     z-index: 1;
   }
+
+  > .creators, .assigned {
+    position: absolute;
+    top: -5px;
+    padding: 3px 5px;
+    background: #009688;
+    border-radius: 3px;
+    z-index: 10;
+    font-size: 12px;
+    color: whitesmoke;
+  }
+  > .assigned { right: -5px;}
+  > .creators { left: -5px;}
 `
 
 const Wrapper = styled.div`
