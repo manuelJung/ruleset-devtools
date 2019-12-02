@@ -7,7 +7,7 @@ import router from 'stores/router'
 import * as t from 'stores/types'
 import {IoIosMedal} from 'react-icons/io'
 
-function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecution) {
+function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecution|null) {
   const graph = {items:[]}
   // source-rules
   // if(actionExecution){
@@ -21,6 +21,11 @@ function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecuti
       store: rule,
       creators: rule.targetActions.length,
       assigned: rule.outputActions.length,
+      actionExecution: null,
+      ruleExecution: (() => {
+        if(!actionExecution) return
+        return actionExecution.creatorRuleExecution
+      })(),
       isCreator: actionExecution && actionExecution.creatorRuleExecution 
         ? actionExecution.creatorRuleExecution.rule.id === rule.id
         : false
@@ -46,6 +51,11 @@ function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecuti
       store: rule,
       creators: rule.targetActions.length,
       assigned: rule.outputActions.length,
+      actionExecution: null,
+      ruleExecution: (() => {
+        if(!actionExecution) return
+        return actionExecution.assignedRuleExecutions.find(ruleExecution => ruleExecution.rule === rule)
+      })(),
       status: (()=> {
         if(!actionExecution) return null
         const ruleExecution = actionExecution.assignedRuleExecutions.find(ruleExecution => ruleExecution.rule === rule)
@@ -66,7 +76,7 @@ function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecuti
   return graph
 }
 
-function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution) {
+function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution|null) {
   const graph = {items:[]}
   // source actions
   rule.targetActions.forEach((action,i) => graph.items.push({
@@ -76,7 +86,10 @@ function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution) {
       label: action.type,
       store: action,
       creators: action.creatorRules.length,
-      assigned: action.attachedRules.length
+      assigned: action.attachedRules.length,
+      // actionExecution: ruleExecution ? ruleExecution.targetActionExecution : null,
+      actionExecution: null,
+      ruleExecution: null
     }
   }))
   // target
@@ -98,7 +111,12 @@ function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution) {
       label: action.type,
       store: action,
       creators: action.creatorRules.length,
-      assigned: action.attachedRules.length
+      assigned: action.attachedRules.length,
+      actionExecution: (() => {
+        if(!ruleExecution) return
+        return ruleExecution.outputActionExecutions.find(actionExecution => actionExecution.action === action)
+      })(),
+      ruleExecution: null,
     }
   }))
 
@@ -123,7 +141,9 @@ export default observer(function Graph () {
               else if (item.x === 2) direction = 'right'
               router.push({
                 type: 'GRAPH',
-                store: item.data.store
+                store: item.data.store,
+                actionExecution: item.data.actionExecution,
+                ruleExecution: item.data.ruleExecution,
               })
             }}
             key={item.data.label+item.data.store.storeType}

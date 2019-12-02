@@ -7,7 +7,8 @@ import {push} from 'utils/helpers'
 export type RuleExecution = {
   storeType: 'RULE_EXECUTION',
   id: number,
-  actionExecutions: t.ActionExecution[],
+  targetActionExecution: t.ActionExecution,
+  outputActionExecutions: t.ActionExecution[],
   rule: t.Rule,
   status: 'PENDING' | 'RESOLVED' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION',
   toJs: () => RuleExecution
@@ -22,7 +23,12 @@ export default function createRuleExecution (
     id: event.ruleExecId,
     status: 'PENDING',
 
-    get actionExecutions () {
+    get targetActionExecution () {
+      // return rootStore.private.actionExecutions.byRuleExecId[event.ruleExecId]
+      return null
+    },
+
+    get outputActionExecutions () {
       return rootStore.private.actionExecutions.byRuleExecId[event.ruleExecId] || []
     },
 

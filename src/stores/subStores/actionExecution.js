@@ -60,4 +60,7 @@ export default function createRule (
   // attach
   rootStore.private.actionExecutions.byActionExecId[store.id] = store
   push(rootStore.private.actionExecutions.byActionType, event.action.type, store)
+  if(event.ruleExecId !== null){
+    push(rootStore.private.actionExecutions.byRuleExecId, event.ruleExecId, store)
+  }
 }
