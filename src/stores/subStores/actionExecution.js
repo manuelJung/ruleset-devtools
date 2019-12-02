@@ -10,6 +10,7 @@ export type ActionExecution = {
   action: t.Action,
   dispatchedAction: t.DispatchedAction | null,
   assignedRuleExecutions: t.RuleExecution[],
+  creatorRuleExecution: t.RuleExecution | null,
   sagaYields: t.SagaYield[],
   toJs: () => ActionExecution
 }
@@ -33,6 +34,10 @@ export default function createRule (
     },
     get sagaYields(){
       return rootStore.private.sagaYields.byActionExecId[event.actionExecId]
+    },
+    get creatorRuleExecution(){
+      if(!event.ruleExecId) return null
+      return rootStore.private.ruleExecutions.byRuleExecId[event.ruleExecId] || null
     },
     
     toJs(){

@@ -7,9 +7,12 @@ import router from 'stores/router'
 import * as t from 'stores/types'
 import {IoIosMedal} from 'react-icons/io'
 
-function calculateActionGraph (action:t.Action) {
+function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecution) {
   const graph = {items:[]}
   // source-rules
+  // if(actionExecution){
+  //   console.log(actionExecution.creatorRuleExecution.rule === action.creatorRules[0])
+  // }
   action.creatorRules.forEach((rule,i) => graph.items.push({
     x: 0,
     y: i,
@@ -17,7 +20,10 @@ function calculateActionGraph (action:t.Action) {
       label: rule.id,
       store: rule,
       creators: rule.targetActions.length,
-      assigned: rule.outputActions.length
+      assigned: rule.outputActions.length,
+      isCreator: actionExecution && actionExecution.creatorRuleExecution 
+        ? actionExecution.creatorRuleExecution.rule.id === rule.id
+        : false
     }
   }))
   // target
@@ -39,13 +45,26 @@ function calculateActionGraph (action:t.Action) {
       label: rule.id,
       store: rule,
       creators: rule.targetActions.length,
-      assigned: rule.outputActions.length
+      assigned: rule.outputActions.length,
+      status: (()=> {
+        if(!actionExecution) return null
+        const ruleExecution = actionExecution.assignedRuleExecutions.find(ruleExecution => ruleExecution.rule === rule)
+        if(!ruleExecution) return null
+        switch(ruleExecution.status){
+          case 'PENDING': return {color: '#009688;', label: 'pending'}
+          case 'RESOLVED': return {color: '#009688;', label: 'executed'}
+          case 'CONDITION_NOT_MATCH': return {color: '#8e8532', label: 'condition not matched'}
+          case 'SKIP': return {color: '#8e8532', label: 'skiped'}
+          case 'CONCURRENCY_REJECTION': return {color: '#E91E63', label: 'aborted'}
+          default: return null
+        }
+      })()
     }
   }))
   return graph
 }
 
-function calculateRuleGraph (rule:t.Rule) {
+function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution) {
   const graph = {items:[]}
   // source actions
   rule.targetActions.forEach((action,i) => graph.items.push({
@@ -87,8 +106,8 @@ let direction = 'right'
 export default observer(function Graph () {
   if(router.route.type !== 'GRAPH') return null
   const graph = router.route.store.storeType === 'ACTION'
-    ? calculateActionGraph(router.route.store)
-    : calculateRuleGraph(router.route.store)
+    ? calculateActionGraph(router.route.store, router.route.actionExecution)
+    : calculateRuleGraph(router.route.store, router.route.ruleExecution)
 
   return (
     <Wrapper className='Graph'>
@@ -114,8 +133,12 @@ export default observer(function Graph () {
               <React.Fragment>
                 {item.data.store.storeType === 'RULE' && <div className='background'><IoIosMedal/></div>}
                 <div className='box'>{item.data.label}</div>
-                {item.data.creators > 0 && <div className='creators'>{item.data.creators}</div>}
-                {item.data.assigned > 0 && <div className='assigned'>{item.data.assigned}</div>}
+                {item.data.creators > 0 && <div className='badge creators'>{item.data.creators}</div>}
+                {item.data.assigned > 0 && <div className='badge assigned'>{item.data.assigned}</div>}
+                {item.data.isCreator && <div className='badge creator'>creator</div>}
+                {item.data.status && <div className='badge status' style={{background:item.data.status.color}}>
+                  {item.data.status.label}
+                </div>}
               </React.Fragment>
             }
           />
@@ -186,9 +209,8 @@ const Item = styled(_Item)`
     z-index: 1;
   }
 
-  > .creators, .assigned {
+  > .badge {
     position: absolute;
-    top: -5px;
     padding: 3px 5px;
     background: #009688;
     border-radius: 3px;
@@ -196,8 +218,11 @@ const Item = styled(_Item)`
     font-size: 12px;
     color: whitesmoke;
   }
-  > .assigned { right: -5px;}
-  > .creators { left: -5px;}
+
+  > .assigned { top: -5px; right: -5px;}
+  > .creators { top: -5px; left: -5px;}
+  > .creator { bottom: -14px; left: -5px;}
+  > .status { bottom: -14px; left: -5px;}
 `
 
 const Wrapper = styled.div`

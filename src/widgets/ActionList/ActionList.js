@@ -13,7 +13,8 @@ export default observer(function ActionList () {
         {rootStore.dispatchedActions.map(dispatchedAction => (
           <div className='item' key={dispatchedAction.id} onClick={() => router.push({
             type: 'GRAPH',
-            store: dispatchedAction.actionExecution.action
+            store: dispatchedAction.actionExecution.action,
+            actionExecution: dispatchedAction.actionExecution
           })}>
             <div className='label'>{dispatchedAction.data.type}</div>
             <div className='badges'>

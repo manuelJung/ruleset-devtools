@@ -9,6 +9,7 @@ export type RuleExecution = {
   id: number,
   actionExecutions: t.ActionExecution[],
   rule: t.Rule,
+  status: 'PENDING' | 'RESOLVED' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION',
   toJs: () => RuleExecution
 }
 
@@ -19,6 +20,7 @@ export default function createRuleExecution (
   const store:RuleExecution = observable(({
     storeType: 'RULE_EXECUTION',
     id: event.ruleExecId,
+    status: 'PENDING',
 
     get actionExecutions () {
       return rootStore.private.actionExecutions.byRuleExecId[event.ruleExecId] || []
@@ -34,7 +36,12 @@ export default function createRuleExecution (
   }:RuleExecution))
 
   // listeners
-  const listener = events.addListener(e => {})
+  const listener = events.addListener(e => {
+    if(e.type === 'EXEC_RULE_END' && e.ruleExecId === event.ruleExecId){
+      store.status = e.result
+      events.removeListener(listener)
+    }
+  })
 
   // attach
   rootStore.private.ruleExecutions.byRuleExecId[store.id] = store

@@ -24,7 +24,9 @@ export type RuleListRoute = {
 
 export type GraphRoute = {
   type: 'GRAPH',
-  store: t.Action | t.Rule 
+  store: t.Action | t.Rule,
+  actionExecution?: t.ActionExecution,
+  ruleExecution?: t.RuleExecution
 }
 
 export type ExecutedRulesRoute = {
