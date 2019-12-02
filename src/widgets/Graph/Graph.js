@@ -3,6 +3,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import {useObserver} from 'mobx-react'
 import {observable} from 'mobx'
+import posed, {PoseGroup} from 'react-pose'
 
 const graph = {
   columns: 3,
@@ -44,20 +45,41 @@ export default function Graph () {
   const [data, setData] = React.useState(graph)
   return useObserver(() =>
     <Wrapper className='Graph'>
-      {data.items.map(item => (
-        <div 
-          onClick={() => setData(data===graph ? graphNext : graph)}
-          className='cell'
-          key={item.data.label}
-          children={item.data.label}
-          style={{
-            top:item.y * 30 + item.y*35 + 15,
-            left:`calc(( 100% / 3 ) * ${item.x} + 10px * ${item.x+1} )`
-          }}/>
-      ))}
+      <PoseGroup>
+        {data.items.map(item => (
+          <Item 
+            item={item}
+            onClick={() => setData(data===graph ? graphNext : graph)}
+            className='cell'
+            key={item.data.label}
+            children={item.data.label}
+            style={{
+              top:item.y * 30 + item.y*35 + 15,
+              left:`calc(( 100% / 3 ) * ${item.x} + 10px * ${item.x+1} )`
+            }}/>
+        ))}
+      </PoseGroup>
     </Wrapper>
   )
 }
+const tween = { type: 'tween', duration: 500}
+const Item = posed.div({
+  flip: {
+    transition: tween,
+  },
+  enter: {
+    y: 0,
+    x: 0,
+    opacity: 1,
+    transition: tween,
+  },
+  exit: {
+    y: ({item}) => item.x === 0 ? 0 : 300,
+    x: ({item}) => item.x === 0 ? -300 : 0,
+    opacity: 0,
+    transition: tween
+  }
+})
 
 const Wrapper = styled.div`
   height: 100%;
