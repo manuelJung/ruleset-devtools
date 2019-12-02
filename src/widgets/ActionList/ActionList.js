@@ -3,6 +3,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import rootStore from 'stores/root'
 import {observer} from 'mobx-react'
+import router from 'stores/router'
 
 export default observer(function ActionList () {
   return (
@@ -10,7 +11,10 @@ export default observer(function ActionList () {
       <div className='filter-wrapper'></div>
       <div className='list'>
         {rootStore.dispatchedActions.map(dispatchedAction => (
-          <div className='item' key={dispatchedAction.id}>
+          <div className='item' key={dispatchedAction.id} onClick={() => router.push({
+            type: 'GRAPH',
+            store: dispatchedAction.actionExecution.action
+          })}>
             <div className='label'>{dispatchedAction.data.type}</div>
             <div className='badges'>
               {!!dispatchedAction.assignedRuleExecutions.length && (

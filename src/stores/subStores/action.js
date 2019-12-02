@@ -1,6 +1,5 @@
 // @flow
 import {observable, toJS} from 'mobx'
-import events from '../events'
 import * as t from '../types'
 
 export type Action = {
@@ -14,32 +13,39 @@ export type Action = {
 
 export default function createAction (
   event:t.RegisterRuleEvent, 
-  rootStore:t.RootStore,
-  type: string
+  rootStore:t.RootStore
 ) {
-  if(rootStore.private.actions.byActionType[type]) return
-  const store:Action = observable(({
-    storeType: 'ACTION',
-    type: type,
+  [...flatten(event.rule.target), ...flatten(event.rule.output)].forEach(type => {
+    if(rootStore.private.actions.byActionType[type]) return
+    const store:Action = observable(({
+      storeType: 'ACTION',
+      type: type,
 
-    get attachedRules(){
-      return rootStore.private.rules.byRuleTarget[type] || []
-    },
-    get creatorRules(){
-      return rootStore.private.rules.byRuleOutput[type] || []
-    },
-    get executions(){
-      return rootStore.private.actionExecutions.byActionType[type] || []
-    },
-    
-    toJs(){
-      return toJS(this)
-    }
-  }:Action))
+      get attachedRules(){
+        return rootStore.private.rules.byRuleTarget[type] || []
+      },
+      get creatorRules(){
+        const rules = rootStore.private.rules.byRuleOutput[type] || []
+        return rules.filter(rule => rule.position !== 'INSTEAD')
+      },
+      get executions(){
+        return rootStore.private.actionExecutions.byActionType[type] || []
+      },
+      
+      toJs(){
+        return toJS(this)
+      }
+    }:Action))
 
-  // listeners
-  const listener = events.addListener(e => {})
+    // attach
+    rootStore.private.actions.byActionType[store.type] = store
+  })
 
-  // attach
-  rootStore.private.actions.byActionType[store.type] = store
+}
+
+function flatten (list?:string|string[]|'*'){
+  if(!list) return []
+  if(list === '*') return []
+  if(typeof list === 'string') return [list]
+  else return list
 }

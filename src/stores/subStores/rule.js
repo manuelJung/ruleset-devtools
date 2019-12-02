@@ -7,6 +7,7 @@ import {push} from 'utils/helpers'
 export type Rule = {
   storeType: 'RULE',
   id: string,
+  position: 'AFTER' | 'BEFORE' | 'INSTEAD',
   targetActions: t.Action[],
   outputActions: t.Action[],
   // sagas: Saga[],
@@ -20,6 +21,7 @@ export default function createRule (
   const store:Rule = observable(({
     storeType: 'RULE',
     id: event.rule.id,
+    position: event.rule.position || 'AFTER',
 
     get targetActions(){
       const {target} = event.rule
@@ -50,6 +52,7 @@ export default function createRule (
         let result = []
         let actionsByType = rootStore.private.actions.byActionType
         output.forEach(type => result.push(actionsByType[type]))
+        console.log(result, event)
         return result
       }
       return []

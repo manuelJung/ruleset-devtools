@@ -125,15 +125,7 @@ events.addListener(e => {
   switch(e.type){
     case 'REGISTER_RULE': {
       createRule(e, rootStore)
-      if(e.rule.target === '*'){
-
-      }
-      else if(typeof e.rule.target === 'string'){
-        createAction(e, rootStore, e.rule.target)
-      }
-      else if(Array.isArray(e.rule.target)){
-        e.rule.target.forEach(type => createAction(e, rootStore, type))
-      }
+      createAction(e, rootStore)
     }
     case 'EXEC_RULE_START': return createRuleExecution(e, rootStore)
     case 'EXEC_ACTION_START': return createActionExecution(e, rootStore)

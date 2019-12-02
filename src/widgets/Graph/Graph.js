@@ -1,55 +1,92 @@
 // @flow
 import * as React from 'react'
 import styled from 'styled-components'
-import {useObserver} from 'mobx-react'
-import {observable} from 'mobx'
+import {observer} from 'mobx-react'
 import posed, {PoseGroup} from 'react-pose'
+import router from 'stores/router'
+import * as t from 'stores/types'
 
-const graph = {
-  columns: 3,
-  items: [
-    { y: 0, x: 0, data: {
-      label: 'products/TOGGLE_TAG'
-    }},{ y: 1, x: 0, data: {
-      label: 'products/SET_QUERY'
-    }},{ y: 2, x: 0, data: {
-      label: 'products/TOGGLE_CATEGORY'
-    }},{ y: 0, x: 1, data: {
-      label: 'products/TRIGGER_SEARCH'
-    }},{ y: 0, x: 2, data: {
-      label: 'products/FETCH_SEARCH_REQUEST'
-    }},{ y: 1, x: 2, data: {
-      label: 'test'
-    }}
-  ]
+function calculateActionGraph (action:t.Action) {
+  const graph = {items:[]}
+  // source-rules
+  action.creatorRules.forEach((rule,i) => graph.items.push({
+    x: 0,
+    y: i,
+    data: {
+      label: rule.id,
+      store: rule
+    }
+  }))
+  // target
+  graph.items.push({
+    x: 1,
+    y: 0,
+    data: {
+      label: action.type,
+      store: action
+    }
+  })
+  // assigned rules
+  action.attachedRules.forEach((rule,i) => graph.items.push({
+    x: 2,
+    y: i,
+    data: {
+      label: rule.id,
+      store: rule
+    }
+  }))
+  return graph
 }
 
-const graphNext = {
-  columns: 3,
-  items: [
-    { y: 0, x: 0, data: {
-      label: 'products/TRIGGER_SEARCH'
-    }},{ y: 0, x: 1, data: {
-      label: 'products/FETCH_SEARCH_REQUEST'
-    }},{ y: 0, x: 2, data: {
-      label: 'products/FETCH'
-    }}
-  ]
+function calculateRuleGraph (rule:t.Rule) {
+  const graph = {items:[]}
+  // source actions
+  rule.targetActions.forEach((action,i) => graph.items.push({
+    x:0,
+    y:i,
+    data: {
+      label: action.type,
+      store: action
+    }
+  }))
+  // target
+  graph.items.push({
+    x:1,
+    y:0,
+    data: {
+      label: rule.id,
+      store: rule
+    }
+  })
+  // output actions
+  rule.outputActions.forEach((action,i) => graph.items.push({
+    x:2,
+    y:i,
+    data: {
+      label: action.type,
+      store: action
+    }
+  }))
+
+  return graph
 }
 
-const state = observable({
-  graph: 0
-})
+export default observer(function Graph () {
+  if(router.route.type !== 'GRAPH') return null
+  const graph = router.route.store.storeType === 'ACTION'
+    ? calculateActionGraph(router.route.store)
+    : calculateRuleGraph(router.route.store)
 
-export default function Graph () {
-  const [data, setData] = React.useState(graph)
-  return useObserver(() =>
+  return (
     <Wrapper className='Graph'>
       <PoseGroup>
-        {data.items.map(item => (
+        {graph.items.map(item => (
           <Item 
             item={item}
-            onClick={() => setData(data===graph ? graphNext : graph)}
+            onClick={() => router.push({
+              type: 'GRAPH',
+              store: item.data.store
+            })}
             className='cell'
             key={item.data.label}
             children={item.data.label}
@@ -61,7 +98,8 @@ export default function Graph () {
       </PoseGroup>
     </Wrapper>
   )
-}
+})
+
 const tween = { type: 'tween', duration: 500}
 const Item = posed.div({
   flip: {
