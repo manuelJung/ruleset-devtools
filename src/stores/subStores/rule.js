@@ -8,6 +8,7 @@ export type Rule = {
   storeType: 'RULE',
   id: string,
   position: 'AFTER' | 'BEFORE' | 'INSTEAD',
+  status: 'ACTIVE' | 'REMOVED' | 'INACTIVE',
   targetActions: t.Action[],
   outputActions: t.Action[],
   // sagas: Saga[],
@@ -23,6 +24,7 @@ export default function createRule (
     storeType: 'RULE',
     id: event.rule.id,
     position: event.rule.position || 'AFTER',
+    status: event.rule.addWhen ? 'INACTIVE' : 'ACTIVE',
 
     get targetActions(){
       const {target} = event.rule
