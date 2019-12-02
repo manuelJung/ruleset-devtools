@@ -87,9 +87,11 @@ function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution|null) {
       store: action,
       creators: action.creatorRules.length,
       assigned: action.attachedRules.length,
-      // actionExecution: ruleExecution ? ruleExecution.targetActionExecution : null,
-      actionExecution: null,
-      ruleExecution: null
+      actionExecution: ruleExecution ? ruleExecution.targetActionExecution : null,
+      ruleExecution: null,
+      isCreator: ruleExecution && ruleExecution.targetActionExecution
+        ? ruleExecution.targetActionExecution.action === action 
+        : false
     }
   }))
   // target
@@ -117,6 +119,12 @@ function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution|null) {
         return ruleExecution.outputActionExecutions.find(actionExecution => actionExecution.action === action)
       })(),
       ruleExecution: null,
+      status: (() => {
+        if(!ruleExecution) return
+        const actionExecution = ruleExecution.outputActionExecutions.find(actionExecution => actionExecution.action === action)
+        if(!actionExecution) return
+        return {color: '#009688', label: 'dispatched'}
+      })()
     }
   }))
 
