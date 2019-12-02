@@ -5,6 +5,7 @@ import {observable, toJS, runInAction} from 'mobx'
 export type Router = {
   route: Route,
   history: Route[],
+  historyPointer: number,
   push: (ctx:Route) => void,
   replace: (ctx:Route) => void,
   go: (n:number) => void,
@@ -50,18 +51,37 @@ export type Route = EmptyRoute
 
 const router:Router = observable(({
   route: {type: 'EMPTY'},
-  history: [],
+  history: [{type:'EMPTY'}],
+  historyPointer: 1,
   push(route){
     runInAction(() => {
-      router.history.push(router.route)
+      if(router.history.length !== router.historyPointer){
+        router.history = router.history.slice(0, router.historyPointer)
+      }
+      router.history.push(route)
       router.route = route
+      router.historyPointer++
     })
   },
   replace(route){
-    router.route = route
+    runInAction(() => {
+      if(router.history.length !== router.historyPointer){
+        router.history = router.history.slice(0, router.historyPointer)
+      }
+      router.history[router.historyPointer] = route 
+      router.route = route
+    })
   },
-  go(){},
-  pop(){},
+  go(number){
+    runInAction(() => {
+      const next = router.historyPointer + number
+      router.historyPointer = next
+      router.route = router.history[next] || {type:'EMPTY'}
+    })
+  },
+  pop(){
+    router.go(-1)
+  },
 
   toJs(){
     return toJS(this)
