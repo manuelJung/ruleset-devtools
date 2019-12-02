@@ -6,6 +6,7 @@ import 'stores/root'
 import browser from 'stores/browser'
 import useResizer from 'hooks/useResizer'
 import ActionList from 'widgets/ActionList'
+import Graph from 'widgets/Graph'
 
 export default function App () {
   const [leftSize,refLeft] = useResizer(230)
@@ -19,7 +20,9 @@ export default function App () {
       </div>
       <div className='right'>
         <div className='header'>header</div>
-        <div className='content'>content</div>
+        <div className='content' style={{width: `calc(100vw - ${leftSize}px)`}}>
+          <Graph/>
+        </div>
         <div className='context' style={{height:contextSize}}>
           context
           <div className='resize-angle' ref={refContext}/>
@@ -74,6 +77,7 @@ const Wrapper = styled.div`
 
     > .content {
       flex: 1;
+      overflow: auto;
     }
 
     > .context {
