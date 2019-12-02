@@ -8,6 +8,7 @@
     "react": "^16.8.6",
     "react-dnd": "^9.5.1",
     "react-dom": "^16.8.6",
+    "react-icons": "^3.8.0",
     "react-json-view": "^1.19.1",
     "react-pose": "^4.0.10",
     "react-router": "^4.3.1",

@@ -5,6 +5,7 @@ import {observer} from 'mobx-react'
 import posed, {PoseGroup} from 'react-pose'
 import router from 'stores/router'
 import * as t from 'stores/types'
+import {IoIosMedal} from 'react-icons/io'
 
 function calculateActionGraph (action:t.Action) {
   const graph = {items:[]}
@@ -82,7 +83,6 @@ export default observer(function Graph () {
       <PoseGroup preEnterPose='preEnter'>
         {graph.items.map(item => (
           <Item 
-            isRule={item.data.store.storeType === 'RULE'}
             item={item}
             onClick={() => {
               if(item.x === 1) return
@@ -94,11 +94,17 @@ export default observer(function Graph () {
               })
             }}
             key={item.data.label}
-            children={item.data.label}
             style={{
               top:item.y * 30 + item.y*35 + 15,
               left:`calc(( 100% / 3 ) * ${item.x} + 10px * ${item.x+1} )`
-            }}/>
+            }}
+            children={
+              <React.Fragment>
+                {item.data.store.storeType === 'RULE' && <div className='background'><IoIosMedal/></div>}
+                <div className='box'>{item.data.label}</div>
+              </React.Fragment>
+            }
+          />
         ))}
       </PoseGroup>
     </Wrapper>
@@ -139,13 +145,32 @@ const Item = styled(_Item)`
   width: calc(100% / 3 - 40px);
   height: 35px;
   position: absolute;
-  box-sizing: border-box;
-  border: 2px ${props => props.isRule ? 'dotted' : 'solid'} whitesmoke;
-  color: whitesmoke;
-  padding: 6px 3px;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+  > .box {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid whitesmoke;
+    color: whitesmoke;
+    padding: 6px 3px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: #4b5e67;
+    z-index: 10;
+  }
+
+  > .background {
+    position: absolute;
+    font-size: 60px;
+    color: white;
+    top: -10px;
+    left: calc(50% - 30px);
+    z-index: 1;
+  }
 `
 
 const Wrapper = styled.div`
