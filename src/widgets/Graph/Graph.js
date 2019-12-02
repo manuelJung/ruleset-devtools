@@ -70,7 +70,7 @@ function calculateRuleGraph (rule:t.Rule) {
 
   return graph
 }
-
+let direction = 'right'
 export default observer(function Graph () {
   if(router.route.type !== 'GRAPH') return null
   const graph = router.route.store.storeType === 'ACTION'
@@ -79,14 +79,19 @@ export default observer(function Graph () {
 
   return (
     <Wrapper className='Graph'>
-      <PoseGroup>
+      <PoseGroup preEnterPose='preEnter'>
         {graph.items.map(item => (
           <Item 
             item={item}
-            onClick={() => router.push({
-              type: 'GRAPH',
-              store: item.data.store
-            })}
+            onClick={() => {
+              if(item.x === 1) return
+              else if (item.x === 0) direction = 'left'
+              else if (item.x === 2) direction = 'right'
+              router.push({
+                type: 'GRAPH',
+                store: item.data.store
+              })
+            }}
             className='cell'
             key={item.data.label}
             children={item.data.label}
@@ -100,20 +105,31 @@ export default observer(function Graph () {
   )
 })
 
-const tween = { type: 'tween', duration: 500}
+const tween = { type: 'tween', duration: 800}
 const Item = posed.div({
   flip: {
     transition: tween,
   },
   enter: {
-    y: 0,
     x: 0,
     opacity: 1,
     transition: tween,
   },
+  preEnter: {
+    x: () => {
+      if(direction === 'left') return -300
+      if(direction === 'right') return 300
+      return 0
+    },
+    opacity: 0,
+    transition: tween
+  },
   exit: {
-    y: ({item}) => item.x === 0 ? 0 : 300,
-    x: ({item}) => item.x === 0 ? -300 : 0,
+    x: () => {
+      if(direction === 'left') return 300
+      if(direction === 'right') return -300
+      return 0
+    },
     opacity: 0,
     transition: tween
   }
