@@ -82,6 +82,7 @@ export default observer(function Graph () {
       <PoseGroup preEnterPose='preEnter'>
         {graph.items.map(item => (
           <Item 
+            isRule={item.data.store.storeType === 'RULE'}
             item={item}
             onClick={() => {
               if(item.x === 1) return
@@ -92,7 +93,6 @@ export default observer(function Graph () {
                 store: item.data.store
               })
             }}
-            className='cell'
             key={item.data.label}
             children={item.data.label}
             style={{
@@ -106,7 +106,7 @@ export default observer(function Graph () {
 })
 
 const tween = { type: 'tween', duration: 800}
-const Item = posed.div({
+const _Item = posed.div({
   flip: {
     transition: tween,
   },
@@ -121,7 +121,7 @@ const Item = posed.div({
       if(direction === 'right') return 300
       return 0
     },
-    opacity: 0,
+    opacity: 1,
     transition: tween
   },
   exit: {
@@ -135,6 +135,19 @@ const Item = posed.div({
   }
 })
 
+const Item = styled(_Item)`
+  width: calc(100% / 3 - 40px);
+  height: 35px;
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px ${props => props.isRule ? 'dotted' : 'solid'} whitesmoke;
+  color: whitesmoke;
+  padding: 6px 3px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`
+
 const Wrapper = styled.div`
   height: 100%;
   width: 100%;
@@ -144,17 +157,4 @@ const Wrapper = styled.div`
   position: relative;
   min-width: 900px;
   /* overflow-y: auto; */
-
-  > .cell {
-    width: calc(100% / 3 - 40px);
-    height: 35px;
-    position: absolute;
-    box-sizing: border-box;
-    border: 1px solid white;
-    color: whitesmoke;
-    padding: 6px 3px;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 `

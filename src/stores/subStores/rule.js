@@ -52,7 +52,6 @@ export default function createRule (
         let result = []
         let actionsByType = rootStore.private.actions.byActionType
         output.forEach(type => result.push(actionsByType[type]))
-        console.log(result, event)
         return result
       }
       return []
