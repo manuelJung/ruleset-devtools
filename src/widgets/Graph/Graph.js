@@ -93,7 +93,7 @@ export default observer(function Graph () {
                 store: item.data.store
               })
             }}
-            key={item.data.label}
+            key={item.data.label+item.data.store.storeType}
             style={{
               top:item.y * 30 + item.y*35 + 15,
               left:`calc(( 100% / 3 ) * ${item.x} + 10px * ${item.x+1} )`
