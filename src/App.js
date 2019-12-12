@@ -15,11 +15,25 @@ export default function App () {
   const [leftSize,refLeft] = useResizer(230)
   const [contextSize,refContext] = useResizer(500, 'y')
 
+  let routeLabel = ''
+
+  if(router.route.type === 'GRAPH'){
+    if(router.route.store.storeType === 'ACTION'){
+      routeLabel = 'Action > '+router.route.store.type
+    }
+    if(router.route.store.storeType === 'RULE'){
+      routeLabel = 'Rule > '+router.route.store.id
+    }
+  }
+  if(router.route.type === 'RULE_LIST'){
+    routeLabel = 'Rule List'
+  }
+
   return useObserver(() =>
     <Wrapper className='App'>
       <div className='header'>
         <div className='navigate' onClick={() => router.go(-1)}><FiChevronLeft/></div>
-        <div className='current-route'></div>
+        <div className='current-route'>{routeLabel}</div>
         <div className='routes'>
           <button onClick={() => router.push({
             type: 'RULE_LIST'
@@ -76,6 +90,10 @@ const Wrapper = styled.div`
       color: white;
       font-size: 20px;
       margin-left: 40px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 10px;
     }
     > .routes {
       height: 100%;
