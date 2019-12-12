@@ -260,7 +260,6 @@ const Wrapper = styled.div`
   height: 100%;
   width: 100%;
   background: #4b5e67;
-  border-left: 1px solid grey;
   display: flex;
   position: relative;
   min-width: 900px;

@@ -77,6 +77,7 @@ const Wrapper = styled.div`
       height: 100vh;
       background: steelblue;
       position: relative;
+      border-right: 1px solid grey;
 
       > .resize-angle {
         position: absolute;
