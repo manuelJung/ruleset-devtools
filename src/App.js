@@ -9,6 +9,7 @@ import ActionList from 'widgets/ActionList'
 import Graph from 'widgets/Graph'
 import router from 'stores/router'
 import {FiChevronLeft, FiChevronRight} from 'react-icons/fi'
+import Dropdown from 'components/Dropdown'
 
 export default function App () {
   const [leftSize,refLeft] = useResizer(230)
@@ -19,7 +20,16 @@ export default function App () {
       <div className='header'>
         <div className='navigate' onClick={() => router.go(-1)}><FiChevronLeft/></div>
         <div className='current-route'></div>
-        <div className='routes'></div>
+        <div className='routes'>
+          <Dropdown
+            label='Graph'
+            options={[
+              {label: 'Graph', value: 'GRAPH'},
+              {label: 'Rules', value: 'RULES'}
+            ]}
+            onChange={console.log}
+          />
+        </div>
         <div className='navigate' onClick={() => router.go(1)}><FiChevronRight/></div>
       </div>
       <div className='content'>
@@ -48,7 +58,7 @@ const Wrapper = styled.div`
   > .header {
     display: flex;
     background: #4B5E67;
-    height: 40px;
+    height: 50px;
     > .navigate {
       padding: 10px;
       font-size: 20px;
@@ -68,6 +78,11 @@ const Wrapper = styled.div`
       color: white;
       font-size: 20px;
       margin-left: 40px;
+    }
+    > .routes {
+      height: 100%;
+      display: flex;
+      align-items: center;
     }
   }
 
