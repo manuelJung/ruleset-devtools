@@ -7,9 +7,9 @@ import browser from 'stores/browser'
 import useResizer from 'hooks/useResizer'
 import ActionList from 'widgets/ActionList'
 import Graph from 'widgets/Graph'
+import RuleList from 'widgets/RuleList'
 import router from 'stores/router'
 import {FiChevronLeft, FiChevronRight} from 'react-icons/fi'
-import Dropdown from 'components/Dropdown'
 
 export default function App () {
   const [leftSize,refLeft] = useResizer(230)
@@ -21,14 +21,9 @@ export default function App () {
         <div className='navigate' onClick={() => router.go(-1)}><FiChevronLeft/></div>
         <div className='current-route'></div>
         <div className='routes'>
-          <Dropdown
-            label='Graph'
-            options={[
-              {label: 'Graph', value: 'GRAPH'},
-              {label: 'Rules', value: 'RULES'}
-            ]}
-            onChange={console.log}
-          />
+          <button onClick={() => router.push({
+            type: 'RULE_LIST'
+          })}>Rules</button>
         </div>
         <div className='navigate' onClick={() => router.go(1)}><FiChevronRight/></div>
       </div>
@@ -40,12 +35,15 @@ export default function App () {
         <div className='right'>
           <div className='header'>header</div>
           <div className='content' style={{width: `calc(100vw - ${leftSize}px)`}}>
-            <Graph/>
+            {router.route.type === 'GRAPH' && <Graph/>}
+            {router.route.type === 'RULE_LIST' && <RuleList/>}
           </div>
-          <div className='context' style={{height:contextSize}}>
-            context
-            <div className='resize-angle' ref={refContext}/>
-          </div>
+          {router.route.type === 'GRAPH' && (
+            <div className='context' style={{height:contextSize}}>
+              context
+              <div className='resize-angle' ref={refContext}/>
+            </div>
+          )}
         </div>
       </div>
     </Wrapper>
@@ -83,6 +81,14 @@ const Wrapper = styled.div`
       height: 100%;
       display: flex;
       align-items: center;
+      > button {
+        padding: 6px;
+        background: none;
+        color: whitesmoke;
+        font-size: 14px;
+        cursor: pointer;
+        border: 1px solid whitesmoke;
+      }
     }
   }
 

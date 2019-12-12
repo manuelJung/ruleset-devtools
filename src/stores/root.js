@@ -63,6 +63,7 @@ export type RootStore = {
     }
   },
   dispatchedActions: t.DispatchedAction[],
+  rules: t.Rule[],
   toJS: (store?:any) => RootStore
 }
 
@@ -113,9 +114,12 @@ const rootStore:RootStore = observable(({
   get dispatchedActions() {
     return rootStore.private.dispatchedActions.ordered
   },
+  get rules() {
+    return Object.keys(rootStore.private.rules.byRuleId).map(key => rootStore.private.rules.byRuleId[key])
+  },
   toJS(store){
     if(store) return toJS(store)
-    return toJS(this)
+    return toJS(rootStore)
   }
 }:RootStore))
 
