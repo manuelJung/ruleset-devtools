@@ -33,7 +33,7 @@ export default function App () {
           <div className='resize-angle' ref={refLeft}/>
         </div>
         <div className='right'>
-          <div className='header'>header</div>
+          {/* <div className='header'>header</div> */}
           <div className='content' style={{width: `calc(100vw - ${leftSize}px)`}}>
             {router.route.type === 'GRAPH' && <Graph/>}
             {router.route.type === 'RULE_LIST' && <RuleList/>}
@@ -56,7 +56,7 @@ const Wrapper = styled.div`
   > .header {
     display: flex;
     background: #4B5E67;
-    height: 50px;
+    height: 45px;
     > .navigate {
       padding: 10px;
       font-size: 20px;
@@ -128,6 +128,7 @@ const Wrapper = styled.div`
       background: #4B5E67;
       display: flex;
       flex-direction: column;
+      border-top: 1px solid grey;
 
       > .header {
         height: 80px;
