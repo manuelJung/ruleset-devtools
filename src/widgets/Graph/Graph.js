@@ -130,7 +130,7 @@ function calculateRuleGraph (rule:t.Rule, ruleExecution?:t.RuleExecution|null) {
 
   return graph
 }
-let direction = 'right'
+let direction = null
 export default observer(function Graph () {
   if(router.route.type !== 'GRAPH') return null
   const graph = router.route.store.storeType === 'ACTION'
@@ -153,6 +153,7 @@ export default observer(function Graph () {
                 actionExecution: item.data.actionExecution,
                 ruleExecution: item.data.ruleExecution,
               })
+              direction = null
             }}
             key={item.data.label+item.data.store.storeType}
             style={{
