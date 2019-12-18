@@ -2,15 +2,24 @@
 import * as React from 'react'
 import styled from 'styled-components'
 import rootStore from 'stores/root'
-import {observer} from 'mobx-react'
 import router from 'stores/router'
+import {useObserver} from 'mobx-react'
 
-export default observer(function ActionList () {
-  return (
+export default function ActionList () {
+  const [commitIndex, setCommitIndex] = React.useState(0)
+  const [filter, setFilter] = React.useState('')
+
+  return useObserver(() =>
     <Wrapper className='ActionList'>
-      <div className='filter-wrapper'></div>
+      <div className='filter-wrapper'>
+        <input type='text' placeholder='filter...' value={filter} onChange={e => setFilter(e.target.value)}/>
+        <button onClick={() => setCommitIndex(rootStore.dispatchedActions.length)}>commit</button>
+      </div>
       <div className='list'>
-        {rootStore.dispatchedActions.map(dispatchedAction => (
+        {rootStore.dispatchedActions
+          .slice(commitIndex)
+          .filter(dispatchedAction => filter ? dispatchedAction.data.type.includes(filter) : true)
+          .map(dispatchedAction => (
           <div className='item' key={dispatchedAction.id} onClick={() => router.push({
             type: 'GRAPH',
             store: dispatchedAction.actionExecution.action,
@@ -30,13 +39,40 @@ export default observer(function ActionList () {
       </div>
     </Wrapper>
   )
-})
+}
 
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   background: #4b5e67;
   overflow: scroll;
+
+  > .filter-wrapper {
+    display: flex;
+    padding: 5px;
+    > input {
+      background: none;
+      border:none;
+      color: white;
+      font-size: 16px;
+      padding: 5px;
+      flex: 1;
+      width: 100%;
+      &:focus {outline:none;}
+
+      &::placeholder {
+        color: whitesmoke;
+      }
+    }
+    > button {
+      padding: 5px;
+      background: none;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid whitesmoke;
+      color: whitesmoke;
+    }
+  }
   
   > .list {
     padding-bottom: 100px;
