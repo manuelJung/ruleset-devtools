@@ -8,6 +8,7 @@ import useResizer from 'hooks/useResizer'
 import ActionList from 'widgets/ActionList'
 import Graph from 'widgets/Graph'
 import RuleList from 'widgets/RuleList'
+import ActionContext from 'widgets/ActionContext'
 import router from 'stores/router'
 import {FiChevronLeft, FiChevronRight} from 'react-icons/fi'
 
@@ -53,7 +54,12 @@ export default function App () {
             {router.route.type === 'RULE_LIST' && <RuleList/>}
           </div>
             <div className='context' style={{height:contextSize, display:router.route.type === 'GRAPH'?'block':'none'}}>
-              context
+              {router.route.type === 'GRAPH' && router.route.store.storeType === 'ACTION' && (
+                <ActionContext
+                  action={router.route.store}
+                  actionExecution={router.route.actionExecution}
+                />
+              )}
               <div className='resize-angle' ref={refContext}/>
             </div>
         </div>
@@ -159,6 +165,7 @@ const Wrapper = styled.div`
       > .context {
         position: relative;
         background: lightblue;
+        box-shadow: 15px 8px 7px 10px #607d8b;
         > .resize-angle {
           position: absolute;
           top: 0;
