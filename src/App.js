@@ -52,12 +52,10 @@ export default function App () {
             {router.route.type === 'GRAPH' && <Graph/>}
             {router.route.type === 'RULE_LIST' && <RuleList/>}
           </div>
-          {router.route.type === 'GRAPH' && (
-            <div className='context' style={{height:contextSize}}>
+            <div className='context' style={{height:contextSize, display:router.route.type === 'GRAPH'?'block':'none'}}>
               context
               <div className='resize-angle' ref={refContext}/>
             </div>
-          )}
         </div>
       </div>
     </Wrapper>
