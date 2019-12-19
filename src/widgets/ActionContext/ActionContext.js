@@ -5,6 +5,7 @@ import rootStore from 'stores/root'
 import router from 'stores/router'
 import {useObserver} from 'mobx-react'
 import * as t from 'stores/types'
+import ActionJson from './ActionJson'
 
 type Props = {
   action: t.Action,
@@ -20,7 +21,7 @@ export default function ActionList ({action,actionExecution}:Props) {
         <Tab active={tab==='sagas'} onClick={() => setTab('sagas')}>Sagas</Tab>
       </div>
       <div className='content'>
-        {tab}
+        {tab === 'action' && <ActionJson actionExecution={actionExecution}/>}
       </div>
     </Wrapper>
   )
@@ -29,13 +30,18 @@ export default function ActionList ({action,actionExecution}:Props) {
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  background: #607d8b;
+  background: rgb(39, 40, 34);
   padding-top: 10px;
 
   > .tabs {
     width: 100%;
     border-bottom: 1px solid whitesmoke;
     display: flex;
+    height: 35px;
+  }
+
+  > .content {
+    height: calc(100% - 50px);
   }
 `
 
@@ -43,6 +49,6 @@ const Tab = styled.div`
   padding: 8px;
   color: whitesmoke;
   cursor: pointer;
-  &:hover {background: whitesmoke;color:#607d8b;}
+  &:hover {background: whitesmoke;color:rgb(39, 40, 34);}
   font-weight: ${props => props.active ? 'bold' : 'normal'};
 `
