@@ -9,22 +9,41 @@ export default function ActionList () {
   const [commitIndex, setCommitIndex] = React.useState(0)
   const [filter, setFilter] = React.useState('')
 
+  const calcHighlight = dispatchedAction => {
+    switch(router.route.type){
+      case 'GRAPH': {
+        const {actionExecution} = router.route
+        if(!actionExecution) return false
+        if(actionExecution.dispatchedAction === dispatchedAction) return 'ACTIVE'
+        if(actionExecution.creatorRuleExecution 
+        && actionExecution.creatorRuleExecution.targetActionExecution
+        && actionExecution.creatorRuleExecution.targetActionExecution.dispatchedAction === dispatchedAction) return 'RELATED_SOURCE'
+        if(actionExecution.assignedRuleExecutions.find(ruleExecution => ruleExecution.outputActionExecutions.find(actionExecution => actionExecution.dispatchedAction === dispatchedAction))) return 'RELATED_OUTPUT'
+      }
+      default: return false
+    }
+  }
+
   return useObserver(() =>
     <Wrapper className='ActionList'>
       <div className='filter-wrapper'>
         <input type='text' placeholder='filter...' value={filter} onChange={e => setFilter(e.target.value)}/>
-        <button onClick={() => setCommitIndex(rootStore.dispatchedActions.length)}>commit</button>
+        <button onClick={() => setCommitIndex(rootStore.dispatchedActions.length)}>comit</button>
       </div>
       <div className='list'>
         {rootStore.dispatchedActions
           .slice(commitIndex)
           .filter(dispatchedAction => filter ? dispatchedAction.data.type.includes(filter) : true)
           .map(dispatchedAction => (
-          <div className='item' key={dispatchedAction.id} onClick={() => router.push({
-            type: 'GRAPH',
-            store: dispatchedAction.actionExecution.action,
-            actionExecution: dispatchedAction.actionExecution
-          })}>
+          <Item 
+            key={dispatchedAction.id} 
+            highlight={calcHighlight(dispatchedAction)}
+            onClick={() => router.push({
+              type: 'GRAPH',
+              store: dispatchedAction.actionExecution.action,
+              actionExecution: dispatchedAction.actionExecution
+            })}
+          >
             <div className='label'>{dispatchedAction.data.type}</div>
             <div className='badges'>
               {!!dispatchedAction.assignedRuleExecutions.length && (
@@ -34,7 +53,7 @@ export default function ActionList () {
                 <div className='saga-yields'>{dispatchedAction.sagaYields.length}</div>
               )}
             </div>
-          </div>
+          </Item>
         ))}
       </div>
     </Wrapper>
@@ -76,45 +95,60 @@ const Wrapper = styled.div`
   
   > .list {
     padding-bottom: 100px;
-    > .item {
-      display: flex;
-      border-top: 1px solid #9e9e9e;
-      &:hover {
-        background: #607d8b;
-        cursor: pointer;
-      }
-    }
-    > .item > .label {
-      flex: 1;
-      padding: 8px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: #e2e0e0;
-      font-size: 14px;
-    }
+  }
+`
 
-    > .item > .badges {
+const Item = styled.div`
+  display: flex;
+  position: relative;
+  border-top: 1px solid #9e9e9e;
+  &:hover {
+    background: #607d8b;
+    cursor: pointer;
+  }
+
+  ${props => props.highlight === 'ACTIVE' && `
+    background: #795548 !important;
+  `}
+
+
+
+  > .label {
+    flex: 1;
+    padding: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #e2e0e0;
+    font-size: 14px;
+    ${props => props.highlight === 'RELATED_SOURCE' && `
+      color: #8bc34a;
+    `}
+
+    ${props => props.highlight === 'RELATED_OUTPUT' && `
+      color: #ffc107;
+    `}
+  }
+
+  > .badges {
+    display: flex;
+    align-items: center;
+    > * {
+      margin:3px;
+      height: 12px;
       display: flex;
       align-items: center;
-      > * {
-        margin:3px;
-        height: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-        padding: 3px;
-        border-radius: 4px;
-        min-width: 16px;
-        color: white;
-      }
-      > .rule-executions {
-        background: #009688;
-      }
-      > .saga-yields {
-        background: #673ab7;
-      }
+      justify-content: center;
+      font-size: 11px;
+      padding: 3px;
+      border-radius: 4px;
+      min-width: 16px;
+      color: white;
     }
-
+    > .rule-executions {
+      background: #009688;
+    }
+    > .saga-yields {
+      background: #673ab7;
+    }
   }
 `

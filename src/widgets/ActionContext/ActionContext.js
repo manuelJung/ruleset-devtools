@@ -8,7 +8,7 @@ import * as t from 'stores/types'
 
 type Props = {
   action: t.Action,
-  actionExecution?: t.ActionExecution
+  actionExecution?: t.ActionExecution | null
 }
 
 export default function ActionList ({action,actionExecution}:Props) {
