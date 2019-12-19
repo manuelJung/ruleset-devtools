@@ -73,7 +73,7 @@ const Wrapper = styled.div`
 
   > .header {
     display: flex;
-    background: #4B5E67;
+    background: rgb(39, 40, 34);
     height: 45px;
     > .navigate {
       padding: 10px;
@@ -147,7 +147,7 @@ const Wrapper = styled.div`
     > .right {
       height: 100vh;
       flex: 1;
-      background: #4B5E67;
+      background: rgb(39, 40, 34);
       display: flex;
       flex-direction: column;
       border-top: 1px solid grey;
@@ -164,7 +164,7 @@ const Wrapper = styled.div`
 
       > .context {
         position: relative;
-        background: lightblue;
+        background: rgb(39, 40, 34);
         box-shadow: 15px 8px 7px 10px #607d8b;
         > .resize-angle {
           position: absolute;

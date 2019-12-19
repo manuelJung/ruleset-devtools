@@ -63,7 +63,7 @@ export default function ActionList () {
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
-  background: #4b5e67;
+  background: rgb(39, 40, 34);
   overflow: scroll;
 
   > .filter-wrapper {

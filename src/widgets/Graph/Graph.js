@@ -227,7 +227,7 @@ const Item = styled(_Item)`
     height: 100%;
     left: 0;
     top: 0;
-    background: #4b5e67;
+    background: rgb(39, 40, 34);
     z-index: 10;
   }
 
@@ -259,7 +259,7 @@ const Item = styled(_Item)`
 const Wrapper = styled.div`
   height: 100%;
   width: 100%;
-  background: #4b5e67;
+  background: rgb(39, 40, 34);
   display: flex;
   position: relative;
   min-width: 900px;
