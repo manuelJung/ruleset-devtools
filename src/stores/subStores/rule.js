@@ -77,8 +77,10 @@ export default function createRule (
 
     getStatus(eventId){
       if(typeof eventId !== 'undefined'){
+        let prev = store.__time.status[0]
         for(let row of store.__time.status){
-          if(eventId >= row.eventId) return row.data
+          if(eventId >= row.eventId) return prev.data
+          else prev = row.data
         }
       }
       return store.status
