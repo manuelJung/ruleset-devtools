@@ -35,6 +35,7 @@ const Wrapper = styled.div`
   height: 100%;
   background: rgb(39, 40, 34);
   padding-top: 10px;
+  box-sizing: border-box;
 
   > .tabs {
     width: 100%;
@@ -47,11 +48,12 @@ const Wrapper = styled.div`
     font-size: 24px;
     color: whitesmoke;
     padding: 10px;
+    height: 35px;
   }
 
   > .content {
-    height: calc(100% - 50px);
     overflow: auto;
+    height: calc(100% - 91px);
   }
 `
 

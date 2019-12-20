@@ -29,6 +29,7 @@ export default observer<Props>(function ActionJson({actionExecution}:Props){
 })
 
 const Wrapper = styled.div`
+  box-sizing: border-box;
   padding: 10px;
   width: 100%;
   height: 100%;

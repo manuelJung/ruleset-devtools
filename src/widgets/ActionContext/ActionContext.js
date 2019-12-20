@@ -32,6 +32,7 @@ const Wrapper = styled.div`
   height: 100%;
   background: rgb(39, 40, 34);
   padding-top: 10px;
+  box-sizing: border-box;
 
   > .tabs {
     width: 100%;

@@ -123,8 +123,9 @@ const Wrapper = styled.div`
 
   > .content {
     display: flex;
+    height: calc(100vh - 45px);
     > .left {
-      height: 100vh;
+      height: 100%;
       background: steelblue;
       position: relative;
       border-right: 1px solid grey;
@@ -152,7 +153,7 @@ const Wrapper = styled.div`
     }
 
     > .right {
-      height: 100vh;
+      height: 100%;
       flex: 1;
       background: rgb(39, 40, 34);
       display: flex;

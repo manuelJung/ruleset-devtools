@@ -93,6 +93,7 @@ export default observer<Props>(function RuleData ({rule, ruleExecution}:Props) {
 const Wrapper = styled.div`
   color: whitesmoke;
   padding: 10px;
+  box-sizing: border-box;
 
   > .row {
     display: flex;
