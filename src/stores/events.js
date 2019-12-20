@@ -195,7 +195,7 @@ const events = {
     type:string, 
     key:string|null, 
     value:number|string, 
-    cb:(event:Event) => mixed, 
+    cb:(event:Event, eventId:number) => mixed, 
     once:boolean=false
   ){
     let eventName = key ? `${type}:${key}:${value}` : type

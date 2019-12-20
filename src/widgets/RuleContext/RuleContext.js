@@ -24,7 +24,7 @@ export default function RuleContext ({rule,ruleExecution}:Props) {
         {rule.id}
       </div>
       <div className='content'>
-        {tab === 'rule' && <RuleData rule={rule}/>}
+        {tab === 'rule' && <RuleData rule={rule} ruleExecution={ruleExecution}/>}
       </div>
     </Wrapper>
   )

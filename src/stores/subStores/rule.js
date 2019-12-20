@@ -12,6 +12,7 @@ export type Rule = {
   weight: number,
   targetActions: t.Action[],
   outputActions: t.Action[],
+  data: $PropertyType<t.RegisterRuleEvent, 'rule'>,
   getStatus: (eventId?:number) => 'ACTIVE' | 'REMOVED' | 'PENDING', // | 'CANCELED'
   // sagas: Saga[],
   toJs: () => Rule,
@@ -34,6 +35,7 @@ export default function createRule (
     position: event.rule.position || 'AFTER',
     status: 'PENDING',
     weight: event.rule.weight || 0,
+    data: event.rule,
 
     get targetActions(){
       const {target} = event.rule
@@ -94,15 +96,19 @@ export default function createRule (
   events.addListenerByEventName('ADD_RULE','ruleId',store.id, (e,eventId) => {
     if(e.type !== 'ADD_RULE') return
     store.status = 'ACTIVE'
+    store.__time.status.push({eventId, data:'ACTIVE'})
   })
   events.addListenerByEventName('REMOVE_RULE','ruleId',store.id, (e,eventId) => {
     if(e.type !== 'REMOVE_RULE') return
     store.status = 'REMOVED'
+    store.__time.status.push({eventId, data:'REMOVED'})
   })
   events.addListenerByEventName('EXEC_SAGA_START','ruleId',store.id, (e,eventId) => {
     if(e.type !== 'EXEC_SAGA_START') return
     store.status = 'PENDING'
+    store.__time.status.push({eventId, data:'PENDING'})
   })
+
   // events.addListenerByEventName('EXEC_SAGA_END','ruleId',store.id, e => {
   //   if(e.type !== 'EXEC_SAGA_END') return
   //   switch(e.sagaType){
