@@ -28,7 +28,7 @@ export default function ActionList () {
     <Wrapper className='ActionList'>
       <div className='filter-wrapper'>
         <input type='text' placeholder='filter...' value={filter} onChange={e => setFilter(e.target.value)}/>
-        <button onClick={() => setCommitIndex(rootStore.dispatchedActions.length)}>comit</button>
+        <button onClick={() => setCommitIndex(rootStore.dispatchedActions.length)}>commit</button>
       </div>
       <div className='list'>
         {rootStore.dispatchedActions

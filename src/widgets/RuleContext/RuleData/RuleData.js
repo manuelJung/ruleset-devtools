@@ -63,6 +63,12 @@ export default observer<Props>(function RuleData ({rule, ruleExecution}:Props) {
         </div>
       </div>
       <div className='row'>
+        <div className='label'>Add-Once</div>
+        <div className='value'>
+          {rule.data.addOnce ? 'Yes' : '-'}
+        </div>
+      </div>
+      <div className='row'>
         <div className='label'>Debounce</div>
         <div className='value'>
           {rule.data.debounce ? rule.data.debounce : '-'}
