@@ -10,18 +10,21 @@ export default function ActionList () {
   const [filter, setFilter] = React.useState('')
 
   const calcHighlight = dispatchedAction => {
-    switch(router.route.type){
-      case 'GRAPH': {
-        const {actionExecution} = router.route
-        if(!actionExecution) return false
-        if(actionExecution.dispatchedAction === dispatchedAction) return 'ACTIVE'
-        if(actionExecution.creatorRuleExecution 
-        && actionExecution.creatorRuleExecution.targetActionExecution
-        && actionExecution.creatorRuleExecution.targetActionExecution.dispatchedAction === dispatchedAction) return 'RELATED_SOURCE'
-        if(actionExecution.assignedRuleExecutions.find(ruleExecution => ruleExecution.outputActionExecutions.find(actionExecution => actionExecution.dispatchedAction === dispatchedAction))) return 'RELATED_OUTPUT'
-      }
-      default: return false
+    if(router.route.type !== 'GRAPH') return false
+
+    let {actionExecution, ruleExecution} = router.route
+    if(!actionExecution && ruleExecution){
+      actionExecution = ruleExecution.targetActionExecution
     }
+
+    if(!actionExecution) return false
+    if(actionExecution.dispatchedAction === dispatchedAction) return 'ACTIVE'
+    if(actionExecution.creatorRuleExecution 
+    && actionExecution.creatorRuleExecution.targetActionExecution
+    && actionExecution.creatorRuleExecution.targetActionExecution.dispatchedAction === dispatchedAction) return 'RELATED_SOURCE'
+    if(actionExecution.assignedRuleExecutions.find(ruleExecution => ruleExecution.outputActionExecutions.find(actionExecution => actionExecution.dispatchedAction === dispatchedAction))) return 'RELATED_OUTPUT'
+
+    return false
   }
 
   return useObserver(() =>
