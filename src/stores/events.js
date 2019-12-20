@@ -25,6 +25,11 @@ export type AddRule = (rule:Rule) => Rule | false
 
 export type RemoveRule = (rule:Rule) => Rule | false
 
+type CTX = {
+  setContext: (key:string, value:mixed) => mixed,
+  getContext: (key:string) => mixed
+}
+
 export type Saga<Logic> = (
   condition: (cb?:(action:Action) => mixed) => Promise<void>,
   getState: GetState
@@ -32,16 +37,24 @@ export type Saga<Logic> = (
 type Rule = {
   id: string,
   target: '*' | string | string[],
-  output?: '*' | string | string[],
   position?: Position,
   weight?: number,
-  meta?: {
-    throttle?: number,
-    debounce?: number
-  },
   concurrency?: LogicConcurrency,
-  condition?: (action:Action, getState:GetState) => boolean,
-  consequence: (store:ReduxStore, action:Action, {addRule:AddRule,removeRule:RemoveRule}) => Action | Promise<Action> | Promise<void> | void | (getState:GetState) => mixed,
+  debounce?: number,
+  throttle?: number,
+  delay?: number,
+  output: string | string[],
+  concurrencyFilter?: (action:Action) => string,
+  condition?: (action?:Action, getState:GetState, context:CTX) => boolean,
+  consequence: ({
+    dispatch:Dispatch,
+    getState:GetState, 
+    action?:Action, 
+    addRule:AddRule,
+    removeRule:RemoveRule, 
+    effect: (()=>mixed)=>void,
+    context: CTX
+  }) => Action | Promise<Action> | Promise<void> | void | () => void,
   addOnce?: boolean,
   addWhen?: Saga<LogicAdd>,
   addUntil?: Saga<LogicRemove>,

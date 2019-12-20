@@ -51,6 +51,7 @@ const Wrapper = styled.div`
 
   > .content {
     height: calc(100% - 50px);
+    overflow: auto;
   }
 `
 
