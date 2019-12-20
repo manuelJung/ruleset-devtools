@@ -155,20 +155,55 @@ export type Event = AddRuleEvent
 | YieldSagaEvent
 | DispatchActionEvent
 
-type CB = (event:Event) => mixed
+type CB = (event:Event, eventId:number) => mixed
 
 let buffer = []
 let listeners = []
+let listenersByEventName = {}
+let eventId = 0
+
 
 const events = {
   push(event:Event){
-    listeners.forEach(l => l(event))
+    let newEventId = eventId++
+    listeners.forEach(l => l(event, newEventId))
+    let eventNames = [event.type]
+    //$FlowFixMe
+    if('ruleId' in event) eventNames.push(`${event.type}:ruleId:${event.ruleId}`)
+    //$FlowFixMe
+    if('sagaId' in event) eventNames.push(`${event.type}:sagaId:${event.sagaId}`)
+    //$FlowFixMe
+    if('actionExecId' in event) eventNames.push(`${event.type}:actionExecId:${event.actionExecId}`)
+    //$FlowFixMe
+    if('ruleExecId' in event) eventNames.push(`${event.type}:ruleExecId:${event.ruleExecId}`)
+
+    for(let eventName of eventNames){
+      let list = listenersByEventName[eventName]
+      if(list) for(let [once, cb] of list){
+        cb(event, newEventId)
+        if(once) listenersByEventName[eventName] = listenersByEventName[eventName].filter(([,fn]) => cb !== fn)
+      }
+    }
     return buffer.push(event)
   },
   addListener(cb:CB, applyPastEvents?:boolean){
     listeners.push(cb)
-    applyPastEvents && buffer.forEach(e => cb(e))
+    applyPastEvents && buffer.forEach(e => cb(e,-1))
     return cb
+  },
+  addListenerByEventName(
+    type:string, 
+    key:string|null, 
+    value:number|string, 
+    cb:(event:Event) => mixed, 
+    once:boolean=false
+  ){
+    let eventName = key ? `${type}:${key}:${value}` : type
+    if(!listenersByEventName[eventName]) listenersByEventName[eventName] = []
+    listenersByEventName[eventName].push([once, cb])
+    return () => {
+      listenersByEventName[eventName] = listenersByEventName[eventName].filter(([,fn]) => cb !== fn)
+    }
   },
   removeListener(cb:CB){
     listeners = listeners.filter(l => l !== cb)
