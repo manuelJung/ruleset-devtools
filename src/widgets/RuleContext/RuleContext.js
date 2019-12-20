@@ -5,6 +5,7 @@ import rootStore from 'stores/root'
 import router from 'stores/router'
 import {useObserver} from 'mobx-react'
 import * as t from 'stores/types'
+import RuleData from './RuleData'
 
 type Props = {
   rule: t.Rule,
@@ -12,15 +13,18 @@ type Props = {
 }
 
 export default function RuleContext ({rule,ruleExecution}:Props) {
-  const [tab, setTab] = React.useState('rule-execution')
-  return (
+  const [tab, setTab] = React.useState('rule')
+  return useObserver(() =>
     <Wrapper className='ActionContext'>
       <div className='tabs'>
         <Tab active={tab==='rule-execution'} onClick={() => setTab('rule-execution')}>Rule-Execution</Tab>
         <Tab active={tab==='rule'} onClick={() => setTab('rule')}>Rule</Tab>
       </div>
+      <div className='title'>
+        {rule.id}
+      </div>
       <div className='content'>
-        {tab}
+        {tab === 'rule' && <RuleData rule={rule}/>}
       </div>
     </Wrapper>
   )
@@ -37,6 +41,12 @@ const Wrapper = styled.div`
     border-bottom: 1px solid whitesmoke;
     display: flex;
     height: 35px;
+  }
+
+  > .title {
+    font-size: 24px;
+    color: whitesmoke;
+    padding: 10px;
   }
 
   > .content {
