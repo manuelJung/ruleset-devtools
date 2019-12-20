@@ -17,8 +17,8 @@ export default function RuleContext ({rule,ruleExecution}:Props) {
   return useObserver(() =>
     <Wrapper className='ActionContext'>
       <div className='tabs'>
-        <Tab active={tab==='rule-execution'} onClick={() => setTab('rule-execution')}>Rule-Execution</Tab>
         <Tab active={tab==='rule'} onClick={() => setTab('rule')}>Rule</Tab>
+        {/* {ruleExecution && <Tab active={tab==='rule-execution'} onClick={() => setTab('rule-execution')}>Rule-Execution</Tab>} */}
       </div>
       <div className='title'>
         {rule.id}
