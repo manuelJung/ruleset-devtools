@@ -9,6 +9,7 @@ import ActionList from 'widgets/ActionList'
 import Graph from 'widgets/Graph'
 import RuleList from 'widgets/RuleList'
 import ActionContext from 'widgets/ActionContext'
+import RuleContext from 'widgets/RuleContext'
 import router from 'stores/router'
 import {FiChevronLeft, FiChevronRight} from 'react-icons/fi'
 
@@ -58,6 +59,12 @@ export default function App () {
                 <ActionContext
                   action={router.route.store}
                   actionExecution={router.route.actionExecution}
+                />
+              )}
+              {router.route.type === 'GRAPH' && router.route.store.storeType === 'RULE' && (
+                <RuleContext
+                  rule={router.route.store}
+                  ruleExecution={router.route.ruleExecution}
                 />
               )}
               <div className='resize-angle' ref={refContext}/>
