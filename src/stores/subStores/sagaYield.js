@@ -13,7 +13,8 @@ export type SagaYield = {
 
 export default function createSagaYield (
   event:t.YieldSagaEvent, 
-  rootStore:t.RootStore
+  rootStore:t.RootStore,
+  eventId: number
 ) {
   const store:SagaYield = observable(({
     storeType: 'SAGA_YIELD',

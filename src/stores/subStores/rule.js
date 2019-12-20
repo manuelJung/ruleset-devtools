@@ -26,7 +26,8 @@ export type Rule = {
 
 export default function createRule (
   event:t.RegisterRuleEvent, 
-  rootStore:t.RootStore
+  rootStore:t.RootStore,
+  eventId: number
 ) {
   if(rootStore.private.rules.byRuleId[event.rule.id]) return
   const store:Rule = observable(({

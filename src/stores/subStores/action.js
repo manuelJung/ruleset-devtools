@@ -13,7 +13,8 @@ export type Action = {
 
 export default function createAction (
   event:t.RegisterRuleEvent, 
-  rootStore:t.RootStore
+  rootStore:t.RootStore,
+  eventId: number
 ) {
   [...flatten(event.rule.target), ...flatten(event.rule.output)].forEach(type => {
     if(rootStore.private.actions.byActionType[type]) return

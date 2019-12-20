@@ -15,7 +15,8 @@ export type DispatchedAction = {
 
 export default function createDispatchedAction (
   event:t.DispatchActionEvent, 
-  rootStore:t.RootStore
+  rootStore:t.RootStore,
+  eventId: number
 ) {
   const store:DispatchedAction = observable(({
     storeType: 'DISPATCHED_ACTION',

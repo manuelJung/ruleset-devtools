@@ -160,12 +160,11 @@ type CB = (event:Event, eventId:number) => mixed
 let buffer = []
 let listeners = []
 let listenersByEventName = {}
-let eventId = 0
 
 
 const events = {
   push(event:Event){
-    let newEventId = eventId++
+    let newEventId = buffer.length
     listeners.forEach(l => l(event, newEventId))
     let eventNames = [event.type]
     //$FlowFixMe
@@ -188,7 +187,7 @@ const events = {
   },
   addListener(cb:CB, applyPastEvents?:boolean){
     listeners.push(cb)
-    applyPastEvents && buffer.forEach(e => cb(e,-1))
+    applyPastEvents && buffer.forEach((e,i) => cb(e,i))
     return cb
   },
   addListenerByEventName(

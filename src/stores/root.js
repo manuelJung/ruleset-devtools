@@ -125,17 +125,17 @@ const rootStore:RootStore = observable(({
 
 window.rootStore = rootStore
 
-events.addListener(e => {
+events.addListener((e,eventId) => {
   switch(e.type){
     case 'REGISTER_RULE': {
-      createRule(e, rootStore)
-      createAction(e, rootStore)
+      createRule(e, rootStore, eventId)
+      createAction(e, rootStore, eventId)
     }
-    case 'EXEC_RULE_START': return createRuleExecution(e, rootStore)
-    case 'EXEC_ACTION_START': return createActionExecution(e, rootStore)
-    case 'DISPATCH_ACTION': return createDispatchedAction(e, rootStore)
-    case 'EXEC_SAGA_START': return createSagaExecution(e, rootStore)
-    case 'YIELD_SAGA': return createSagaYield(e, rootStore)
+    case 'EXEC_RULE_START': return createRuleExecution(e, rootStore, eventId)
+    case 'EXEC_ACTION_START': return createActionExecution(e, rootStore, eventId)
+    case 'DISPATCH_ACTION': return createDispatchedAction(e, rootStore, eventId)
+    case 'EXEC_SAGA_START': return createSagaExecution(e, rootStore, eventId)
+    case 'YIELD_SAGA': return createSagaYield(e, rootStore, eventId)
   }
 }, true)
 

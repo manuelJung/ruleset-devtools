@@ -10,13 +10,13 @@ type Props = {
   ruleExecution?: t.RuleExecution | null
 }
 
-export default observer<Props>(function RuleData ({rule}:Props) {
+export default observer<Props>(function RuleData ({rule, ruleExecution}:Props) {
   return (
     <Wrapper className='RuleData'>
       <div className='row'>
         <div className='label'>Status</div>
         <div className='value'>
-          {rule.status}
+          {ruleExecution ? rule.getStatus(ruleExecution.startEventId) : rule.status}
         </div>
       </div>
       <div className='row'>

@@ -7,6 +7,7 @@ import {push} from 'utils/helpers'
 export type RuleExecution = {
   storeType: 'RULE_EXECUTION',
   id: number,
+  startEventId: number,
   targetActionExecution: t.ActionExecution | null,
   outputActionExecutions: t.ActionExecution[],
   rule: t.Rule,
@@ -16,12 +17,14 @@ export type RuleExecution = {
 
 export default function createRuleExecution (
   event:t.ExecRuleStartEvent, 
-  rootStore:t.RootStore
+  rootStore:t.RootStore,
+  eventId: number
 ) {
   const store:RuleExecution = observable(({
     storeType: 'RULE_EXECUTION',
     id: event.ruleExecId,
     status: 'PENDING',
+    startEventId: eventId,
 
     get targetActionExecution () {
       if(!event.actionExecId) return null

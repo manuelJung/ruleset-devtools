@@ -15,7 +15,8 @@ export type SagaExecution = {
 
 export default function createSagaExecution (
   event:t.ExecSagaStartEvent, 
-  rootStore:t.RootStore
+  rootStore:t.RootStore,
+  eventId: number
 ) {
   const store:SagaExecution = observable(({
     storeType: 'SAGA_EXECUTION',
