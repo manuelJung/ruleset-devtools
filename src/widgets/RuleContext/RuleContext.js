@@ -6,6 +6,7 @@ import router from 'stores/router'
 import {useObserver} from 'mobx-react'
 import * as t from 'stores/types'
 import RuleData from './RuleData'
+import RuleHistory from './RuleHistory'
 
 type Props = {
   rule: t.Rule,
@@ -13,18 +14,19 @@ type Props = {
 }
 
 export default function RuleContext ({rule,ruleExecution}:Props) {
-  const [tab, setTab] = React.useState('rule')
+  const [tab, setTab] = React.useState('history')
   return useObserver(() =>
     <Wrapper className='ActionContext'>
       <div className='tabs'>
         <Tab active={tab==='rule'} onClick={() => setTab('rule')}>Rule</Tab>
-        {/* {ruleExecution && <Tab active={tab==='rule-execution'} onClick={() => setTab('rule-execution')}>Rule-Execution</Tab>} */}
+        {ruleExecution && <Tab active={tab==='history'} onClick={() => setTab('history')}>Rule-History</Tab>}
       </div>
       <div className='title'>
         {rule.id}
       </div>
       <div className='content'>
         {tab === 'rule' && <RuleData rule={rule} ruleExecution={ruleExecution}/>}
+        {tab === 'history' && <RuleHistory rule={rule} ruleExecution={ruleExecution}/>}
       </div>
     </Wrapper>
   )
