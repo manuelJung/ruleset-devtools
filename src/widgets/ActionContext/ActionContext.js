@@ -6,6 +6,7 @@ import router from 'stores/router'
 import {useObserver} from 'mobx-react'
 import * as t from 'stores/types'
 import ActionJson from './ActionJson'
+import Sagas from './Sagas'
 
 type Props = {
   action: t.Action,
@@ -13,15 +14,16 @@ type Props = {
 }
 
 export default function ActionList ({action,actionExecution}:Props) {
-  const [tab, setTab] = React.useState('action')
+  const [tab, setTab] = React.useState('actions')
   return (
     <Wrapper className='ActionContext'>
       <div className='tabs'>
         <Tab active={tab==='action'} onClick={() => setTab('action')}>Action</Tab>
-        <Tab active={tab==='sagas'} onClick={() => setTab('sagas')}>Sagas</Tab>
+        {actionExecution && <Tab active={tab==='sagas'} onClick={() => setTab('sagas')}>Saga-Yields</Tab>}
       </div>
       <div className='content'>
         {tab === 'action' && <ActionJson actionExecution={actionExecution}/>}
+        {tab === 'sagas' && <Sagas actionExecution={actionExecution}/>}
       </div>
     </Wrapper>
   )

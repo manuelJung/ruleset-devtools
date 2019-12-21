@@ -6,6 +6,9 @@ import {push} from 'utils/helpers'
 
 export type SagaYield = {
   storeType: 'SAGA_YIELD',
+  sagaType: 'ADD_WHEN' | 'ADD_UNTIL',
+  result: 'REJECT' | 'RESOLVE',
+  rule: t.Rule,
   // sagaExecution: t.SagaExecution,
   // rule: t.Rule,
   toJs: () => SagaYield
@@ -18,6 +21,12 @@ export default function createSagaYield (
 ) {
   const store:SagaYield = observable(({
     storeType: 'SAGA_YIELD',
+    sagaType: event.sagaType,
+    result: event.result,
+    
+    get rule () {
+      return rootStore.private.rules.byRuleId[event.ruleId]
+    },
 
     toJs(){
       return toJS(this)
