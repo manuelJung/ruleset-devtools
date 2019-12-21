@@ -11,6 +11,7 @@ type Props = {
 
 type Row = {
   label: string,
+  eventId: number,
   active?:boolean,
   trigger?: {
     label: string,
@@ -24,8 +25,6 @@ type Row = {
 
 const list = [
   {
-    label: 'REGISTER_RULE',
-  },{
     label: 'start saga ADD_WHEN'
   },{
     label: 'yield saga ADD_WHEN',
@@ -56,9 +55,8 @@ const list = [
   }
 ]
 
-export default observer(function RuleHistory({rule}:Props){
-  let rows:Row[] = []
-  rows = list
+export default observer(function RuleHistory({rule, ruleExecution}:Props){
+  let rows:Row[] = calculateRows(rule, ruleExecution)
   return (
     <Wrapper className='RuleHistory'>
       {rows.map((row,i) => (
@@ -100,3 +98,40 @@ const Wrapper = styled.div`
   }
 
 `
+
+function calculateRows (rule, currentRuleExecution) {
+  let list = [{label:'REGISTER_RULE', eventId:-1}]
+  let unorderedList = []
+
+  // rule executions
+  rule.ruleExecutions.forEach(ruleExecution => {
+    let row:Row = {
+      label: 'EXECUTE',
+      eventId: ruleExecution.startEventId,
+      active: ruleExecution === currentRuleExecution
+    }
+    if(ruleExecution.targetActionExecution && ruleExecution.targetActionExecution.dispatchedAction){
+      row['trigger'] = {
+        label: ruleExecution.targetActionExecution.dispatchedAction.data.type
+      }
+    }
+    if(ruleExecution.outputActionExecutions[0] && ruleExecution.outputActionExecutions[0].dispatchedAction){
+      row['output'] = {
+        label: ruleExecution.outputActionExecutions[0].dispatchedAction.data.type
+      }
+    }
+    unorderedList.push(row)
+  })
+
+  // saga start
+  rule.sagaExecutions.forEach(sagaExecution => {
+    unorderedList.push({
+      label: 'start saga ' + sagaExecution.type,
+      eventId: sagaExecution.startEventId
+    })
+  })
+
+  list = [...list, ...unorderedList.sort((a,b) => a.eventId > b.eventId ? 1 : -1)]
+
+  return list
+}

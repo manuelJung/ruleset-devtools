@@ -7,6 +7,8 @@ import {push} from 'utils/helpers'
 export type SagaExecution = {
   storeType: 'SAGA_EXECUTION',
   id: number,
+  type: 'ADD_WHEN' | 'ADD_UNTIL',
+  startEventId: number,
   // status: 'PENDING' | 'RESOLVED' | 'ABORTED',
   // saga: t.Saga,
   // rule: t.Rule,
@@ -22,6 +24,8 @@ export default function createSagaExecution (
   const store:SagaExecution = observable(({
     storeType: 'SAGA_EXECUTION',
     id: event.sagaId,
+    startEventId: eventId,
+    type: event.sagaType,
 
     toJs(){
       return toJS(this)
