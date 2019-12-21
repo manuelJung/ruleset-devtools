@@ -131,6 +131,26 @@ function calculateRows (rule, currentRuleExecution) {
     })
   })
 
+  // saga yields
+  rule.sagaYields.forEach(sagaYield => {
+    let row:Row = {
+      label: 'yield saga ' + sagaYield.sagaType,
+      eventId: sagaYield.eventId,
+      output: {
+        label: sagaYield.result
+      }
+    }
+    if(sagaYield.actionExecution.dispatchedAction){
+      row['trigger'] = {
+        label: sagaYield.actionExecution.dispatchedAction.data.type
+      }
+    }
+
+    unorderedList.push(row)
+  })
+
+  // saga end
+
   list = [...list, ...unorderedList.sort((a,b) => a.eventId > b.eventId ? 1 : -1)]
 
   return list

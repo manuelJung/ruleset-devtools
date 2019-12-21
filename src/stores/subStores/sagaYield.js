@@ -9,6 +9,8 @@ export type SagaYield = {
   sagaType: 'ADD_WHEN' | 'ADD_UNTIL',
   result: 'REJECT' | 'RESOLVE',
   rule: t.Rule,
+  eventId: number,
+  actionExecution: t.ActionExecution,
   // sagaExecution: t.SagaExecution,
   // rule: t.Rule,
   toJs: () => SagaYield
@@ -23,6 +25,11 @@ export default function createSagaYield (
     storeType: 'SAGA_YIELD',
     sagaType: event.sagaType,
     result: event.result,
+    eventId: eventId,
+    
+    get actionExecution () {
+      return rootStore.private.actionExecutions.byActionExecId[event.actionExecId]
+    },
     
     get rule () {
       return rootStore.private.rules.byRuleId[event.ruleId]
@@ -38,4 +45,5 @@ export default function createSagaYield (
   // attach
   push(rootStore.private.sagaYields.bySagaExecId, event.sagaId, store)
   push(rootStore.private.sagaYields.byActionExecId, event.actionExecId, store)
+  push(rootStore.private.sagaYields.byRuleId, event.ruleId, store)
 }
