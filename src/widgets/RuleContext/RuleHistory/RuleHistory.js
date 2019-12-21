@@ -23,42 +23,21 @@ type Row = {
   }
 }
 
-const list = [
-  {
-    label: 'start saga ADD_WHEN'
-  },{
-    label: 'yield saga ADD_WHEN',
-    trigger: {
-      label: 'LOCATION_CHANGE'
-    },
-    output: {
-      label: 'RESOLVED'
-    }
-  },{
-    label: 'end saga ADD_WHEN',
-    output: {
-      label: 'ADD_RULE'
-    }
-  },{
-    label: 'ADD_RULE'
-  },{
-    label: 'start saga ADD_UNTIL'
-  },{
-    label: 'EXECUTE',
-    active: true,
-    trigger: {
-      label: 'FETCH_REQUEST'
-    },
-    output: {
-      label: 'FETCH_SUCCESS'
-    }
-  }
-]
-
 export default observer(function RuleHistory({rule, ruleExecution}:Props){
   let rows:Row[] = calculateRows(rule, ruleExecution)
   return (
     <Wrapper className='RuleHistory'>
+      <div className='row header'>
+        <div className='trigger'>
+          <div className='box'>Trigger</div>
+        </div>
+        <div className='event'>
+          <div className='box'>Event</div>
+        </div>
+        <div className='output'>
+          <div className='box'>Output</div>
+        </div>
+      </div>
       {rows.map((row,i) => (
         <div className='row' key={i}>
           <div className='trigger'>
@@ -97,6 +76,12 @@ const Wrapper = styled.div`
     margin: 10px;
   }
 
+  > .header .box {
+    color: #ffc107;
+    border-bottom: none;
+    font-weight: bold;
+  }
+
 `
 
 function calculateRows (rule, currentRuleExecution) {
@@ -123,12 +108,22 @@ function calculateRows (rule, currentRuleExecution) {
     unorderedList.push(row)
   })
 
-  // saga start
+  // saga executions
   rule.sagaExecutions.forEach(sagaExecution => {
     unorderedList.push({
       label: 'start saga ' + sagaExecution.type,
       eventId: sagaExecution.startEventId
     })
+
+    if(sagaExecution.endEventId !== null){
+      unorderedList.push({
+        label: 'end saga ' + sagaExecution.type,
+        eventId: sagaExecution.endEventId,
+        output: {
+          label: sagaExecution.result
+        }
+      })
+    }
   })
 
   // saga yields
@@ -148,8 +143,6 @@ function calculateRows (rule, currentRuleExecution) {
 
     unorderedList.push(row)
   })
-
-  // saga end
 
   list = [...list, ...unorderedList.sort((a,b) => a.eventId > b.eventId ? 1 : -1)]
 
