@@ -144,6 +144,17 @@ function calculateRows (rule, currentRuleExecution) {
     unorderedList.push(row)
   })
 
+  rule.__time.status.map(row => {
+    if(row.data === 'ACTIVE') unorderedList.push({
+      label: 'ADD_RULE',
+      eventId: row.eventId
+    })
+    if(row.data === 'REMOVED') unorderedList.push({
+      label: 'REMOVE_RULE',
+      eventId: row.eventId
+    })
+  })
+
   list = [...list, ...unorderedList.sort((a,b) => a.eventId > b.eventId ? 1 : -1)]
 
   return list
