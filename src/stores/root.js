@@ -54,6 +54,7 @@ export type RootStore = {
     },
     sagaExecutions: {
       bySagaExecId: {[number]: t.SagaExecution},
+      byRuleId: {[string]: t.SagaExecution[]},
       // bySagaId: {[number]: t.SagaExecution[]},
       // bySagaYieldId: {[number]: t.SagaExecution}
     },
@@ -103,6 +104,7 @@ const rootStore:RootStore = observable(({
     },
     sagaExecutions: {
       bySagaExecId: {},
+      byRuleId: {},
       // bySagaId: {},
       // bySagaYieldId: {}
     },

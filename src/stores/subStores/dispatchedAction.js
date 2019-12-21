@@ -41,7 +41,6 @@ export default function createDispatchedAction (
   }:DispatchedAction))
 
   // listeners
-  const listener = events.addListener(e => {})
 
   // attach
   rootStore.private.dispatchedActions.byActionExecId[event.actionExecId] = store

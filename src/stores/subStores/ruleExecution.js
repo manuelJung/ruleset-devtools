@@ -45,15 +45,14 @@ export default function createRuleExecution (
   }:RuleExecution))
 
   // listeners
-  const listener = events.addListener(e => {
-    if(e.type === 'EXEC_RULE_END' && e.ruleExecId === event.ruleExecId){
-      store.status = e.result
-      events.removeListener(listener)
-    }
+  events.addListenerByEventName('EXEC_RULE_END', 'ruleExecId', event.ruleExecId, event => {
+    if(event.type !== 'EXEC_RULE_END') return
+    store.status = event.result
   })
 
   // attach
   rootStore.private.ruleExecutions.byRuleExecId[store.id] = store
+  push(rootStore.private.ruleExecutions.byRuleId, event.ruleId, store)
   if(event.actionExecId){
     push(rootStore.private.ruleExecutions.byActionExecId, event.actionExecId, store)
   }

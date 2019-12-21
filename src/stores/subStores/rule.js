@@ -12,9 +12,10 @@ export type Rule = {
   weight: number,
   targetActions: t.Action[],
   outputActions: t.Action[],
+  ruleExecutions: t.RuleExecution[],
+  sagaExecutions: t.SagaExecution[],
   data: $PropertyType<t.RegisterRuleEvent, 'rule'>,
   getStatus: (eventId?:number) => 'ACTIVE' | 'REMOVED' | 'PENDING', // | 'CANCELED'
-  // sagas: Saga[],
   toJs: () => Rule,
   __time: {
     status: {
@@ -71,8 +72,13 @@ export default function createRule (
       }
       return []
     },
-    get sagas(){
-      return []
+
+    get ruleExecutions(){
+      return rootStore.private.ruleExecutions.byRuleId[event.rule.id] || []
+    },
+
+    get sagaExecutions(){
+      return rootStore.private.sagaExecutions.byRuleId[event.rule.id] || []
     },
 
     getStatus(eventId){

@@ -50,12 +50,9 @@ export default function createRule (
   }:ActionExecution))
 
   // listeners
-  const listener = events.addListener(e => {
-    if(e.type === 'EXEC_ACTION_END' && e.actionExecId === event.actionExecId){
-      if(e.result === 'ABORTED'){
-        store.canceled = true
-      }
-    }
+  events.addListenerByEventName('EXEC_ACTION_END', 'actionExecId', event.actionExecId, event => {
+    if(event.type !== 'EXEC_ACTION_END') return
+    if(event.result === 'ABORTED') store.canceled = true
   })
 
   // attach

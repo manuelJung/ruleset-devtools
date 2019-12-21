@@ -34,7 +34,6 @@ export default function createSagaYield (
   }:SagaYield))
 
   // listeners
-  const listener = events.addListener(e => {})
 
   // attach
   push(rootStore.private.sagaYields.bySagaExecId, event.sagaId, store)

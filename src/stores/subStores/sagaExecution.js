@@ -2,6 +2,7 @@
 import {observable, toJS} from 'mobx'
 import events from '../events'
 import * as t from '../types'
+import {push} from 'utils/helpers'
 
 export type SagaExecution = {
   storeType: 'SAGA_EXECUTION',
@@ -28,8 +29,8 @@ export default function createSagaExecution (
   }:SagaExecution))
 
   // listeners
-  const listener = events.addListener(e => {})
 
   // attach
   rootStore.private.sagaExecutions.bySagaExecId[store.id] = store
+  push(rootStore.private.sagaExecutions.byRuleId, event.ruleId, store)
 }
