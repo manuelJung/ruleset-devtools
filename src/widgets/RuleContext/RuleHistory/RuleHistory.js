@@ -16,11 +16,11 @@ type Row = {
   trigger?: {
     label: string,
     onClick?: () => mixed
-  },
+  }[],
   output?: {
     label: string,
     onClick?: () => mixed
-  }
+  }[]
 }
 
 export default observer(function RuleHistory({rule, ruleExecution}:Props){
@@ -41,11 +41,13 @@ export default observer(function RuleHistory({rule, ruleExecution}:Props){
       {rows.map((row,i) => (
         <div className='row' key={i}>
           <div className='trigger'>
-            {row.trigger && <div className='box'>{row.trigger.label}</div>}
+            {row.trigger && row.trigger.map((trigger,i) => <div className='box' key={i}>{trigger.label}</div>)}
           </div>
-          <div className='event'><div className='box' style={{color:row.active && '#8bc34a'}}>{row.label}</div></div>
+          <div className='event'>
+            <div className='box' style={{color:row.active && '#8bc34a'}}>{row.label}</div>
+          </div>
           <div className='output'>
-            {row.output && <div className='box'>{row.output.label}</div>}
+            {row.output && row.output.map((output,i) => <div className='box' key={i}>{output.label}</div>)}
           </div>
         </div>
       ))}
@@ -61,10 +63,10 @@ const Wrapper = styled.div`
 
   > .row {
     display: flex;
-    > * {flex:1;display:flex;}
-    .trigger {justify-content: flex-end;}
+    > * {flex:1;display:flex;flex-direction:column;}
+    .trigger {align-items: flex-end;}
     .event {flex:0;}
-    .output {justify-content: flex-start;}
+    .output {align-items: flex-start;}
   }
 
   .box {
@@ -93,18 +95,21 @@ function calculateRows (rule, currentRuleExecution) {
     let row:Row = {
       label: 'EXECUTE',
       eventId: ruleExecution.startEventId,
-      active: ruleExecution === currentRuleExecution
+      active: ruleExecution === currentRuleExecution,
+      trigger: [],
+      output: []
     }
     if(ruleExecution.targetActionExecution && ruleExecution.targetActionExecution.dispatchedAction){
-      row['trigger'] = {
+      row.trigger && row.trigger.push({
         label: ruleExecution.targetActionExecution.dispatchedAction.data.type
-      }
+      })
     }
-    if(ruleExecution.outputActionExecutions[0] && ruleExecution.outputActionExecutions[0].dispatchedAction){
-      row['output'] = {
-        label: ruleExecution.outputActionExecutions[0].dispatchedAction.data.type
-      }
-    }
+    ruleExecution.outputActionExecutions.forEach(actionExecution => {
+      if(!actionExecution.dispatchedAction) return
+      row.output && row.output.push({
+        label: actionExecution.dispatchedAction.data.type
+      })
+    })
     unorderedList.push(row)
   })
 
@@ -119,9 +124,9 @@ function calculateRows (rule, currentRuleExecution) {
       unorderedList.push({
         label: 'end saga ' + sagaExecution.type,
         eventId: sagaExecution.endEventId,
-        output: {
+        output: [{
           label: sagaExecution.result
-        }
+        }]
       })
     }
   })
@@ -131,29 +136,30 @@ function calculateRows (rule, currentRuleExecution) {
     let row:Row = {
       label: 'yield saga ' + sagaYield.sagaType,
       eventId: sagaYield.eventId,
-      output: {
+      output: [{
         label: sagaYield.result
-      }
+      }],
+      trigger: []
     }
     if(sagaYield.actionExecution.dispatchedAction){
-      row['trigger'] = {
+      row.trigger && row.trigger.push({
         label: sagaYield.actionExecution.dispatchedAction.data.type
-      }
+      })
     }
 
     unorderedList.push(row)
   })
 
-  rule.__time.status.map(row => {
-    if(row.data === 'ACTIVE') unorderedList.push({
-      label: 'ADD_RULE',
-      eventId: row.eventId
-    })
-    if(row.data === 'REMOVED') unorderedList.push({
-      label: 'REMOVE_RULE',
-      eventId: row.eventId
-    })
-  })
+  // rule.__time.status.map(row => {
+  //   if(row.data === 'ACTIVE') unorderedList.push({
+  //     label: 'ADD_RULE',
+  //     eventId: row.eventId
+  //   })
+  //   if(row.data === 'REMOVED') unorderedList.push({
+  //     label: 'REMOVE_RULE',
+  //     eventId: row.eventId
+  //   })
+  // })
 
   list = [...list, ...unorderedList.sort((a,b) => a.eventId > b.eventId ? 1 : -1)]
 

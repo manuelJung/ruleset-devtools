@@ -14,7 +14,7 @@ type Props = {
 }
 
 export default function RuleContext ({rule,ruleExecution}:Props) {
-  const [tab, setTab] = React.useState('history')
+  const [tab, setTab] = React.useState('rule')
   return useObserver(() =>
     <Wrapper className='ActionContext'>
       <div className='tabs'>
