@@ -14,7 +14,7 @@ type Props = {
 }
 
 export default function ActionList ({action,actionExecution}:Props) {
-  const [tab, setTab] = React.useState('actions')
+  const [tab, setTab] = React.useState('action')
   return (
     <Wrapper className='ActionContext'>
       <div className='tabs'>
