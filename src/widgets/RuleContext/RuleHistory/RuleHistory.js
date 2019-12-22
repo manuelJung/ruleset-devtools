@@ -3,6 +3,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import {observer} from 'mobx-react'
 import * as t from 'stores/types'
+import router from 'stores/router'
 
 type Props = {
   rule: t.Rule,
@@ -41,13 +42,21 @@ export default observer(function RuleHistory({rule, ruleExecution}:Props){
       {rows.map((row,i) => (
         <div className='row' key={i}>
           <div className='trigger'>
-            {row.trigger && row.trigger.map((trigger,i) => <div className='box' key={i}>{trigger.label}</div>)}
+            {row.trigger && row.trigger.map((trigger,i) => (
+              <Box interactive={!!trigger.onClick} key={i} onClick={trigger.onClick}>
+                {trigger.label}
+              </Box>
+            ))}
           </div>
           <div className='event'>
-            <div className='box' style={{color:row.active && '#8bc34a'}}>{row.label}</div>
+            <Box style={{color:row.active && '#8bc34a'}}>{row.label}</Box>
           </div>
           <div className='output'>
-            {row.output && row.output.map((output,i) => <div className='box' key={i}>{output.label}</div>)}
+            {row.output && row.output.map((output,i) => (
+              <Box interactive={!!output.onClick} key={i} onClick={output.onClick}>
+                {output.label}
+              </Box>
+            ))}
           </div>
         </div>
       ))}
@@ -69,21 +78,25 @@ const Wrapper = styled.div`
     .output {align-items: flex-start;}
   }
 
-  .box {
-    color: whitesmoke;
-    padding: 8px;
-    width: 250px;
-    text-align: center;
-    border-bottom: 1px solid whitesmoke;
-    margin: 10px;
-  }
-
   > .header .box {
     color: #ffc107;
     border-bottom: none;
     font-weight: bold;
   }
+`
 
+const Box = styled.div`
+  color: whitesmoke;
+  padding: 8px;
+  width: 250px;
+  text-align: center;
+  border-bottom: 1px solid whitesmoke;
+  margin: 10px;
+
+  &:hover {
+    cursor: ${props => props.interactive && 'pointer'};
+    color: ${props => props.interactive && 'grey'};
+  }
 `
 
 function calculateRows (rule, currentRuleExecution) {
@@ -101,13 +114,24 @@ function calculateRows (rule, currentRuleExecution) {
     }
     if(ruleExecution.targetActionExecution && ruleExecution.targetActionExecution.dispatchedAction){
       row.trigger && row.trigger.push({
-        label: ruleExecution.targetActionExecution.dispatchedAction.data.type
+        label: ruleExecution.targetActionExecution.dispatchedAction.data.type,
+        onClick: () => router.push({
+          type: 'GRAPH',
+          // $FlowFixMe
+          store: ruleExecution.targetActionExecution.action,
+          actionExecution: ruleExecution.targetActionExecution,
+        })
       })
     }
     ruleExecution.outputActionExecutions.forEach(actionExecution => {
       if(!actionExecution.dispatchedAction) return
       row.output && row.output.push({
-        label: actionExecution.dispatchedAction.data.type
+        label: actionExecution.dispatchedAction.data.type,
+        onClick: () => router.push({
+          type: 'GRAPH',
+          store: actionExecution.action,
+          actionExecution: actionExecution,
+        })
       })
     })
     unorderedList.push(row)
@@ -143,7 +167,13 @@ function calculateRows (rule, currentRuleExecution) {
     }
     if(sagaYield.actionExecution.dispatchedAction){
       row.trigger && row.trigger.push({
-        label: sagaYield.actionExecution.dispatchedAction.data.type
+        label: sagaYield.actionExecution.dispatchedAction.data.type,
+        onClick: () => router.push({
+          type: 'GRAPH',
+          // $FlowFixMe
+          store: sagaYield.actionExecution.action,
+          actionExecution: sagaYield.actionExecution,
+        })
       })
     }
 

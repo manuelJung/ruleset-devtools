@@ -3,6 +3,7 @@ import * as React from 'react'
 import styled from 'styled-components'
 import {observer} from 'mobx-react'
 import * as t from 'stores/types'
+import router from 'stores/router'
 
 type Props = {
   actionExecution: t.ActionExecution
@@ -23,7 +24,10 @@ export default observer(function Sagas ({actionExecution}:Props) {
       </div>
       {actionExecution.sagaYields.map(sagaYield => (
         <div className='row' key={sagaYield.rule.id}>
-          <div className='cell'>{sagaYield.rule.id}</div>
+          <div className='cell interactive' onClick={() => router.push({
+          type: 'GRAPH',
+          store: sagaYield.rule
+        })}>{sagaYield.rule.id}</div>
           <div className='cell'>{sagaYield.sagaType}</div>
           <div className='cell'>{sagaYield.result}</div>
         </div>
@@ -45,6 +49,11 @@ const Wrapper = styled.div`
       flex: 1;
       max-width: 300px;
       margin-left: 8px;
+    }
+
+    > .interactive:hover {
+      color: grey;
+      cursor: pointer;
     }
   }
 `

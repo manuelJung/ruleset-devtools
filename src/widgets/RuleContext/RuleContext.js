@@ -19,7 +19,7 @@ export default function RuleContext ({rule,ruleExecution}:Props) {
     <Wrapper className='ActionContext'>
       <div className='tabs'>
         <Tab active={tab==='rule'} onClick={() => setTab('rule')}>Rule</Tab>
-        {ruleExecution && <Tab active={tab==='history'} onClick={() => setTab('history')}>Rule-History</Tab>}
+        <Tab active={tab==='history'} onClick={() => setTab('history')}>Rule-History</Tab>
       </div>
       <div className='title'>
         {rule.id}
