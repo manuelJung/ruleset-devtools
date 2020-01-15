@@ -27,6 +27,15 @@ export default function ActionList () {
     return false
   }
 
+  const showInList = dispatchedAction => {
+    if(!filter) return true
+    const queries = filter.split('|')
+    return queries.some(query => {
+      if(query[0] === '!') return !dispatchedAction.data.type.includes(query.slice(1))
+      else return dispatchedAction.data.type.includes(query)
+    })
+  }
+
   return useObserver(() =>
     <Wrapper className='ActionList'>
       <div className='filter-wrapper'>
@@ -36,7 +45,7 @@ export default function ActionList () {
       <div className='list'>
         {rootStore.dispatchedActions
           .slice(commitIndex)
-          .filter(dispatchedAction => filter ? dispatchedAction.data.type.includes(filter) : true)
+          .filter(showInList)
           .map(dispatchedAction => (
           <Item 
             key={dispatchedAction.id} 
