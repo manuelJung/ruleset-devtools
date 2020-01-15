@@ -76,11 +76,11 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   background: rgb(39, 40, 34);
-  overflow: scroll;
 
   > .filter-wrapper {
     display: flex;
     padding: 5px;
+    border-bottom: 1px solid grey;
     > input {
       background: none;
       border:none;
@@ -106,6 +106,8 @@ const Wrapper = styled.div`
   }
   
   > .list {
+    overflow: scroll;
+    height: calc(100% - 140px);
     padding-bottom: 100px;
   }
 `
