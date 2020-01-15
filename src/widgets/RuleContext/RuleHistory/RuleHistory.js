@@ -65,21 +65,22 @@ export default observer(function RuleHistory({rule, ruleExecution}:Props){
 })
 
 const Wrapper = styled.div`
-  display: flex;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
   flex-direction: column;
   padding-bottom: 30px;
   box-sizing: border-box;
 
   > .row {
-    display: flex;
-    > * {flex:1;display:flex;flex-direction:column;}
-    .trigger {align-items: flex-end;}
-    .event {flex:0;}
-    .output {align-items: flex-start;}
-  }
-
-  > .header > * {
-    align-items: center !important;
+    display: table-row;
+    > * {
+      display:table-cell;
+      width:33.33%;
+      height: 40px;
+      text-align:center;
+      word-wrap: break-word;
+    }
   }
 
   > .header .box {
@@ -92,7 +93,6 @@ const Wrapper = styled.div`
 const Box = styled.div`
   color: whitesmoke;
   padding: 8px;
-  width: 250px;
   text-align: center;
   border-bottom: 1px solid whitesmoke;
   margin: 10px;
