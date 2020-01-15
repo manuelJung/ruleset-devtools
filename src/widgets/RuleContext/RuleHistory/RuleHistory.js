@@ -78,6 +78,10 @@ const Wrapper = styled.div`
     .output {align-items: flex-start;}
   }
 
+  > .header > * {
+    align-items: center !important;
+  }
+
   > .header .box {
     color: #ffc107;
     border-bottom: none;
