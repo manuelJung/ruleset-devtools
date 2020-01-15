@@ -133,10 +133,15 @@ events.addListener((e,eventId) => {
   switch(e.type){
     case 'REGISTER_RULE': {
       createRule(e, rootStore, eventId)
-      createAction(e, rootStore, eventId)
+      createAction(e, rootStore)
+      return
     }
     case 'EXEC_RULE_START': return createRuleExecution(e, rootStore, eventId)
-    case 'EXEC_ACTION_START': return createActionExecution(e, rootStore, eventId)
+    case 'EXEC_ACTION_START': {
+      createAction(e, rootStore)
+      createActionExecution(e, rootStore, eventId)
+      return
+    }
     case 'DISPATCH_ACTION': return createDispatchedAction(e, rootStore, eventId)
     case 'EXEC_SAGA_START': return createSagaExecution(e, rootStore, eventId)
     case 'YIELD_SAGA': return createSagaYield(e, rootStore, eventId)

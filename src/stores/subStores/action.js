@@ -12,11 +12,17 @@ export type Action = {
 }
 
 export default function createAction (
-  event:t.RegisterRuleEvent, 
-  rootStore:t.RootStore,
-  eventId: number
+  event:t.RegisterRuleEvent | t.ExecActionStartEvent, 
+  rootStore:t.RootStore
 ) {
-  [...flatten(event.rule.target), ...flatten(event.rule.output)].forEach(type => {
+  let list = []
+  if(event.type === 'REGISTER_RULE'){
+    list = [...flatten(event.rule.target), ...flatten(event.rule.output)]
+  }
+  if(event.type === 'EXEC_ACTION_START'){
+    list = [event.action.type]
+  }
+  list.forEach(type => {
     if(rootStore.private.actions.byActionType[type]) return
     const store:Action = observable(({
       storeType: 'ACTION',
