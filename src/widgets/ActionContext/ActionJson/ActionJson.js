@@ -11,8 +11,8 @@ type Props = {
 }
 
 export default observer<Props>(function ActionJson({actionExecution}:Props){
-  if(!actionExecution) return 'no action found'
-  if(!actionExecution.dispatchedAction) return 'no action found'
+  if(!actionExecution) return ''
+  if(!actionExecution.dispatchedAction) return ''
   return (
     <Wrapper className='ActionJson'>
       <ReactJson 
