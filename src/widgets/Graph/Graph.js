@@ -51,6 +51,8 @@ function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecuti
       store: rule,
       creators: rule.targetActions.length,
       assigned: rule.outputActions.length,
+      cancels: rule.position === 'INSTEAD' && !rule.outputActions.length,
+      manipulates: rule.position === 'INSTEAD' && rule.outputActions.length === 1 && rule.outputActions[0].type === action.type,
       actionExecution: null,
       ruleExecution: (() => {
         if(!actionExecution) return
@@ -166,6 +168,8 @@ export default observer(function Graph () {
                 <div className='box'>{item.data.label}</div>
                 {item.data.creators > 0 && <div className='badge creators'>{item.data.creators}</div>}
                 {item.data.assigned > 0 && <div className='badge assigned'>{item.data.assigned}</div>}
+                {item.data.cancels && <div className='badge cancels'>C</div>}
+                {item.data.manipulates && <div className='badge manipulates'>M</div>}
                 {item.data.isCreator && <div className='badge creator'>creator</div>}
                 {item.data.status && <div className='badge status' style={{background:item.data.status.color}}>
                   {item.data.status.label}
@@ -250,10 +254,13 @@ const Item = styled(_Item)`
     color: whitesmoke;
   }
 
-  > .assigned { top: -5px; right: -5px;}
+  > .assigned, .cancels, .manipulates { top: -5px; right: -5px;}
   > .creators { top: -5px; left: -5px;}
   > .creator { bottom: -14px; left: -5px;}
   > .status { bottom: -14px; left: -5px;}
+
+  > .cancels { background: #e91e63;}
+  > .manipulates { background: rgb(253, 151, 31);}
 `
 
 const Wrapper = styled.div`
