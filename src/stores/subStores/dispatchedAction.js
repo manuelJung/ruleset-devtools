@@ -8,6 +8,7 @@ export type DispatchedAction = {
   id: number,
   actionExecution: t.ActionExecution,
   assignedRuleExecutions: t.RuleExecution[],
+  assignedExecutedRuleExecutions: t.RuleExecution[],
   sagaYields: t.SagaYield[],
   data: {type:string},
   toJs: () => DispatchedAction
@@ -29,6 +30,17 @@ export default function createDispatchedAction (
 
     get assignedRuleExecutions () {
       return store.actionExecution.assignedRuleExecutions || []
+    },
+
+    get assignedExecutedRuleExecutions () {
+      return store.assignedRuleExecutions.filter(ruleExecution => {
+        switch(ruleExecution.status){
+          case 'RESOLVED': return true
+          case 'PENDING': return true
+          case 'CONCURRENCY_REJECTION': return true
+          default: return false
+        }
+      })
     },
 
     get sagaYields () {

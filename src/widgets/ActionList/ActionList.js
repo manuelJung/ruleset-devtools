@@ -61,8 +61,8 @@ export default function ActionList () {
               {dispatchedAction.actionExecution.canceled && (
                 <div className='canceled'>C</div>
               )}
-              {!!dispatchedAction.assignedRuleExecutions.length && (
-                <div className='rule-executions'>{dispatchedAction.assignedRuleExecutions.length}</div>
+              {!!dispatchedAction.assignedExecutedRuleExecutions.length && (
+                <div className='rule-executions'>{dispatchedAction.assignedExecutedRuleExecutions.length}</div>
               )}
               {!!dispatchedAction.sagaYields.length && (
                 <div className='saga-yields'>{dispatchedAction.sagaYields.length}</div>
