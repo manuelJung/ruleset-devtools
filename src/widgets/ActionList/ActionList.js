@@ -58,6 +58,9 @@ export default function ActionList () {
           >
             <div className='label'>{dispatchedAction.data.type}</div>
             <div className='badges'>
+              {dispatchedAction.actionExecution.canceled && (
+                <div className='canceled'>C</div>
+              )}
               {!!dispatchedAction.assignedRuleExecutions.length && (
                 <div className='rule-executions'>{dispatchedAction.assignedRuleExecutions.length}</div>
               )}
@@ -157,6 +160,9 @@ const Item = styled.div`
       border-radius: 4px;
       min-width: 16px;
       color: white;
+    }
+    > .canceled {
+      background: #e91e63;
     }
     > .rule-executions {
       background: #009688;
