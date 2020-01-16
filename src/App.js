@@ -15,7 +15,7 @@ import {FiChevronLeft, FiChevronRight} from 'react-icons/fi'
 
 export default function App () {
   const [leftSize,refLeft] = useResizer(230)
-  const [contextSize,refContext] = useResizer(500, 'y')
+  const [contextSize,refContext] = useResizer(300, 'y')
 
   let routeLabel = ''
 
