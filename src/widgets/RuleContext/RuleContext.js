@@ -22,7 +22,7 @@ export default function RuleContext ({rule,ruleExecution}:Props) {
         <Tab active={tab==='history'} onClick={() => setTab('history')}>Rule-History</Tab>
       </div>
       <div className='title'>
-        {rule.id}
+        <span>{rule.id}</span>
       </div>
       <div className='content'>
         {tab === 'rule' && <RuleData rule={rule} ruleExecution={ruleExecution}/>}
@@ -49,8 +49,19 @@ const Wrapper = styled.div`
   > .title {
     font-size: 24px;
     color: whitesmoke;
-    padding: 10px;
-    height: 35px;
+    height: 45px;
+    width: 100%;
+    position: relative;
+    > span {
+      padding: 10px;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      position: absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      top:0;
+    }
   }
 
   > .content {

@@ -160,7 +160,7 @@ export default observer(function Graph () {
             key={item.data.label+item.data.store.storeType}
             style={{
               top:item.y * 30 + item.y*35 + 15,
-              left:`calc(( 100% / 3 ) * ${item.x} + 10px * ${item.x+1} )`
+              left:`calc(( 100% / 3 ) * ${item.x} + 10px )`
             }}
             children={
               <React.Fragment>
@@ -214,7 +214,7 @@ const _Item = posed.div({
 })
 
 const Item = styled(_Item)`
-  width: calc(100% / 3 - 40px);
+  width: calc(100% / 3 - 20px);
   height: 35px;
   position: absolute;
 
@@ -240,7 +240,7 @@ const Item = styled(_Item)`
     font-size: 60px;
     color: white;
     top: -10px;
-    left: calc(50% - 30px);
+    left: calc(50% - 10px);
     z-index: 1;
   }
 
@@ -269,6 +269,6 @@ const Wrapper = styled.div`
   background: rgb(39, 40, 34);
   display: flex;
   position: relative;
-  min-width: 900px;
+  min-width: 600px;
   /* overflow-y: auto; */
 `

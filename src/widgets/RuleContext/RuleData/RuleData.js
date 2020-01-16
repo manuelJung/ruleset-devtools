@@ -101,7 +101,7 @@ const Wrapper = styled.div`
     border-bottom: 1px solid grey;
 
     > .label {
-      width: 250px;
+      width: 200px;
     }
     > .value {
       flex: 1;
