@@ -9,8 +9,9 @@
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
+    "all_frames": true,
     "js": ["contentScript.js"],
-    "run_at": "document_idle"
+    "run_at": "document_start"
   }],
   "web_accessible_resources": ["pageScript.js"],
   "minimum_chrome_version": "10.0",

@@ -48,6 +48,9 @@ chrome.devtools.panels.create("Ruleset",
 
 recieveFromBackgroundScript(message => {
   if(!devtools) return
+  if(message.type !== 'UPDATE_RULESET_EVENTS'){
+    console.log(message)
+  }
   if(message.type === 'UPDATE_RULESET_EVENTS'){
     devtools.ruleEvents.push(...message.events)
   }

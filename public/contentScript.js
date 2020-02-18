@@ -34,13 +34,31 @@ recieveFromBackgroundScript(message => {
   sendToPageScript(message)
 })
 
+var observer = new MutationObserver(onMutation);
+observer.observe(document, {
+  childList: true, // report added/removed nodes
+  subtree: true,   // observe any descendant elements
+});
 
-// add pageScript
-let s = document.createElement('script')
-s.type = 'text/javascript'
-s.async = true
-s.src = chrome.extension.getURL('pageScript.js')
-s.onload = function() {
-  this.parentNode.removeChild(this)
+function onMutation() {
+  if(!document.head) return
+  observer.disconnect()
+
+  // add notifier
+  let n = document.createElement('script')
+  n.type = 'text/javascript'
+  n.innerText = 'window.RULESET_DEVTOOLS=true'
+  document.head.appendChild(n)
+  
+  // add pageScript
+  let s = document.createElement('script')
+  s.type = 'text/javascript'
+  s.async = true
+  s.src = chrome.extension.getURL('pageScript.js')
+  s.onload = function() {
+    this.parentNode.removeChild(this)
+  }
+  
+  document.head.appendChild(s)
 }
-document.head.appendChild(s)
+

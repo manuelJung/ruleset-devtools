@@ -20,6 +20,12 @@ chrome.runtime.onConnect.addListener(function (port) {
 function sendToDevtools (message) {
   if(typeof message !== 'object') return
   if(!message.isRulesetMessage) return
+  if(!connection) return
+  if(message.type === 'APP_MOUNT') {
+    connection.postMessage({
+      type: 'MY_COOL_TYPE'
+    })
+  }
   connection.postMessage(message)
 }
 
@@ -39,6 +45,10 @@ function recieveFromContentScript (cb) {
 
 function recieveFromDevtools (cb) {}
 
+
+// setInterval(() => {
+//   console.log(typeof connection)
+// }, 1000)
 
 // SCRIPT
 
