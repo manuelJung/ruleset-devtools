@@ -37,7 +37,7 @@ export default function createDispatchedAction (
         switch(ruleExecution.status){
           case 'RESOLVED': return true
           case 'PENDING': return true
-          case 'CONCURRENCY_REJECTION': return true
+          case 'CANCELED': return true
           default: return false
         }
       })

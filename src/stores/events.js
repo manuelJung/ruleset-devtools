@@ -90,7 +90,7 @@ export type ExecRuleStartEvent = {
   concurrencyFilter: string
 }
 
-type ExecRuleEventResult = 'RESOLVED' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION'
+type ExecRuleEventResult = 'RESOLVED' | 'CONDITION_NOT_MATCHED' | 'SKIP' | 'CANCELED'
 export type ExecRuleEndEvent = {
   type: 'EXEC_RULE_END',
   timestamp: number,

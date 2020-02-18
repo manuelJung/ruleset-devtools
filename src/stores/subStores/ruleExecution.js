@@ -11,7 +11,7 @@ export type RuleExecution = {
   targetActionExecution: t.ActionExecution | null,
   outputActionExecutions: t.ActionExecution[],
   rule: t.Rule,
-  status: 'PENDING' | 'RESOLVED' | 'CONDITION_NOT_MATCH' | 'SKIP' | 'CONCURRENCY_REJECTION',
+  status: 'PENDING' | 'RESOLVED' | 'CONDITION_NOT_MATCHED' | 'SKIP' | 'CANCELED',
   toJs: () => RuleExecution
 }
 

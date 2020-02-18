@@ -39,7 +39,7 @@ const RuleExecution = styled.div`
   margin-bottom: 5px;
   color: white;
   border: ${props => props.active ? '2px dashed black' : '1px solid black'};
-  background: ${props => props.status !== 'CONDITION_NOT_MATCH' ? 'darkgreen' : 'darkred'};
+  background: ${props => props.status !== 'CONDITION_NOT_MATCHED' ? 'darkgreen' : 'darkred'};
 `
 
 const ActionExecution = styled.div`

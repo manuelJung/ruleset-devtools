@@ -67,9 +67,9 @@ function calculateActionGraph (action:t.Action, actionExecution?:t.ActionExecuti
         switch(ruleExecution.status){
           case 'PENDING': return {color: '#009688', label: 'pending'}
           case 'RESOLVED': return {color: '#009688', label: 'executed'}
-          case 'CONDITION_NOT_MATCH': return {color: '#8e8532', label: 'condition not matched'}
+          case 'CONDITION_NOT_MATCHED': return {color: '#8e8532', label: 'condition not matched'}
           case 'SKIP': return {color: '#8e8532', label: 'skiped'}
-          case 'CONCURRENCY_REJECTION': return {color: '#E91E63', label: 'aborted'}
+          case 'CANCELED': return {color: '#E91E63', label: 'aborted'}
           default: return null
         }
       })()
