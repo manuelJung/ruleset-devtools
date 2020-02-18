@@ -1,6 +1,8 @@
 
 // COMUNICATION
 
+console.log('mount-contentScript')
+
 function sendToBackgroundScript (message) {
   // console.log('cs:sendToBackgroundScript', message)
   chrome.runtime.sendMessage(message)
@@ -27,10 +29,12 @@ function recieveFromBackgroundScript (cb) {
 // SCRIPT
 
 recieveFromPageScript(message => {
+  console.log('ps', message)
   sendToBackgroundScript(message.data)
 })
 
 recieveFromBackgroundScript(message => {
+  console.log('bg', message)
   sendToPageScript(message)
 })
 

@@ -1,58 +1,54 @@
+
+console.log('mount background')
+
 // SETUP
 
-let connection = null
-
+// setup devtools connection
 chrome.runtime.onConnect.addListener(function (port) {
+  let buffer = []
+  const channelId = Math.random().toString(36).substr(2, 9)
+  console.log('port', port)
   if(port.name !== 'Ruleset') return
-  connection = port
 
-  port.onDisconnect.addListener(function(port) {
-      connection = null
-      port.onMessage.removeListener(sendToContentScript)
-  });
+  function onDisconnect () {
+    port.onMessage.removeListener(recieveFromDevtools)
+    port.onDisconnect.removeListener(onDisconnect)
+    chrome.runtime.onMessage.removeListener(recieveFromContentScript)
+  }
 
-  port.onMessage.addListener(sendToContentScript)
-})
+  function recieveFromContentScript (msg) {
+    if(!msg.isRulesetMessage) return
+    if(msg.channelId !== channelId) return
+    console.log('recieve-from-content-script', channelId, msg)
+    sendToDevtools(msg)
+  }
 
+  function recieveFromDevtools (msg) {
+    console.log('recieve-from-devtools', msg)
+    sendToContentScript(msg)
+  }
 
-// COMMUNICATION
-
-function sendToDevtools (message) {
-  if(typeof message !== 'object') return
-  if(!message.isRulesetMessage) return
-  if(!connection) return
-  if(message.type === 'APP_MOUNT') {
-    connection.postMessage({
-      type: 'MY_COOL_TYPE'
+  function sendToContentScript (msg) {
+    chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+      if(!tabs[0]) return console.log('no active tab found')
+      chrome.tabs.sendMessage(tabs[0].id, msg)
     })
   }
-  connection.postMessage(message)
-}
 
-function sendToContentScript (message) {
-  chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-    chrome.tabs.sendMessage(tabs[0].id, message)
+  function sendToDevtools (msg) {
+    port.postMessage(msg)
+  }
+
+  sendToContentScript({
+    type:'REGISTER_CHANNEL_ID',
+    isRulesetMessage: true,
+    direction: 'top-down',
+    channelId
   })
-}
 
-function recieveFromContentScript (cb) {
-  chrome.runtime.onMessage.addListener(message => {
-    if(typeof message !== 'object') return
-    if(!message.isRulesetMessage) return
-    cb(message)
-  })
-}
-
-function recieveFromDevtools (cb) {}
-
-
-// setInterval(() => {
-//   console.log(typeof connection)
-// }, 1000)
-
-// SCRIPT
-
-
-recieveFromContentScript(message => {
-  sendToDevtools(message)
+  chrome.runtime.onMessage.addListener(recieveFromContentScript)
+  port.onDisconnect.addListener(onDisconnect)
+  port.onMessage.addListener(recieveFromDevtools)
+  buffer.forEach(msg => sendToDevtools(msg))
+  buffer = []
 })

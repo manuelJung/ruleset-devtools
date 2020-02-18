@@ -1,6 +1,8 @@
 
 // SETUP
 
+console.log('mount-devtools')
+
 var backgroundPageConnection = chrome.runtime.connect({
     name: "Ruleset"
 });
@@ -47,9 +49,10 @@ chrome.devtools.panels.create("Ruleset",
 )
 
 recieveFromBackgroundScript(message => {
+  console.log(!!devtools, message)
   if(!devtools) return
-  if(message.type !== 'UPDATE_RULESET_EVENTS'){
-    console.log(message)
+  if(message.type == 'APP_MOUNT'){
+
   }
   if(message.type === 'UPDATE_RULESET_EVENTS'){
     devtools.addRulesetEvents(message.events)

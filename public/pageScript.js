@@ -1,8 +1,9 @@
 
 // COMMUNICATION
 
+console.log('mount-pageScript')
+
 function sendToContentScript (message) {
-  // console.log('pageScript:sendToContentScript', message)
   window.postMessage(message, '*')
 }
 
@@ -20,22 +21,16 @@ const sendEvent = events => sendToContentScript({
   type: 'UPDATE_RULESET_EVENTS',
   direction: 'bottom-up',
   events: JSON.parse(JSON.stringify(events, null, 2)),
+  channelId: channelId
 })
 
 
 // SCRIPT
 
-let unlisten = null
-let initial = true
-
-sendToContentScript({
-  isRulesetMessage: true,
-  type: 'APP_MOUNT',
-  direction: 'bottom-up'
-})
 
 let buffer = []
 let active = false
+let channelId = null
 
 window.__REDUX_RULESET_DEVTOOLS__ = function (event) {
   if(!active) buffer.push(event)
@@ -43,8 +38,10 @@ window.__REDUX_RULESET_DEVTOOLS__ = function (event) {
 }
 
 recieveFromContentScript(message => {
-  // console.log(message.data.type)
   if(typeof message.data !== 'object') return
+  if(message.data.type === 'REGISTER_CHANNEL_ID'){
+    channelId = message.data.channelId
+  }
   if(message.data.type === 'OPEN_DEVTOOLS') {
     active = true
     if(buffer.length) {
