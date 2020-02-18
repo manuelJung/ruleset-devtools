@@ -222,16 +222,17 @@ const events = {
   }
 }
 
-window.ruleEvents = events
+window.addRulesetEvents = function (list) {
+  console.log('list', list)
+  runInAction(() => {
+    list.forEach(event => events.push(event))
+  })
+}
 
 export default events
 
 if(process.env.NODE_ENV === 'development'){
   setTimeout(() => {
-    runInAction(() => {
-      EventList.forEach(event => {
-        events.push(event)
-      })
-    })
+    window.addRulesetEvents(EventList)
   }, 500)
 }

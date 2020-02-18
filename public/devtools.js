@@ -52,7 +52,8 @@ recieveFromBackgroundScript(message => {
     console.log(message)
   }
   if(message.type === 'UPDATE_RULESET_EVENTS'){
-    devtools.ruleEvents.push(...message.events)
+    devtools.addRulesetEvents(message.events)
+    // devtools.ruleEvents.push(...message.events)
   }
 })
 
