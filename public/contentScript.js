@@ -2,6 +2,8 @@
 // COMUNICATION
 
 console.log('mount-contentScript')
+let psBuffer = []
+let psMount = false
 
 // query tab
 
@@ -40,12 +42,16 @@ observer.observe(document, {
 function setup (tab) {
 
   function sendToBackgroundScript (message) {
-    message.data.tab = tab
-    console.log('send-to-bg', message.data)
-    chrome.runtime.sendMessage(message.data)
+    message.tab = tab
+    console.log('send-to-bg', message)
+    chrome.runtime.sendMessage(message)
   }
 
   function sendToPageScript (message) {
+    if(!psMount) {
+      psBuffer.push(message)
+      return
+    }
     console.log('send-to-ps', message)
     window.postMessage(message, '*')
   }
@@ -56,13 +62,19 @@ function setup (tab) {
     if(!message.data.isRulesetMessage) return
     if(message.data.direction !== 'bottom-up') return
     console.log('get-from-ps', message)
-    sendToBackgroundScript(message)
+    sendToBackgroundScript(message.data)
   }, false)
 
   // recieveFromBackgroundScript
   chrome.runtime.onMessage.addListener(message => {
     console.log('get-from-bg', message)
     sendToPageScript(message)
+  })
+
+  sendToBackgroundScript({
+    type: 'RELOAD_PAGE',
+    isRulesetMessage: true,
+    direction: 'bottom-up',
   })
 
   // add pageScript
@@ -72,6 +84,9 @@ function setup (tab) {
   s.src = chrome.extension.getURL('pageScript.js')
   s.onload = function() {
     this.parentNode.removeChild(this)
+    psMount = true
+    psBuffer.forEach(sendToPageScript)
+    psBuffer = []
   }
   
   document.head.appendChild(s)

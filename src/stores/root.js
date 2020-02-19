@@ -69,52 +69,54 @@ export type RootStore = {
   toJS: (store?:any) => RootStore
 }
 
-const rootStore:RootStore = observable(({
-  private: {
-    actions: {
-      byActionType: {},
-      // byRuleTarget: {},
-      // byRuleOutput: {},
-      // byActionExecId: {}
-    },
-    rules: {
-      byRuleId: {},
-      byRuleTarget: {},
-      byRuleOutput: {},
-      bySagaId: {},
-      bySagaExecId: {},
-      bySagaYieldId: {}
-    },
-    sagas: {
-      bySagaId: {},
-      byRuleId: {}
-    },
-    actionExecutions: {
-      byActionExecId: {},
-      byActionType: {},
-      byRuleExecId: {},
-    },
-    dispatchedActions: {
-      ordered: [],
-      byActionExecId: {}
-    },
-    ruleExecutions: {
-      byRuleExecId: {},
-      byRuleId: {},
-      byActionExecId: {},
-    },
-    sagaExecutions: {
-      bySagaExecId: {},
-      byRuleId: {},
-      // bySagaId: {},
-      // bySagaYieldId: {}
-    },
-    sagaYields: {
-      bySagaExecId: {},
-      byActionExecId: {},
-      byRuleId: {}
-    }
+const cleanPrivate = {
+  actions: {
+    byActionType: {},
+    // byRuleTarget: {},
+    // byRuleOutput: {},
+    // byActionExecId: {}
   },
+  rules: {
+    byRuleId: {},
+    byRuleTarget: {},
+    byRuleOutput: {},
+    bySagaId: {},
+    bySagaExecId: {},
+    bySagaYieldId: {}
+  },
+  sagas: {
+    bySagaId: {},
+    byRuleId: {}
+  },
+  actionExecutions: {
+    byActionExecId: {},
+    byActionType: {},
+    byRuleExecId: {},
+  },
+  dispatchedActions: {
+    ordered: [],
+    byActionExecId: {}
+  },
+  ruleExecutions: {
+    byRuleExecId: {},
+    byRuleId: {},
+    byActionExecId: {},
+  },
+  sagaExecutions: {
+    bySagaExecId: {},
+    byRuleId: {},
+    // bySagaId: {},
+    // bySagaYieldId: {}
+  },
+  sagaYields: {
+    bySagaExecId: {},
+    byActionExecId: {},
+    byRuleId: {}
+  }
+}
+
+const rootStore:RootStore = observable(({
+  private: JSON.parse(JSON.stringify(cleanPrivate)),
   get dispatchedActions() {
     return rootStore.private.dispatchedActions.ordered
   },
@@ -128,6 +130,10 @@ const rootStore:RootStore = observable(({
 }:RootStore))
 
 window.rootStore = rootStore
+
+window.clearStore = () => {
+  rootStore.private = JSON.parse(JSON.stringify(cleanPrivate))
+}
 
 events.addListener((e,eventId) => {
   switch(e.type){

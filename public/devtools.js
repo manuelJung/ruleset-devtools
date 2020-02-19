@@ -51,8 +51,13 @@ chrome.devtools.panels.create("Ruleset",
 recieveFromBackgroundScript(message => {
   console.log(!!devtools, message)
   if(!devtools) return
-  if(message.type == 'APP_MOUNT'){
-
+  if(message.type == 'RELOAD_PAGE'){
+    devtools.clearStore()
+    sendToBackgroundScript({
+      isRulesetMessage: true,
+      direction: 'top-down',
+      type: 'OPEN_DEVTOOLS'
+    })
   }
   if(message.type === 'UPDATE_RULESET_EVENTS'){
     devtools.addRulesetEvents(message.events)
