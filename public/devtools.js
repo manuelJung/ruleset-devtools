@@ -23,6 +23,7 @@ function recieveFromBackgroundScript (cb) {
 
 
 let devtools =  null
+let shouldClear = false
 
 
 chrome.devtools.panels.create("Ruleset",
@@ -31,6 +32,10 @@ chrome.devtools.panels.create("Ruleset",
     function(panel) {
       panel.onShown.addListener(global => {
         devtools = global
+        if(shouldClear){
+          devtools.clearStore()
+          shouldClear = false
+        }
         sendToBackgroundScript({
           isRulesetMessage: true,
           direction: 'top-down',
@@ -50,16 +55,20 @@ chrome.devtools.panels.create("Ruleset",
 
 recieveFromBackgroundScript(message => {
   console.log(!!devtools, message)
-  if(!devtools) return
   if(message.type == 'RELOAD_PAGE'){
-    devtools.clearStore()
-    sendToBackgroundScript({
-      isRulesetMessage: true,
-      direction: 'top-down',
-      type: 'OPEN_DEVTOOLS'
-    })
+    if(devtools){
+      devtools.clearStore()
+      sendToBackgroundScript({
+        isRulesetMessage: true,
+        direction: 'top-down',
+        type: 'OPEN_DEVTOOLS'
+      })
+    }
+    else {
+      shouldClear = true
+    }
   }
-  if(message.type === 'UPDATE_RULESET_EVENTS'){
+  if(devtools && message.type === 'UPDATE_RULESET_EVENTS'){
     devtools.addRulesetEvents(message.events)
     // devtools.ruleEvents.push(...message.events)
   }
