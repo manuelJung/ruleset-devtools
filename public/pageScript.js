@@ -55,7 +55,6 @@ recieveFromContentScript(message => {
 setTimeout(() => {
   if(window.__addRulesetEventListener){
     window.__addRulesetEventListener(e => {
-      console.log(buffer.length, e)
       if(!active) buffer.push(e)
       else sendEvents([e])
     }, true)
