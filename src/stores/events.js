@@ -223,7 +223,6 @@ const events = {
 }
 
 window.addRulesetEvents = function (list) {
-  console.log('list', list)
   runInAction(() => {
     list.forEach(event => events.push(event))
   })

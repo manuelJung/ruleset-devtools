@@ -1,5 +1,5 @@
 
-console.log('mount background')
+// console.log('mount background')
 
 // SETUP
 
@@ -7,7 +7,7 @@ console.log('mount background')
 chrome.runtime.onConnect.addListener(function (port) {
   let buffer = []
   let rootTab = null
-  console.log('port', port)
+  // console.log('port', port)
   if(port.name !== 'Ruleset') return
 
   chrome.tabs.query({active: true, currentWindow: true}, tabs => {
@@ -25,7 +25,7 @@ chrome.runtime.onConnect.addListener(function (port) {
     if(!msg.isRulesetMessage) return
     if(!msg.tab || !rootTab) return
     if(msg.tab.id !== rootTab.id) return
-    console.log('recieve-from-content-script', msg)
+    // console.log('recieve-from-content-script', msg)
     sendToDevtools(msg)
   }
 

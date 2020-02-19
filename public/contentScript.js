@@ -1,7 +1,7 @@
 
 // COMUNICATION
 
-console.log('mount-contentScript')
+// console.log('mount-contentScript')
 let psBuffer = []
 let psMount = false
 
@@ -10,7 +10,7 @@ let psMount = false
 const queryTabCb = function (msg) {
   if(msg.type === 'RESOLVE_TAB') {
     chrome.runtime.onMessage.removeListener(queryTabCb)
-    console.log('get tab', msg.tab)
+    // console.log('get tab', msg.tab)
     setup(msg.tab)
   }
 }
@@ -43,7 +43,7 @@ function setup (tab) {
 
   function sendToBackgroundScript (message) {
     message.tab = tab
-    console.log('send-to-bg', message)
+    // console.log('send-to-bg', message)
     chrome.runtime.sendMessage(message)
   }
 
@@ -52,7 +52,7 @@ function setup (tab) {
       psBuffer.push(message)
       return
     }
-    console.log('send-to-ps', message)
+    // console.log('send-to-ps', message)
     window.postMessage(message, '*')
   }
 
@@ -61,13 +61,13 @@ function setup (tab) {
     if(typeof message.data !== 'object') return
     if(!message.data.isRulesetMessage) return
     if(message.data.direction !== 'bottom-up') return
-    console.log('get-from-ps', message)
+    // console.log('get-from-ps', message)
     sendToBackgroundScript(message.data)
   }, false)
 
   // recieveFromBackgroundScript
   chrome.runtime.onMessage.addListener(message => {
-    console.log('get-from-bg', message)
+    // console.log('get-from-bg', message)
     sendToPageScript(message)
   })
 
@@ -90,5 +90,5 @@ function setup (tab) {
   }
   
   document.head.appendChild(s)
-  console.log('setup finished')
+  // console.log('setup finished')
 }

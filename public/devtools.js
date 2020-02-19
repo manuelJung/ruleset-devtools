@@ -54,7 +54,7 @@ chrome.devtools.panels.create("Ruleset",
 )
 
 recieveFromBackgroundScript(message => {
-  console.log(!!devtools, message)
+  // console.log(!!devtools, message)
   if(message.type == 'RELOAD_PAGE'){
     if(devtools){
       devtools.clearStore()

@@ -1,10 +1,10 @@
 
 // COMMUNICATION
 
-console.log('mount-pageScript')
+// console.log('mount-pageScript')
 
 function sendToContentScript (message) {
-  console.log('send-to-content-script', message)
+  // console.log('send-to-content-script', message)
   window.postMessage(message, '*')
 }
 
@@ -17,7 +17,7 @@ function recieveFromContentScript (cb) {
   }, false)
 }
 
-const sendEvent = events => sendToContentScript({
+const sendEvents = events => sendToContentScript({
   isRulesetMessage: true,
   type: 'UPDATE_RULESET_EVENTS',
   direction: 'bottom-up',
@@ -33,16 +33,16 @@ let active = false
 
 window.__REDUX_RULESET_DEVTOOLS__ = function (event) {
   if(!active) buffer.push(event)
-  else sendEvent([event])
+  else sendEvents([event])
 }
 
 recieveFromContentScript(message => {
-  console.log('recieve-from-content-script', message)
+  // console.log('recieve-from-content-script', message)
   if(typeof message.data !== 'object') return
   if(message.data.type === 'OPEN_DEVTOOLS') {
     active = true
     if(buffer.length) {
-      sendEvent(buffer)
+      sendEvents(buffer)
       buffer = []
     }
   }
@@ -51,3 +51,13 @@ recieveFromContentScript(message => {
   }
 })
 
+// deprecated: old version
+setTimeout(() => {
+  if(window.__addRulesetEventListener){
+    window.__addRulesetEventListener(e => {
+      console.log(buffer.length, e)
+      if(!active) buffer.push(e)
+      else sendEvents([e])
+    }, true)
+  }
+}, 1000)
