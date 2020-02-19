@@ -3,48 +3,22 @@
 
 console.log('mount-contentScript')
 
-function sendToBackgroundScript (message) {
-  // console.log('cs:sendToBackgroundScript', message)
-  chrome.runtime.sendMessage(message)
+// query tab
+
+const queryTabCb = function (msg) {
+  if(msg.type === 'RESOLVE_TAB') {
+    chrome.runtime.onMessage.removeListener(queryTabCb)
+    console.log('get tab', msg.tab)
+    setup(msg.tab)
+  }
 }
-
-function sendToPageScript (message) {
-  window.postMessage(message, '*')
-}
-
-function recieveFromPageScript (cb) {
-  window.addEventListener('message', message => {
-    if(typeof message.data !== 'object') return
-    if(!message.data.isRulesetMessage) return
-    if(message.data.direction !== 'bottom-up') return
-    cb(message)
-  }, false)
-}
-
-function recieveFromBackgroundScript (cb) {
-  chrome.runtime.onMessage.addListener(cb)
-}
+chrome.runtime.onMessage.addListener(queryTabCb)
+chrome.runtime.sendMessage({type:'QUERY_TAB'})
 
 
-// SCRIPT
+// notify redux-ruleset that it should generate events
 
-recieveFromPageScript(message => {
-  console.log('ps', message)
-  sendToBackgroundScript(message.data)
-})
-
-recieveFromBackgroundScript(message => {
-  console.log('bg', message)
-  sendToPageScript(message)
-})
-
-var observer = new MutationObserver(onMutation);
-observer.observe(document, {
-  childList: true, // report added/removed nodes
-  subtree: true,   // observe any descendant elements
-});
-
-function onMutation() {
+var observer = new MutationObserver(function () {
   if(!document.head) return
   observer.disconnect()
 
@@ -53,7 +27,44 @@ function onMutation() {
   n.type = 'text/javascript'
   n.innerText = 'window.RULESET_DEVTOOLS=true'
   document.head.appendChild(n)
-  
+});
+observer.observe(document, {
+  childList: true, // report added/removed nodes
+  subtree: true,   // observe any descendant elements
+})
+
+
+
+// setup communication
+
+function setup (tab) {
+
+  function sendToBackgroundScript (message) {
+    message.data.tab = tab
+    console.log('send-to-bg', message.data)
+    chrome.runtime.sendMessage(message.data)
+  }
+
+  function sendToPageScript (message) {
+    console.log('send-to-ps', message)
+    window.postMessage(message, '*')
+  }
+
+  // recieveFromPageScript
+  window.addEventListener('message', message => {
+    if(typeof message.data !== 'object') return
+    if(!message.data.isRulesetMessage) return
+    if(message.data.direction !== 'bottom-up') return
+    console.log('get-from-ps', message)
+    sendToBackgroundScript(message)
+  }, false)
+
+  // recieveFromBackgroundScript
+  chrome.runtime.onMessage.addListener(message => {
+    console.log('get-from-bg', message)
+    sendToPageScript(message)
+  })
+
   // add pageScript
   let s = document.createElement('script')
   s.type = 'text/javascript'
@@ -64,5 +75,5 @@ function onMutation() {
   }
   
   document.head.appendChild(s)
+  console.log('setup finished')
 }
-
