@@ -58,6 +58,7 @@ recieveFromBackgroundScript(message => {
   if(message.type == 'RELOAD_PAGE'){
     if(devtools){
       devtools.clearStore()
+      devtools.clearRouter()
       sendToBackgroundScript({
         isRulesetMessage: true,
         direction: 'top-down',

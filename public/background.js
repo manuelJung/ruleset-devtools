@@ -30,7 +30,7 @@ chrome.runtime.onConnect.addListener(function (port) {
   }
 
   function recieveFromDevtools (msg) {
-    console.log('recieve-from-devtools', msg)
+    // console.log('recieve-from-devtools', msg)
     sendToContentScript(msg)
   }
 

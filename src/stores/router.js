@@ -92,4 +92,9 @@ const router:Router = observable(({
 
 window.router = router
 
+window.clearRouter = () => {
+  router.route = {type:'EMPTY'}
+  router.history = [{type:'EMPTY'}]
+}
+
 export default router
