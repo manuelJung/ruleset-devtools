@@ -30,7 +30,7 @@ export default function createAction (
 
       get attachedRules(){
         const rules = rootStore.private.rules.byRuleTarget[type] || []
-        return rules.sort((a,b) => {
+        return rules.slice().sort((a,b) => {
           if(a.position === 'INSTEAD' && b.position !== 'INSTEAD') return -1
           if(b.position === 'INSTEAD' && a.position !== 'INSTEAD') return 1
           if(a.position === 'BEFORE' && b.position !== 'BEFORE') return -1
