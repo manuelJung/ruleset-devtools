@@ -7,15 +7,25 @@ import {useObserver} from 'mobx-react'
 import * as t from 'stores/types'
 import RuleData from './RuleData'
 import RuleHistory from './RuleHistory'
+import {observer} from 'mobx-react'
+import type {GraphRoute} from 'stores/router'
 
 type Props = {
   rule: t.Rule,
   ruleExecution?: t.RuleExecution | null
 }
 
-export default function RuleContext ({rule,ruleExecution}:Props) {
-  const [tab, setTab] = React.useState('rule')
-  return useObserver(() =>
+export default observer<Props>(function RuleContext ({rule,ruleExecution}:Props) {
+  let tab = 'rule'
+  if(router.route.type === 'GRAPH') {
+    tab = router.route.tab || 'rule'
+  }
+  const setTab = tab => {
+    if(router.route.type === 'GRAPH') {
+      router.push(({...router.route, tab}:GraphRoute))
+    }
+  }
+  return (
     <Wrapper className='ActionContext'>
       <div className='tabs'>
         <Tab active={tab==='rule'} onClick={() => setTab('rule')}>Rule</Tab>
@@ -30,7 +40,7 @@ export default function RuleContext ({rule,ruleExecution}:Props) {
       </div>
     </Wrapper>
   )
-}
+})
 
 const Wrapper = styled.div`
   width: 100%;

@@ -7,14 +7,24 @@ import {useObserver} from 'mobx-react'
 import * as t from 'stores/types'
 import ActionJson from './ActionJson'
 import Sagas from './Sagas'
+import {observer} from 'mobx-react'
+import type {GraphRoute} from 'stores/router'
 
 type Props = {
   action: t.Action,
   actionExecution?: t.ActionExecution | null
 }
 
-export default function ActionList ({action,actionExecution}:Props) {
-  const [tab, setTab] = React.useState('action')
+export default observer<Props>(function ActionList ({action,actionExecution}:Props) {
+  let tab = 'action'
+  if(router.route.type === 'GRAPH') {
+    tab = router.route.tab || 'action'
+  }
+  const setTab = tab => {
+    if(router.route.type === 'GRAPH') {
+      router.push(({...router.route, tab}:GraphRoute))
+    }
+  }
   return (
     <Wrapper className='ActionContext'>
       <div className='tabs'>
@@ -27,7 +37,7 @@ export default function ActionList ({action,actionExecution}:Props) {
       </div>
     </Wrapper>
   )
-}
+})
 
 const Wrapper = styled.div`
   width: 100%;

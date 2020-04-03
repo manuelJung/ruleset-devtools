@@ -26,7 +26,8 @@ export type GraphRoute = {
   type: 'GRAPH',
   store: t.Action | t.Rule,
   actionExecution?: t.ActionExecution | null,
-  ruleExecution?: t.RuleExecution | null
+  ruleExecution?: t.RuleExecution | null,
+  tab?: string
 }
 
 export type ExecutedRulesRoute = {
@@ -41,7 +42,7 @@ export type ExecutedSagasRoute = {
 
 export type DispatchedActionRoute = {
   type: 'DISPATCHED_ACTION',
-  dispatchedAction: t.DispatchedAction
+  dispatchedAction: t.DispatchedAction,
 }
 
 export type Route = EmptyRoute 
@@ -54,10 +55,10 @@ export type Route = EmptyRoute
 const router:Router = observable(({
   route: {type: 'EMPTY'},
   history: [{type:'EMPTY'}],
-  historyPointer: 1,
+  historyPointer: 0,
   push(route){
     runInAction(() => {
-      if(router.history.length !== router.historyPointer){
+      if(router.history.length-1 !== router.historyPointer){
         router.history = router.history.slice(0, router.historyPointer)
       }
       router.history.push(route)
@@ -77,8 +78,10 @@ const router:Router = observable(({
   go(number){
     runInAction(() => {
       const next = router.historyPointer + number
+      const route = router.history[next]
+      if(!route) return
       router.historyPointer = next
-      router.route = router.history[next] || {type:'EMPTY'}
+      router.route = route
     })
   },
   pop(){
