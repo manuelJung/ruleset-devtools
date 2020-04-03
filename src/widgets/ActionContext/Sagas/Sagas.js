@@ -15,6 +15,10 @@ export default observer(function Sagas ({actionExecution}:Props) {
       no sagas were executed
     </Wrapper>
   )
+  const push = sagaYield => () => router.push({
+    type: 'GRAPH',
+    store: sagaYield.rule
+  })
   return (
     <Wrapper className='Sagas'>
       <div className='row header'>
@@ -24,10 +28,10 @@ export default observer(function Sagas ({actionExecution}:Props) {
       </div>
       {actionExecution.sagaYields.map(sagaYield => (
         <div className='row' key={sagaYield.rule.id}>
-          <div className='cell interactive' onClick={() => router.push({
-          type: 'GRAPH',
-          store: sagaYield.rule
-        })}>{sagaYield.rule.id}</div>
+          <div className='cell' onClick={push(sagaYield)}>
+            &nbsp;
+            <div className='text'>{sagaYield.rule.id}</div>
+          </div>
           <div className='cell'>{sagaYield.sagaType}</div>
           <div className='cell'>{sagaYield.result}</div>
         </div>
@@ -46,14 +50,28 @@ const Wrapper = styled.div`
     padding: 8px;
     border-bottom: 1px solid whitesmoke;
     > .cell {
+      position: relative;
       flex: 1;
       max-width: 300px;
       margin-left: 8px;
-    }
 
-    > .interactive:hover {
-      color: grey;
-      cursor: pointer;
+      > .text {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        &:hover {
+          z-index: 1;
+          cursor: pointer;
+          background: #262822;
+          width: auto;
+          padding-right:10px;
+          color: #9e9e9e;
+        }
+      }
     }
   }
 `
