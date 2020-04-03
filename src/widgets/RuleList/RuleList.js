@@ -15,10 +15,10 @@ export default observer(function RuleList () {
       </form>
       <div className='rule-list'>
         {rootStore.rules.filter(rule => rule.id.includes(state.search)).map(rule => (
-          <div className='rule' key={rule.id} onClick={() => router.push({
+          <Rule status={rule.status} key={rule.id} onClick={() => router.push({
             type: 'GRAPH',
             store: rule
-          })}>{rule.id}</div>
+          })}>{rule.id}</Rule>
         ))}
       </div>
     </Wrapper>
@@ -46,15 +46,32 @@ const Wrapper = styled.div`
   > .rule-list {
     display: flex;
     flex-wrap: wrap;
-    > .rule {
-      margin: 10px;
-      width: calc(50% - 40px);
-      padding: 8px;
-      border: 1px solid whitesmoke;
-      color: whitesmoke;
-      text-align: center;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  }
+`
+
+const Rule = styled.div`
+  margin: 10px;
+  width: calc(50% - 50px);
+  padding: 8px;
+  padding-left: 20px
+  border: 1px solid whitesmoke;
+  color: whitesmoke;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+
+  &:after {
+    content:'';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 15px;
+    background: ${props => {
+      if(props.status === 'ACTIVE') return '#4caf50'
+      if(props.status === 'REMOVED') return '#E91E63'
+      if(props.status === 'PENDING') return '#ffeb3b'
+    }};
   }
 `
