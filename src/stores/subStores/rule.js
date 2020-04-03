@@ -120,44 +120,38 @@ export default function createRule (
   })
   events.addListenerByEventName('EXEC_SAGA_START','ruleId',store.id, (e,eventId) => {
     if(e.type !== 'EXEC_SAGA_START') return
-    store.status = 'PENDING'
-    store.__time.status.push({eventId, data:'PENDING'})
+    if(e.sagaType === 'ADD_WHEN'){
+      store.status = 'PENDING'
+      store.__time.status.push({eventId, data:'PENDING'})
+    }
+    if(e.sagaType === 'ADD_UNTIL'){
+      store.status = 'ACTIVE'
+      store.__time.status.push({eventId, data:'ACTIVE'})
+    }
   })
-
-  // events.addListenerByEventName('EXEC_SAGA_END','ruleId',store.id, e => {
-  //   if(e.type !== 'EXEC_SAGA_END') return
-  //   switch(e.sagaType){
-  //     case 'ADD_WHEN': switch(e.result) {
-  //       case 'ADD_RULE_BEFORE': return (store.status='ACTIVE')
-  //       case 'ADD_RULE': return (store.status='ACTIVE')
-  //       case 'ABORT': return
-  //       case 'CACEL': return
-  //       case 'REAPPLY_WHEN': return
-  //     }
-  //     case 'ADD_UNTIL': {
-
-  //     }
-  //   }
-  //   // if(e.sagaType === 'ADD_WHEN'){
-  //   //   if(e.result === 'ADD_RULE_BEFORE'){
-  //   //     store.status = 'ACTIVE'
-  //   //   }
-  //   //   if(e.result === 'ADD_RULE'){
-  //   //     let listeners = []
-  //   //     // const innerListener = events.addListener(ex => {
-  //   //     //   if(ex.type === 'EXEC_ACTION_END' && ex === e.)
-  //   //     // })
-  //   //     store.status = 'ACTIVE'
-  //   //   }
-  //   //   if(e.result === 'ABORT' || e.result === 'CANCELED'){
-  //   //     store.status = 'REMOVED'
-  //   //     events.removeListener(listener)
-  //   //   }
-  //   // }
-  //   // if(e.sagaType === 'ADD_UNTIL'){
-      
-  //   // }
-  // })
+  events.addListenerByEventName('EXEC_SAGA_END','ruleId',store.id, (e,eventId) => {
+    if(e.type !== 'EXEC_SAGA_END') return
+    const set = status => {
+      store.status = status
+      store.__time.status.push({eventId, data:status})
+    }
+    switch(e.sagaType){
+      case 'ADD_WHEN': switch(e.result) {
+        case 'ADD_RULE_BEFORE': return (set('ACTIVE'))
+        case 'ADD_RULE': return (set('ACTIVE'))
+        case 'ABORT': return (set('REMOVED'))
+        case 'CANCEL': return (set('REMOVED'))
+        default: return
+      }
+      case 'ADD_UNTIL': switch(e.result) {
+        case 'RECREATE_RULE': {
+          if(store.data.addWhen) return (set('PENDING'))
+        }
+        case 'REMOVE_RULE': return (set('REMOVED'))
+        default: return
+      }
+    }
+  })
 
   // attach
   const {target, output} = event.rule
