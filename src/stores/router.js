@@ -59,7 +59,7 @@ const router:Router = observable(({
   push(route){
     runInAction(() => {
       if(router.history.length-1 !== router.historyPointer){
-        router.history = router.history.slice(0, router.historyPointer)
+        router.history = router.history.slice(0, router.historyPointer+1)
       }
       router.history.push(route)
       router.route = route
