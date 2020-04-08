@@ -71,11 +71,19 @@ function setup (tab) {
     sendToPageScript(message)
   })
 
+window.addEventListener('beforeunload', (event) => {
   sendToBackgroundScript({
-    type: 'RELOAD_PAGE',
+    type: 'UNLOAD_PAGE',
     isRulesetMessage: true,
     direction: 'bottom-up',
   })
+})
+sendToBackgroundScript({
+  type: 'MOUNT_PAGE',
+  isRulesetMessage: true,
+  direction: 'bottom-up',
+})
+
 
   // add pageScript
   let s = document.createElement('script')

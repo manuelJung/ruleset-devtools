@@ -54,24 +54,28 @@ chrome.devtools.panels.create("Ruleset",
 )
 
 recieveFromBackgroundScript(message => {
+  // console.log(message)
   // console.log(!!devtools, message)
-  if(message.type == 'RELOAD_PAGE'){
+  if(message.type === 'UNLOAD_PAGE'){
     if(devtools){
       devtools.clearStore()
       devtools.clearRouter()
+    }
+    else {
+      shouldClear = true
+    }
+  }
+  if(message.type === 'MOUNT_PAGE'){
+    if(devtools){
       sendToBackgroundScript({
         isRulesetMessage: true,
         direction: 'top-down',
         type: 'OPEN_DEVTOOLS'
       })
     }
-    else {
-      shouldClear = true
-    }
   }
   if(devtools && message.type === 'UPDATE_RULESET_EVENTS'){
     devtools.addRulesetEvents(message.events)
-    // devtools.ruleEvents.push(...message.events)
   }
 })
 
