@@ -11,7 +11,14 @@ var backgroundPageConnection = chrome.runtime.connect({
 // COMMUNICATION
 
 function sendToBackgroundScript (message) {
-  backgroundPageConnection.postMessage(message)
+  try {
+    backgroundPageConnection.postMessage(message)
+  }
+  catch(e){
+    console.warn(e)
+    backgroundPageConnection = chrome.runtime.connect({ name: "Ruleset" })
+    backgroundPageConnection.postMessage(message)
+  }
 }
 
 function recieveFromBackgroundScript (cb) {
