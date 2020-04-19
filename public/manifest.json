@@ -1,6 +1,6 @@
 {
   "name": "Redux-Ruleset",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Devtools for redux-ruleset. Visualizes your data-flow",
   "manifest_version": 2,
   "background": {
