@@ -115,6 +115,8 @@ const cleanPrivate = {
   }
 }
 
+let allEvents = []
+
 const rootStore:RootStore = observable(({
   private: JSON.parse(JSON.stringify(cleanPrivate)),
   get dispatchedActions() {
@@ -126,6 +128,9 @@ const rootStore:RootStore = observable(({
   toJS(store){
     if(store) return toJS(store)
     return toJS(rootStore)
+  },
+  logAllEvents(){
+    console.log(allEvents)
   }
 }:RootStore))
 
@@ -136,6 +141,7 @@ window.clearStore = () => {
 }
 
 events.addListener((e,eventId) => {
+  allEvents.push(e)
   switch(e.type){
     case 'REGISTER_RULE': {
       createRule(e, rootStore, eventId)

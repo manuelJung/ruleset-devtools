@@ -169,7 +169,7 @@ function calculateRows (rule, currentRuleExecution) {
       }],
       trigger: []
     }
-    if(sagaYield.actionExecution.dispatchedAction){
+    if(sagaYield.actionExecution && sagaYield.actionExecution.dispatchedAction){
       row.trigger && row.trigger.push({
         label: sagaYield.actionExecution.dispatchedAction.data.type,
         onClick: () => router.push({

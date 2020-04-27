@@ -10,7 +10,7 @@ export type SagaYield = {
   result: 'REJECT' | 'RESOLVE',
   rule: t.Rule,
   eventId: number,
-  actionExecution: t.ActionExecution,
+  actionExecution: t.ActionExecution | null,
   // sagaExecution: t.SagaExecution,
   // rule: t.Rule,
   toJs: () => SagaYield
