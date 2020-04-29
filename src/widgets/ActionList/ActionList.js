@@ -4,20 +4,24 @@ import styled from 'styled-components'
 import rootStore from 'stores/root'
 import router from 'stores/router'
 import {useObserver} from 'mobx-react'
+import ah from 'stores/actionHighlight'
 
 export default function ActionList () {
   const [commitIndex, setCommitIndex] = React.useState(0)
   const [filter, setFilter] = React.useState('')
 
   const calcHighlight = dispatchedAction => {
+    if(ah.activeExecId === dispatchedAction.actionExecution.id){
+      return 'ACTION_HIGHLIGHT'
+    }
     if(router.route.type !== 'GRAPH') return false
 
     let {actionExecution, ruleExecution} = router.route
     if(!actionExecution && ruleExecution){
       actionExecution = ruleExecution.targetActionExecution
     }
-
     if(!actionExecution) return false
+
     if(actionExecution.dispatchedAction === dispatchedAction) return 'ACTIVE'
     if(actionExecution.creatorRuleExecution 
     && actionExecution.creatorRuleExecution.targetActionExecution
@@ -143,6 +147,10 @@ const Item = styled.div`
 
     ${props => props.highlight === 'RELATED_OUTPUT' && `
       color: #ffc107;
+    `}
+
+    ${props => props.highlight === 'ACTION_HIGHLIGHT' && `
+      color: #00bcd4;
     `}
   }
 

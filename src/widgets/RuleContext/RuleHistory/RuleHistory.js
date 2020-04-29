@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import {observer} from 'mobx-react'
 import * as t from 'stores/types'
 import router from 'stores/router'
+import ah from 'stores/actionHighlight'
 
 type Props = {
   rule: t.Rule,
@@ -15,10 +16,12 @@ type Row = {
   eventId: number,
   active?:boolean,
   trigger?: {
+    actionExecId?: number,
     label: string,
     onClick?: () => mixed
   }[],
   output?: {
+    actionExecId?: number,
     label: string,
     onClick?: () => mixed
   }[]
@@ -43,7 +46,11 @@ export default observer(function RuleHistory({rule, ruleExecution}:Props){
         <div className='row' key={i}>
           <div className='trigger'>
             {row.trigger && row.trigger.map((trigger,i) => (
-              <Box interactive={!!trigger.onClick} key={i} onClick={trigger.onClick}>
+              <Box 
+                interactive={!!trigger.onClick} 
+                key={i} 
+                onClick={trigger.onClick}
+                {...ah.createHandle(trigger.actionExecId)}>
                 {trigger.label}
               </Box>
             ))}
@@ -53,7 +60,11 @@ export default observer(function RuleHistory({rule, ruleExecution}:Props){
           </div>
           <div className='output'>
             {row.output && row.output.map((output,i) => (
-              <Box interactive={!!output.onClick} key={i} onClick={output.onClick}>
+              <Box 
+                interactive={!!output.onClick} 
+                key={i} 
+                onClick={output.onClick}
+                {...ah.createHandle(output.actionExecId)}>
                 {output.label}
               </Box>
             ))}
@@ -119,6 +130,7 @@ function calculateRows (rule, currentRuleExecution) {
     if(ruleExecution.targetActionExecution && ruleExecution.targetActionExecution.dispatchedAction){
       row.trigger && row.trigger.push({
         label: ruleExecution.targetActionExecution.dispatchedAction.data.type,
+        actionExecId: ruleExecution.targetActionExecution.id,
         onClick: () => router.push({
           type: 'GRAPH',
           // $FlowFixMe
@@ -131,6 +143,7 @@ function calculateRows (rule, currentRuleExecution) {
       if(!actionExecution.dispatchedAction) return
       row.output && row.output.push({
         label: actionExecution.dispatchedAction.data.type,
+        actionExecId: actionExecution.id,
         onClick: () => router.push({
           type: 'GRAPH',
           store: actionExecution.action,
@@ -172,6 +185,7 @@ function calculateRows (rule, currentRuleExecution) {
     if(sagaYield.actionExecution && sagaYield.actionExecution.dispatchedAction){
       row.trigger && row.trigger.push({
         label: sagaYield.actionExecution.dispatchedAction.data.type,
+        actionExecId: sagaYield.actionExecution.id,
         onClick: () => router.push({
           type: 'GRAPH',
           // $FlowFixMe
