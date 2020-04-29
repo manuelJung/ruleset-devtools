@@ -222,7 +222,16 @@ const events = {
   }
 }
 
+// function asyncAdd (list) {
+//   const [item, ...rest] = list
+//   events.push(item)
+//   if(rest.length){
+//     setTimeout(() => asyncAdd(rest), 50)
+//   }
+// }
+
 window.addRulesetEvents = function (list) {
+  // asyncAdd(list)
   runInAction(() => {
     list.forEach(event => events.push(event))
   })

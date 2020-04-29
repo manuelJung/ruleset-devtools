@@ -1,10 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
+import ErrorBoundary from './ErrorBoundary'
 
 const MOUNT_NODE = document.getElementById('root')
 
-const render = Container => ReactDOM.render(<Container />, MOUNT_NODE)
+const render = Container => ReactDOM.render((
+  <ErrorBoundary>
+    <Container/>
+  </ErrorBoundary>
+), MOUNT_NODE)
 
 render(App)
 

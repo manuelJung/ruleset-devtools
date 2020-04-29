@@ -53,8 +53,8 @@ export default function createRule (
         let actionsByType = rootStore.private.actions.byActionType
         target.forEach(type => {
           if(!actionsByType[type]) {
-            // alert('no type found')
-            // console.log(target, type)
+            alert('no type found')
+            console.log(target, type)
             return
           }
           result.push(actionsByType[type])
@@ -75,8 +75,11 @@ export default function createRule (
       if(Array.isArray(output)){
         let result = []
         let actionsByType = rootStore.private.actions.byActionType
-        output.forEach(type => result.push(actionsByType[type]))
-        return result.filter(Boolean)
+        output.forEach(type => {
+          if(!actionsByType[type]) return
+          result.push(actionsByType[type])
+        })
+        return result
       }
       return []
     },
