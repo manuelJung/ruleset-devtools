@@ -51,7 +51,14 @@ export default function createRule (
       if(Array.isArray(target)){
         let result = []
         let actionsByType = rootStore.private.actions.byActionType
-        target.forEach(type => result.push(actionsByType[type]))
+        target.forEach(type => {
+          if(!actionsByType[type]) {
+            // alert('no type found')
+            // console.log(target, type)
+            return
+          }
+          result.push(actionsByType[type])
+        })
         return result
       }
       return []
@@ -69,7 +76,7 @@ export default function createRule (
         let result = []
         let actionsByType = rootStore.private.actions.byActionType
         output.forEach(type => result.push(actionsByType[type]))
-        return result
+        return result.filter(Boolean)
       }
       return []
     },
@@ -133,7 +140,7 @@ export default function createRule (
     if(e.type !== 'EXEC_SAGA_END') return
     const set = status => {
       store.status = status
-      store.__time.status.push({eventId, data:status})
+      // store.__time.status.push({eventId, data:status})
     }
     switch(e.sagaType){
       case 'ADD_WHEN': switch(e.result) {
