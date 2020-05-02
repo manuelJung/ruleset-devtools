@@ -53,8 +53,8 @@ export default function createRule (
         let actionsByType = rootStore.private.actions.byActionType
         target.forEach(type => {
           if(!actionsByType[type]) {
-            alert('no type found')
-            console.log(target, type)
+            // alert('no type found')
+            // console.log(target, type)
             return
           }
           result.push(actionsByType[type])

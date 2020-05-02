@@ -1,7 +1,9 @@
 {
+  "version": "1.0.2",
   "name": "Redux-Ruleset",
-  "version": "1.0.1",
+  "short_name": "Redux-Ruleset",
   "description": "Devtools for redux-ruleset. Visualizes your data-flow",
+  "homepage_url": "https://redux-ruleset.netlify.com",
   "manifest_version": 2,
   "background": {
     "scripts": ["background.js"],
