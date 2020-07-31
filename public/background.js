@@ -8,25 +8,27 @@ var clientBuffer = {}
 chrome.runtime.onConnect.addListener(function (port) {
   
   if(port.name === 'Ruleset-Client') {
+    console.log('client-connect', port)
     const tabId = port.sender.tab.id
     clients[tabId] = port
-    const server = serverConnections[tabId]
-    const toBuffer = msg => {
-      if(clientBuffer[tabId] === 'pending') return
-      if(!clientBuffer[tabId]) clientBuffer[tabId] = []
-      clientBuffer[tabId].push(msg)
-    }
-    if(server) {
-      createBridge(port, server) 
-      port.onMessage.removeListener(toBuffer)
-    }
-    else {
-      port.onMessage.addListener(toBuffer)
-    }
+    // const server = serverConnections[tabId]
+    // const toBuffer = msg => {
+    //   if(clientBuffer[tabId] === 'pending') return
+    //   if(!clientBuffer[tabId]) clientBuffer[tabId] = []
+    //   clientBuffer[tabId].push(msg)
+    // }
+    // if(server) {
+    //   // createBridge(port, server) 
+    //   port.onMessage.removeListener(toBuffer)
+    // }
+    // else {
+    //   port.onMessage.addListener(toBuffer)
+    // }
     return
   }
 
   if(port.name !== 'Ruleset-Server') return
+  console.log('server-connect', port)
 
   // eslint-disable-next-line no-undef
   chrome.tabs.query({active: true, currentWindow: true}, tabs => {
@@ -53,13 +55,15 @@ function createBridge (client, server) {
         clientBuffer[client.sender.tab.id] = []
         break;
       }
+      case 'CREATE_CONNECTION': console.log(msg); break;
       default: break;
     }
-    // client.postMessage(msg)
   }
   const c2s = msg => {server.postMessage(msg)}
   client.onMessage.addListener(c2s)
   server.onMessage.addListener(s2c)
+
+  console.log('create-bridge', client, server)
 
   const onDisconnect = () => {
     client.onMessage.removeListener(c2s)

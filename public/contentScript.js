@@ -2,7 +2,14 @@
   // window.rulesetDevToolsExtensionID = 'diibnbdfcjddnpmlhakebmiabmhhmnii'
   window.rulesetDevToolsExtensionID = 'mkcbfjcdaeieogfcbhdcmljdfjdhgmfj' // DEVELOPMENT
   // eslint-disable-next-line no-undef
-  const bg = chrome.runtime.connect(window.rulesetDevToolsExtensionID, { name:'Ruleset-Client' })
+  let bg = chrome.runtime.connect(window.rulesetDevToolsExtensionID, { name:'Ruleset-Client' })
+  let bgConnected = true
+
+  const handleBgDisconnect = () => {
+    bg.onDisconnect.removeListener(handleBgDisconnect)
+    bgConnected = false
+  }
+  bg.onDisconnect.addListener(handleBgDisconnect)
 
 
   /** 
@@ -41,9 +48,12 @@
   window.addEventListener('message', message => {
     if(typeof message.data !== 'object') return
     if(message.data.type !== "RULESET_EVENTS") return
-    bg.postMessage({
-      type: 'RULESET_EVENTS',
-      payload: JSON.stringify(message.data.payload)
-    })
+    try {
+      bgConnected && bg.postMessage({
+        type: 'RULESET_EVENTS',
+        payload: JSON.stringify(message.data.payload)
+      })
+    }
+    catch(e){}
   }, false)
 })()

@@ -157,6 +157,7 @@ events.addListener((e,eventId) => {
     case 'DISPATCH_ACTION': return createDispatchedAction(e, rootStore, eventId)
     case 'EXEC_SAGA_START': return createSagaExecution(e, rootStore, eventId)
     case 'YIELD_SAGA': return createSagaYield(e, rootStore, eventId)
+    default: return
   }
 }, true)
 
