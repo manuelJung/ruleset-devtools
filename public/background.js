@@ -11,6 +11,7 @@ chrome.runtime.onConnect.addListener(function (port) {
     console.log('client-connect', port)
     const tabId = port.sender.tab.id
     clients[tabId] = port
+    clientBuffer[tabId] = createClientBuffer(port)
     // const server = serverConnections[tabId]
     // const toBuffer = msg => {
     //   if(clientBuffer[tabId] === 'pending') return
@@ -45,35 +46,31 @@ function createBridge (client, server) {
   const s2c = msg => {
     switch(msg.type) {
       case 'OPEN_DEVTOOLS': {
-        if(clientBuffer[client.sender.tab.id]){
-          clientBuffer[client.sender.tab.id].forEach(c2s)
-          clientBuffer[client.sender.tab.id] = 'pending'
-        }
+        const buffer = clientBuffer[client.sender.tab.id]
+        if(buffer) buffer.setCb(c2s)
         break;
       }
       case 'CLOSE_DEVTOOLS': {
-        clientBuffer[client.sender.tab.id] = []
+        const buffer = clientBuffer[client.sender.tab.id]
+        if(buffer) buffer.clearCb()
         break;
       }
-      case 'CREATE_CONNECTION': console.log(msg); break;
       default: break;
     }
   }
-  const c2s = msg => {server.postMessage(msg)}
-  client.onMessage.addListener(c2s)
+  const c2s = msg => {serverConnections[client.sender.tab.id] && server.postMessage(msg)}
   server.onMessage.addListener(s2c)
 
   console.log('create-bridge', client, server)
 
   const onDisconnect = () => {
-    client.onMessage.removeListener(c2s)
     server.onMessage.removeListener(s2c)
     client.onDisconnect.removeListener(onClientDisconnect)
     server.onDisconnect.removeListener(onServerDisconnect)
   }
 
   const onClientDisconnect = () => {
-    c2s({type:'DISCONNECT_CLIENT'})
+    server.postMessage({type:'DISCONNECT_CLIENT'})
     delete clients[client.sender.tab.id]
     delete clientBuffer[client.sender.tab.id]
     delete serverConnections[client.sender.tab.id]
@@ -87,4 +84,25 @@ function createBridge (client, server) {
 
   client.onDisconnect.addListener(onClientDisconnect)
   server.onDisconnect.addListener(onServerDisconnect)
+}
+
+
+function createClientBuffer (port) {
+  let list = []
+  let cb = null
+
+  port.onMessage.addListener(msg => {
+    if(cb) cb(msg)
+    else list.push(msg)
+  })
+  return {
+    setCb(_cb) {
+      cb=_cb
+      list.forEach(item => cb(item))
+      list = []
+    },
+    clearCb(){
+      cb = null
+    }
+  }
 }
