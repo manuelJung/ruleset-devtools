@@ -46,6 +46,7 @@ chrome.devtools.panels.create("Ruleset",
     }
 )
 
+// eslint-disable-next-line no-undef
 chrome.runtime.onConnect.addListener(function (port) {
   if(port.name === 'Ruleset-Client') {
     if(reopenCb) reopenCb()

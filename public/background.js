@@ -43,15 +43,14 @@ chrome.runtime.onConnect.addListener(function (port) {
 
 // send messages from client to server and back
 function createBridge (client, server) {
+  const buffer = clientBuffer[client.sender.tab.id]
   const s2c = msg => {
     switch(msg.type) {
       case 'OPEN_DEVTOOLS': {
-        const buffer = clientBuffer[client.sender.tab.id]
         if(buffer) buffer.setCb(c2s)
         break;
       }
       case 'CLOSE_DEVTOOLS': {
-        const buffer = clientBuffer[client.sender.tab.id]
         if(buffer) buffer.clearCb()
         break;
       }
@@ -93,13 +92,12 @@ function createClientBuffer (port) {
 
   port.onMessage.addListener(msg => {
     if(cb) cb(msg)
-    else list.push(msg)
+    list.push(msg)
   })
   return {
     setCb(_cb) {
       cb=_cb
       list.forEach(item => cb(item))
-      list = []
     },
     clearCb(){
       cb = null
