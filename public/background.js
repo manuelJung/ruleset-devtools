@@ -12,19 +12,6 @@ chrome.runtime.onConnect.addListener(function (port) {
     const tabId = port.sender.tab.id
     clients[tabId] = port
     clientBuffer[tabId] = createClientBuffer(port)
-    // const server = serverConnections[tabId]
-    // const toBuffer = msg => {
-    //   if(clientBuffer[tabId] === 'pending') return
-    //   if(!clientBuffer[tabId]) clientBuffer[tabId] = []
-    //   clientBuffer[tabId].push(msg)
-    // }
-    // if(server) {
-    //   // createBridge(port, server) 
-    //   port.onMessage.removeListener(toBuffer)
-    // }
-    // else {
-    //   port.onMessage.addListener(toBuffer)
-    // }
     return
   }
 
@@ -57,7 +44,10 @@ function createBridge (client, server) {
       default: break;
     }
   }
-  const c2s = msg => {serverConnections[client.sender.tab.id] && server.postMessage(msg)}
+  const c2s = msg => {
+    if(!serverConnections[client.sender.tab.id]) return
+    server.postMessage(msg)
+  }
   server.onMessage.addListener(s2c)
 
   console.log('create-bridge', client, server)
@@ -101,6 +91,6 @@ function createClientBuffer (port) {
     },
     clearCb(){
       cb = null
-    }
+    },
   }
 }

@@ -2,6 +2,7 @@
 // eslint-disable-next-line no-undef
 const connectToBg = () => chrome.runtime.connect({ name: "Ruleset-Server" })
 let reopenCb = null
+let disconnected = false
 // eslint-disable-next-line no-undef
 chrome.devtools.panels.create("Ruleset",
     "favicon.ico",
@@ -13,14 +14,15 @@ chrome.devtools.panels.create("Ruleset",
       const handleBgMsg = msg => {
         switch(msg.type){
           case 'DISCONNECT_CLIENT': {
+            disconnected = true
             background.onMessage.removeListener(handleBgMsg)
             reopenCb = () => {
               background = connectToBg()
               background.onMessage.addListener(handleBgMsg)
               reopenCb = null
+              setTimeout(() => background.postMessage({type:'OPEN_DEVTOOLS'}), 500)
             }
             if(global){
-              console.clear()
               global.clearStore()
               global.clearRouter()
             }
@@ -48,6 +50,8 @@ chrome.devtools.panels.create("Ruleset",
 
 // eslint-disable-next-line no-undef
 chrome.runtime.onConnect.addListener(function (port) {
+  if(!disconnected) return
+  disconnected = false
   if(port.name === 'Ruleset-Client') {
     if(reopenCb) reopenCb()
   }
