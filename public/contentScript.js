@@ -11,6 +11,8 @@
   }
   bg.onDisconnect.addListener(handleBgDisconnect)
 
+  bg.postMessage({ type: 'CONNECT_CLIENT' })
+
 
   /** 
   * notify redux-ruleset that it should generate events

@@ -31,35 +31,23 @@ chrome.runtime.onConnect.addListener(function (port) {
 // send messages from client to server and back
 function createBridge (client, server) {
   const buffer = clientBuffer[client.sender.tab.id]
-  const s2c = msg => {
-    switch(msg.type) {
-      case 'OPEN_DEVTOOLS': {
-        if(buffer) buffer.setCb(c2s)
-        break;
-      }
-      case 'CLOSE_DEVTOOLS': {
-        if(buffer) buffer.clearCb()
-        break;
-      }
-      default: break;
-    }
-  }
   const c2s = msg => {
+    console.log(!serverConnections[client.sender.tab.id], msg)
     if(!serverConnections[client.sender.tab.id]) return
     server.postMessage(msg)
   }
-  server.onMessage.addListener(s2c)
+  buffer.setCb(c2s)
 
   console.log('create-bridge', client, server)
 
   const onDisconnect = () => {
-    server.onMessage.removeListener(s2c)
+    buffer.clearCb()
     client.onDisconnect.removeListener(onClientDisconnect)
     server.onDisconnect.removeListener(onServerDisconnect)
   }
 
   const onClientDisconnect = () => {
-    server.postMessage({type:'DISCONNECT_CLIENT'})
+    server.postMessage({type:'DISCONNECT_CLIENT', payload: client.sender.tab.id})
     delete clients[client.sender.tab.id]
     delete clientBuffer[client.sender.tab.id]
     delete serverConnections[client.sender.tab.id]

@@ -10,40 +10,49 @@ chrome.devtools.panels.create("Ruleset",
     function(panel) {
       var background = connectToBg()
       let global = null
+      let buffer = []
+      let tabId = null
+
+      const reconnectCb = port => {
+        if(port.name === 'Ruleset-Client' && port.sender.tab.id === tabId) {
+          port.onMessage.addListener(handleBgMsg)
+        }
+      }
 
       const handleBgMsg = msg => {
         switch(msg.type){
-          case 'DISCONNECT_CLIENT': {
-            disconnected = true
-            background.onMessage.removeListener(handleBgMsg)
-            reopenCb = () => {
-              background = connectToBg()
-              background.onMessage.addListener(handleBgMsg)
-              reopenCb = null
-              setTimeout(() => background.postMessage({type:'OPEN_DEVTOOLS'}), 500)
-            }
+          case 'CONNECT_CLIENT': {
             if(global){
               global.clearStore()
               global.clearRouter()
             }
             break;
           }
+          case 'DISCONNECT_CLIENT': {
+            // eslint-disable-next-line no-undef
+            if(chrome.runtime.onConnect.hasListener(reconnectCb)){
+              // eslint-disable-next-line no-undef
+              chrome.runtime.onConnect.removeListener(reconnectCb)
+            }
+            // eslint-disable-next-line no-undef
+            chrome.runtime.onConnect.addListener(reconnectCb)
+            tabId = msg.payload
+            break;
+          }
           case 'RULESET_EVENTS': {
-            global.addRulesetEvents(JSON.parse(msg.payload))
+            if(global) global.addRulesetEvents(JSON.parse(msg.payload))
+            else buffer.push(JSON.parse(msg.payload))
             break;
           }
           default: break;
         }
       }
+      background.onMessage.addListener(handleBgMsg)
 
       panel.onShown.addListener(_global => {
         global = _global
-        background.onMessage.addListener(handleBgMsg)
-        background.postMessage({type:'OPEN_DEVTOOLS'})
-      })
-      panel.onHidden.addListener(() => {
-        background.postMessage({type:'CLOSE_DEVTOOLS'})
-        background.onMessage.removeListener(handleBgMsg)
+        buffer.forEach(row => global.addRulesetEvents(row))
+        buffer = []
       })
     }
 )
