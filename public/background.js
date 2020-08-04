@@ -8,7 +8,7 @@ var clientBuffer = {}
 chrome.runtime.onConnect.addListener(function (port) {
   
   if(port.name === 'Ruleset-Client') {
-    console.log('client-connect', port)
+    // console.log('client-connect', port)
     const tabId = port.sender.tab.id
     clients[tabId] = port
     clientBuffer[tabId] = createClientBuffer(port)
@@ -16,7 +16,7 @@ chrome.runtime.onConnect.addListener(function (port) {
   }
 
   if(port.name !== 'Ruleset-Server') return
-  console.log('server-connect', port)
+  // console.log('server-connect', port)
 
   // eslint-disable-next-line no-undef
   chrome.tabs.query({active: true, currentWindow: true}, tabs => {
@@ -32,13 +32,12 @@ chrome.runtime.onConnect.addListener(function (port) {
 function createBridge (client, server) {
   const buffer = clientBuffer[client.sender.tab.id]
   const c2s = msg => {
-    console.log(!serverConnections[client.sender.tab.id], msg)
     if(!serverConnections[client.sender.tab.id]) return
     server.postMessage(msg)
   }
   buffer.setCb(c2s)
 
-  console.log('create-bridge', client, server)
+  // console.log('create-bridge', client, server)
 
   const onDisconnect = () => {
     buffer.clearCb()
