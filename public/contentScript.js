@@ -36,7 +36,6 @@
     // eslint-disable-next-line no-undef
     s.src = chrome.extension.getURL('pageScript.js')
     document.head.appendChild(s)
-    console.log('added page-script')
   });
   observer.observe(document, {
     childList: true, // report added/removed nodes
