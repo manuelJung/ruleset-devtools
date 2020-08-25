@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "name": "Redux-Ruleset",
   "short_name": "Redux-Ruleset",
   "description": "Devtools for redux-ruleset. Visualizes your data-flow",
@@ -8,6 +8,12 @@
   "background": {
     "scripts": ["background.js"],
     "persistent": false
+  },
+  "icons": { 
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+   "128": "icon128.png" 
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
