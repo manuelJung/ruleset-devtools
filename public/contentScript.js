@@ -1,6 +1,6 @@
 ;(function () {
-  // window.rulesetDevToolsExtensionID = 'diibnbdfcjddnpmlhakebmiabmhhmnii'
-  window.rulesetDevToolsExtensionID = 'mkcbfjcdaeieogfcbhdcmljdfjdhgmfj' // DEVELOPMENT
+  window.rulesetDevToolsExtensionID = 'diibnbdfcjddnpmlhakebmiabmhhmnii'
+  // window.rulesetDevToolsExtensionID = 'mkcbfjcdaeieogfcbhdcmljdfjdhgmfj' // DEVELOPMENT
   // eslint-disable-next-line no-undef
   let bg = chrome.runtime.connect(window.rulesetDevToolsExtensionID, { name:'Ruleset-Client' })
   let bgConnected = true
